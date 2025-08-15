@@ -1,0 +1,62 @@
+/* Theme override (auto-patched) */
+body{background:#0b1c16 url('images/jungle-bg.png') center / cover no-repeat fixed !important;}
+body::before{content:'';position:fixed;inset:0;background:linear-gradient(180deg,rgba(8,20,15,.55),rgba(8,20,15,.55))!important;pointer-events:none;z-index:-1;}
+.brand .logo{width:44px;height:44px;border-radius:10px;background-image:url('../images/crested-critters-logo.png');background-size:cover;background-position:center;outline:2px solid rgba(124,197,155,.9);}
+
+/* Product Card Width Adjustment - 15% Wider */
+.product-card {
+    flex: 1 1 calc(38.333% - 20px); /* Increased width from ~33.333% */
+    max-width: 400px;               /* Increased by 15% from 350px */
+}
+
+/* Adjust for smaller screens */
+@media (max-width: 768px) {
+    .product-card {
+        flex: 1 1 calc(57.5% - 20px); /* Adjust for tablets */
+    }
+}
+
+@media (max-width: 480px) {
+    .product-card {
+        flex: 1 1 100%; /* 1 card per row on mobile */
+    }
+}
+/* Home carousel: fixed-size cards, no shrinking */
+#homeCarousel {
+  position: relative;
+  overflow: hidden; /* hide overflow so only per-view cards show */
+}
+
+#homeTrack {
+  display: flex;
+  gap: 16px;            /* space between cards */
+  will-change: transform;
+}
+
+#homeTrack .card {
+  flex: 0 0 auto;       /* NEVER shrink to fit */
+  width: 260px;         /* JS will override this with an exact size */
+}
+
+/* keep images crisp inside fixed cards */
+#homeTrack .card .image-wrap img {
+  width: 100%;
+  height: 160px;        /* adjust if you want taller images */
+  object-fit: cover;
+}
+/* Home carousel – only the TRACK scrolls */
+#homeCarousel { position: relative; overflow: hidden; }
+#homeTrack {
+  display: flex;
+  gap: 16px;
+  padding: 1rem;
+  overflow-x: auto;          /* <-- this is the key */
+  scroll-behavior: smooth;
+}
+#homeTrack::-webkit-scrollbar { display: none; }
+#homeTrack { scrollbar-width: none; }
+
+#homeTrack .card {
+  flex: 0 0 auto;
+  width: 260px;              /* JS will override with an exact px width */
+}

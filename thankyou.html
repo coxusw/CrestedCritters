@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/x-icon" href="images/favicon-badge.ico">
+  <link rel="icon" type="image/png" href="images/favicon-badge-64.png" sizes="64x64">
+
+<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thank You • Crested Critters</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme-override.css">
+  <style>
+    .order-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem;margin-top:1rem}
+    .order-row{display:flex;justify-content:space-between;padding:.4rem 0;border-bottom:1px dashed var(--border)}
+    .order-row:last-child{border-bottom:none}
+    .totals{margin-top:.75rem}
+    .totals .order-row b{min-width:120px;display:inline-block}
+  </style>
+</head>
+<body>
+<header class="navbar">
+  <div class="inner container">
+    <div class="brand"><div class="logo"></div><a href="index.html">Crested Critters</a></div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="geckos.html">Geckos</a>
+      <a href="isopods.html">IsoPods</a>
+      <a href="bio-active-tanks.html">Bio-Active Tanks</a>
+      <a href="supplies.html">Supplies</a>
+      <a href="about.html">About Us</a>
+    </nav>
+  </div>
+</header>
+<main class="container">
+  <div class="section-title"><h2>Thank you!</h2><span class="tag">Order received</span></div>
+  <p>Your PayPal sandbox order was captured successfully.</p>
+  <p id="oid"></p>
+
+  <div id="orderSummary" class="order-box" style="display:none">
+    <h3 style="margin-top:0">Order Summary</h3>
+    <div id="items"></div>
+    <div class="totals">
+      <div class="order-row"><b>Subtotal</b><span id="sumSub">$0.00</span></div>
+      <div class="order-row"><b>Shipping</b><span id="sumShip">$0.00</span></div>
+      <div class="order-row"><b>Tax</b><span id="sumTax">$0.00</span></div>
+      <div class="order-row"><b>Total</b><span id="sumTot">$0.00</span></div>
+    </div>
+  </div>
+
+  <p class="notice" style="margin-top:1rem">
+    If live product was ordered we will be in contact for shipping time frame to make sure product arrives healthy.
+  </p>
+
+  <p style="margin-top:1rem"><a href="index.html">Back to Home</a></p>
+</main>
+<script>
+  const id = new URLSearchParams(location.search).get('orderId');
+  if(id) document.getElementById('oid').textContent = "Order ID: " + id;
+
+  // Try to render last order summary from sessionStorage
+  try{
+    const raw = sessionStorage.getItem('cc_last_order');
+    if(raw){
+      const data = JSON.parse(raw);
+      // Basic validation
+      if(data && data.product && data.breakdown){
+        const box = document.getElementById('orderSummary');
+        const items = document.getElementById('items');
+        const qty = Number(data.quantity||1);
+        const unit = Number(data.product.unitPrice||0);
+        const lineTotal = (unit*qty).toFixed(2);
+        items.innerHTML = [
+          '<div class="order-row"><span>'+ (data.product.name||'Item') + ' × '+ qty +'</span><span>$'+ lineTotal +'</span></div>'
+        ].join('');
+        document.getElementById('sumSub').textContent = '$' + Number(data.breakdown.subtotal||0).toFixed(2);
+        document.getElementById('sumShip').textContent= '$' + Number(data.breakdown.shipping||0).toFixed(2);
+        document.getElementById('sumTax').textContent = '$' + Number(data.breakdown.tax||0).toFixed(2);
+        document.getElementById('sumTot').textContent = '$' + Number(data.breakdown.total||0).toFixed(2);
+        box.style.display = '';
+      }
+    }
+  }catch(e){ console.warn('Could not render last order summary', e); }
+
+  // Render cart-mode summary if present
+  try{
+    const raw = sessionStorage.getItem('cc_last_order_cart');
+    if(raw){
+      const data = JSON.parse(raw);
+      const box = document.getElementById('orderSummary');
+      const itemsDiv = document.getElementById('items');
+      if(data && Array.isArray(data.items) && data.items.length){
+        itemsDiv.innerHTML = data.items.map(it => {
+          const line = (Number(it.unitPrice||0) * Number(it.quantity||1)).toFixed(2);
+          return `<div class="order-row"><span>${it.name} × ${it.quantity}</span><span>$${line}</span></div>`;
+        }).join('');
+        document.getElementById('sumSub').textContent = '$' + Number(data.totals?.subtotal||0).toFixed(2);
+        document.getElementById('sumShip').textContent= '$' + Number(data.totals?.shipping||0).toFixed(2);
+        document.getElementById('sumTax').textContent = '$' + Number(data.totals?.tax||0).toFixed(2);
+        document.getElementById('sumTot').textContent = '$' + Number(data.totals?.total||0).toFixed(2);
+        box.style.display = '';
+      }
+    }
+  }catch(e){ console.warn('Could not render cart order summary', e); }
+</script>
+</body>
+</html>

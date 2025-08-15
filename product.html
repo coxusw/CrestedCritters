@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product • Crested Critters</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/theme-override.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="inner container">
+      <div class="brand">
+        <div class="logo"></div>
+        <a href="index.html">Crested Critters</a>
+      </div>
+      <nav class="nav">
+        <a href="index.html" data-nav="home">Home</a>
+        <a href="geckos.html" data-nav="geckos">Geckos</a>
+        <a href="isopods.html" data-nav="isopods">IsoPods</a>
+        <a href="bio-active-tanks.html" data-nav="tanks">Bio-Active Tanks</a>
+        <a href="supplies.html" data-nav="supplies">Supplies</a>
+        <a href="about.html" data-nav="about">About Us</a>
+        <a href="cart.html" data-nav="cart">Cart <span id="ccCartBadge" class="badge"></span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div id="productRoot" class="product-hero">
+      <div class="bigimg"><img id="pImage" alt=""></div>
+      <div class="buy">
+        <h2 id="pName"></h2>
+        <div class="meta" id="pMeta"></div>
+        <p id="pDesc"></p>
+
+        <label for="qty">Quantity</label>
+        <input id="qty" class="qty" type="number" min="1" value="1">
+
+        <div style="height:.6rem"></div>
+        <div class="row" style="display:grid;gap:.4rem">
+          <label for="shipMethod">Shipping</label>
+          <select id="shipMethod" class="qty"></select>
+        </div>
+
+        <div id="breakdownBox" class="notice" style="margin:.75rem 0">
+          <div><b>Subtotal:</b> <span id="bSub">$0.00</span></div>
+          <div><b>Shipping:</b> <span id="bShip">$0.00</span></div>
+          <div><b>Tax:</b> <span id="bTax">$0.00</span></div>
+          <div style="margin-top:.25rem"><b>Total:</b> <span id="bTot">$0.00</span></div>
+        </div>
+
+        <button id="addCartBtn" class="qty">Add to Cart</button>
+        <div style="height:.75rem"></div>
+        <div id="paypal-button-container"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>© 2025 Crested Critters. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- IMPORTANT: set CC_ACTIVE before scripts -->
+  <script>window.CC_ACTIVE='product';</script>
+
+  <!-- Script order: config -> cart -> paypal -> main -> add-to-cart patch -->
+  <script src="js/config.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/paypal.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/addtocart_patch.js"></script>
+<script src="js/inventory_patch.js"></script>
+</body>
+</html>
