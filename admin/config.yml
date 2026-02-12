@@ -2,7 +2,8 @@ backend:
   name: github
   repo: coxusw/CrestedCritters
   branch: main
-  auth_endpoint: https://crestedcritters-auth.onrender.com
+  auth_endpoint: https://crestedcritters-auth.onrender.com/auth
+
 
 local_backend: false   # Only set to true if testing locally
 
