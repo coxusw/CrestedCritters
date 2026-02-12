@@ -2,7 +2,7 @@ backend:
   name: github
   repo: coxusw/CrestedCritters
   branch: main
-  auth_endpoint: https://YOUR-RENDER-APP.onrender.com/auth
+  auth_endpoint: https://crestedcritters-auth.onrender.com
 
 
 media_folder: "assets/images"
