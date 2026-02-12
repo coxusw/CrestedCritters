@@ -6,32 +6,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Load Decap CMS -->
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+  <!-- Load YAML parser -->
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 </head>
 <body>
   <h1>Loading CMS...</h1>
-  
+
   <script>
-    // Tell Decap CMS to load manually
-    window.CMS_MANUAL_INIT = true;
+    // Ensure CMS initializes after DOM is fully loaded
+    document.addEventListener("DOMContentLoaded", () => {
+      // Fetch the config.yml from GitHub Pages
+      fetch('/CrestedCritters/admin/config.yml')
+        .then(res => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.text();
+        })
+        .then(yamlText => {
+          const config = jsyaml.load(yamlText);
+          window.CMSConfig = config;
 
-    // Fetch config.yml from GitHub Pages
-    fetch('config.yml')
-      .then(res => res.text())
-      .then(yamlText => {
-        // Parse YAML
-        const config = jsyaml.load(yamlText);
-        window.CMSConfig = config;
-
-        // Initialize CMS
-        Decap.init({ config: window.CMSConfig });
-      })
-      .catch(err => {
-        console.error("Failed to load config.yml:", err);
-        document.body.innerHTML = "<h2>Failed to load CMS config</h2>";
-      });
+          // Initialize Decap CMS
+          Decap.init({ config: window.CMSConfig });
+        })
+        .catch(err => {
+          console.error("Failed to load CMS config:", err);
+          document.body.innerHTML = `
+            <h2>Failed to load CMS config</h2>
+            <p>Check that config.yml is present and the path is correct.</p>
+          `;
+        });
+    });
   </script>
-
-  <!-- Load YAML parser -->
-  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 </body>
 </html>
