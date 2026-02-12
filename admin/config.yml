@@ -1,9 +1,8 @@
-local_backend: true
-
 backend:
   name: github
   repo: coxusw/CrestedCritters
   branch: main
+  auth_endpoint: https://api.netlify.com/auth
 
 media_folder: "assets/images"
 public_folder: "/assets/images"
