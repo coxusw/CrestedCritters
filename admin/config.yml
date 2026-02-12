@@ -4,6 +4,7 @@ backend:
   branch: main
   auth_endpoint: https://crestedcritters-auth.onrender.com
 
+local_backend: false   # Only set to true if testing locally
 
 media_folder: "assets/images"
 public_folder: "/assets/images"
