@@ -3,7 +3,7 @@ backend:
   repo: coxusw/CrestedCritters
   branch: main
   base_url: https://crestedcritters-auth.onrender.com
-  auth_endpoint: /auth
+  auth_endpoint: auth
 
 media_folder: "assets/images"
 public_folder: "/assets/images"
