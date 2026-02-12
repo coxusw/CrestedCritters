@@ -1,0 +1,12 @@
+title: Crested Critters
+collections:
+  products:
+    output: true
+    permalink: /product/:name/
+
+defaults:
+  - scope:
+      path: ""
+      type: "products"
+    values:
+      layout: product
