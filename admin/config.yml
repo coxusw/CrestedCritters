@@ -22,5 +22,3 @@ collections:
       - { label: "Image", name: "image", widget: "image" }
       - { label: "Square Payment Link", name: "square_link", widget: "string" }
       - { label: "Description", name: "body", widget: "markdown" }
-
-
