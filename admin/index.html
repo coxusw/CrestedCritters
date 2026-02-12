@@ -16,7 +16,7 @@
     // Ensure CMS initializes after DOM is fully loaded
     document.addEventListener("DOMContentLoaded", () => {
       // Fetch the config.yml from GitHub Pages
-      fetch('/CrestedCritters/admin/config.yml')
+      fetch('config.yml')
         .then(res => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.text();
