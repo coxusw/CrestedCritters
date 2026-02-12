@@ -1,18 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Crested Critters Admin</title>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  </head>
-  <body>
-    <script>
-      window.CMS_MANUAL_INIT = true;
-    </script>
-    <script>
-  Decap.init({
-    config: window.CMSConfig
-  });
-</script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Crested Critters Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Load Decap CMS -->
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+</head>
+<body>
+  <h1>Loading CMS...</h1>
+  
+  <script>
+    // Tell Decap CMS to load manually
+    window.CMS_MANUAL_INIT = true;
+
+    // Fetch config.yml from GitHub Pages
+    fetch('config.yml')
+      .then(res => res.text())
+      .then(yamlText => {
+        // Parse YAML
+        const config = jsyaml.load(yamlText);
+        window.CMSConfig = config;
+
+        // Initialize CMS
+        Decap.init({ config: window.CMSConfig });
+      })
+      .catch(err => {
+        console.error("Failed to load config.yml:", err);
+        document.body.innerHTML = "<h2>Failed to load CMS config</h2>";
+      });
+  </script>
+
+  <!-- Load YAML parser -->
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+</body>
 </html>
