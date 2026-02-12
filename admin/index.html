@@ -7,37 +7,43 @@
 
   <!-- YAML parser -->
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
-
-  <!-- Decap CMS -->
-  <script src="https://cdn.jsdelivr.net/npm/decap-cms@3.10.0/dist/decap-cms.js"></script>
 </head>
 <body>
   <h1>Loading CMS...</h1>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Fetch config.yml relative to admin folder
-      fetch('config.yml')
-        .then(res => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.text();
-        })
-        .then(yamlText => {
-          const config = jsyaml.load(yamlText);
-          window.CMSConfig = config;
+      // Dynamically load Decap CMS
+      const cmsScript = document.createElement("script");
+      cmsScript.src = "https://cdn.jsdelivr.net/npm/decap-cms@3.10.0/dist/decap-cms.js";
+      cmsScript.onload = () => {
+        // Now Decap is guaranteed to exist
+        fetch('config.yml')
+          .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.text();
+          })
+          .then(yamlText => {
+            const config = jsyaml.load(yamlText);
+            window.CMSConfig = config;
 
-          // Initialize Decap CMS
-          Decap.init({ config: window.CMSConfig });
-        })
-        .catch(err => {
-          console.error("Failed to load CMS config:", err);
-          document.body.innerHTML = `
-            <h2>Failed to load CMS config</h2>
-            <p>Check that config.yml is present and the path is correct.</p>
-          `;
-        });
+            // Initialize Decap CMS safely
+            Decap.init({ config: window.CMSConfig });
+          })
+          .catch(err => {
+            console.error("Failed to load CMS config:", err);
+            document.body.innerHTML = `
+              <h2>Failed to load CMS config</h2>
+              <p>Check that config.yml is present and the path is correct.</p>
+            `;
+          });
+      };
+      cmsScript.onerror = () => {
+        console.error("Failed to load Decap CMS JS");
+        document.body.innerHTML = "<h2>Failed to load Decap CMS JS</h2>";
+      };
+      document.body.appendChild(cmsScript);
     });
   </script>
 </body>
 </html>
-
