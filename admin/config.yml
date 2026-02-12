@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: coxusw/crestedcritters
+  repo: coxusw/CrestedCritters
   branch: main
 
 media_folder: "assets/images"
