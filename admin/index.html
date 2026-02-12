@@ -4,8 +4,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Crested Critters Admin</title>
+
+    <!-- Tell Decap exactly where the config is -->
+    <link rel="cms-config-url" type="text/yaml" href="./config.yml" />
+
+    <!-- We will manually init after script loads -->
+    <script>
+      window.CMS_MANUAL_INIT = true;
+    </script>
   </head>
   <body>
     <script src="https://cdn.jsdelivr.net/npm/decap-cms@3.10.0/dist/decap-cms.js"></script>
+    <script>
+      // initCMS is the correct global for script-tag usage
+      window.initCMS();
+    </script>
   </body>
 </html>
