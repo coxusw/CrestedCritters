@@ -1,0 +1,23 @@
+backend:
+  name: github
+  repo: YOUR_GITHUB_USERNAME/crestedcritters
+  branch: main
+
+media_folder: "assets/images"
+public_folder: "/assets/images"
+
+collections:
+  - name: "products"
+    label: "Products"
+    folder: "_products"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Product Name", name: "title", widget: "string" }
+      - { label: "Category", name: "category", widget: "select", options: ["Isopods", "Botanicals", "3D Printed Accessories"] }
+      - { label: "Price", name: "price", widget: "number" }
+      - { label: "Inventory", name: "inventory", widget: "number" }
+      - { label: "Sold Out", name: "sold_out", widget: "boolean", default: false }
+      - { label: "Image", name: "image", widget: "image" }
+      - { label: "Square Payment Link", name: "square_link", widget: "string" }
+      - { label: "Description", name: "body", widget: "markdown" }
