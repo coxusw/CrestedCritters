@@ -2,7 +2,13 @@ backend:
   name: github
   repo: coxusw/CrestedCritters
   branch: main
-  auth_endpoint: https://crestedcritters-auth.onrender.com/auth
+
+  # IMPORTANT: point base_url to your Render OAuth proxy
+  base_url: https://crestedcritters-auth.onrender.com
+
+  # IMPORTANT: auth_endpoint is a PATH, not a full URL
+  auth_endpoint: auth
+
 
 media_folder: "assets/images"
 public_folder: "/assets/images"
