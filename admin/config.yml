@@ -23,3 +23,4 @@ collections:
       - { label: "Square Payment Link", name: "square_link", widget: "string" }
       - { label: "Description", name: "body", widget: "markdown" }
 
+
