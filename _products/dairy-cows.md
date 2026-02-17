@@ -1,3 +1,4 @@
+layout: product
 ---
 title: Dairy Cows
 category: Isopods
