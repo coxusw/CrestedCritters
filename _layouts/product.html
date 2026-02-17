@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ page.title }} | Crested Critters</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+</head>
+
+<body>
+
+  <header class="site-header">
+    <div class="nav-container">
+      <a href="{{ '/' | relative_url }}" class="logo">Crested Critters</a>
+      <nav class="nav-links">
+        <a href="{{ '/' | relative_url }}">Home</a>
+        <a href="{{ '/shop/' | relative_url }}">Shop</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container product-layout">
+
+      <div class="product-media">
+        {% if page.image %}
+          <img src="{{ page.image | relative_url }}" alt="{{ page.title }}">
+        {% endif %}
+      </div>
+
+      <div class="product-info">
+        <span class="category-badge">{{ page.category }}</span>
+
+        <h1>{{ page.title }}</h1>
+
+        <div class="product-price">${{ page.price }}</div>
+
+        {% if page.sold_out or page.inventory == 0 %}
+          <div class="stock-status sold">Sold Out</div>
+        {% else %}
+          <div class="stock-status in-stock">{{ page.inventory }} in stock</div>
+        {% endif %}
+
+        {% if page.sold_out or page.inventory == 0 %}
+          <button class="btn ghost btn-full" disabled>Sold Out</button>
+        {% else %}
+          {% if page.square_link %}
+            <a class="btn primary btn-full" href="{{ page.square_link }}" target="_blank">
+              Buy Now
+            </a>
+          {% endif %}
+        {% endif %}
+
+        <div class="product-description">
+          {{ content }}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Related products -->
+    <div class="container section">
+      <h2>Related {{ page.category }}</h2>
+      <div class="product-grid">
+        {% assign related = site.products | where: "category", page.category %}
+        {% for product in related limit:3 %}
+          {% unless product.url == page.url %}
+            <a class="p-card" href="{{ product.url | relative_url }}">
+              <div class="p-img">
+                <img src="{{ product.image | relative_url }}" alt="{{ product.title }}">
+              </div>
+              <div class="p-body">
+                <h3>{{ product.title }}</h3>
+                <span class="price">${{ product.price }}</span>
+              </div>
+            </a>
+          {% endunless %}
+        {% endfor %}
+      </div>
+    </div>
+
+  </main>
+
+</body>
+</html>
