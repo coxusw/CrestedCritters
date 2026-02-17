@@ -161,3 +161,46 @@ img{max-width:100%;display:block}
   .split{grid-template-columns:1fr}
   .hero h1{font-size:2.35rem}
 }
+.filters{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin: 10px 0 22px 0;
+}
+
+.filter-btn{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 10px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.filter-btn:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.18);
+  color: var(--text);
+}
+
+.filter-btn.is-active{
+  background: rgba(127,176,105,0.18);
+  border-color: rgba(127,176,105,0.35);
+  color: var(--text);
+}
+
+.p-link{ display:block; }
+.p-actions{ padding: 0 16px 16px 16px; }
+.btn-full{ width: 100%; }
+
+.p-img-placeholder{
+  height:200px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(255,255,255,0.04);
+  color: var(--muted);
+}
+
