@@ -1,0 +1,103 @@
+---
+layout: default
+title: Shop
+---
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Shop</h2>
+      <p class="muted">Isopods • Botanicals • 3D Printed Accessories</p>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filters" id="filters">
+      <button class="filter-btn is-active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="Isopods">Isopods</button>
+      <button class="filter-btn" data-filter="Botanicals">Botanicals</button>
+      <button class="filter-btn" data-filter="3D Printed Accessories">3D Printed Accessories</button>
+    </div>
+
+    <div class="product-grid" id="productGrid">
+      {% assign sorted = site.products | sort: "title" %}
+      {% for product in sorted %}
+        {% assign is_sold = false %}
+        {% if product.sold_out == true or product.inventory == 0 %}
+          {% assign is_sold = true %}
+        {% endif %}
+
+        <div class="p-card" data-category="{{ product.category }}">
+          <a href="{{ product.url | relative_url }}" class="p-link">
+            <div class="p-img">
+              {% if product.image %}
+                <img src="{{ product.image }}" alt="{{ product.title }}">
+              {% else %}
+                <div class="p-img-placeholder">No image</div>
+              {% endif %}
+
+              {% if is_sold %}
+                <span class="badge sold">Sold Out</span>
+              {% else %}
+                <span class="badge stock">{{ product.inventory }} in stock</span>
+              {% endif %}
+            </div>
+
+            <div class="p-body">
+              <div class="p-top">
+                <h3>{{ product.title }}</h3>
+                <span class="price">${{ product.price }}</span>
+              </div>
+              <p class="muted p-cat">{{ product.category }}</p>
+            </div>
+          </a>
+
+          <div class="p-actions">
+            {% if is_sold %}
+              <button class="btn ghost btn-full" disabled>Sold Out</button>
+            {% else %}
+              {% if product.square_link %}
+                <a class="btn primary btn-full" href="{{ product.square_link }}" target="_blank" rel="noopener">
+                  Buy Now
+                </a>
+              {% else %}
+                <button class="btn ghost btn-full" disabled>Add Square Link</button>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if site.products.size == 0 %}
+      <p class="muted">No products yet. Add products in Admin → Products → New.</p>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  (function () {
+    const buttons = document.querySelectorAll(".filter-btn");
+    const cards = document.querySelectorAll(".p-card");
+
+    function setActive(btn) {
+      buttons.forEach(b => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+    }
+
+    function applyFilter(category) {
+      cards.forEach(card => {
+        const cardCat = card.getAttribute("data-category");
+        const show = (category === "all") || (cardCat === category);
+        card.style.display = show ? "" : "none";
+      });
+    }
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const cat = btn.getAttribute("data-filter");
+        setActive(btn);
+        applyFilter(cat);
+      });
+    });
+  })();
+</script>
