@@ -17,10 +17,63 @@ collections:
     fields:
       - { label: "Product Name", name: "title", widget: "string" }
       - { label: "Category", name: "category", widget: "select", options: ["Isopods", "Botanicals", "3D Printed Accessories"] }
-      - { label: "Price", name: "price", widget: "number" }
-      - { label: "Inventory", name: "inventory", widget: "number" }
+      - { label: "Price", name: "price", widget: "number", value_type: "float", min: 0 }
+      - { label: "Inventory", name: "inventory", widget: "number", value_type: "int", min: 0 }
       - { label: "Sold Out", name: "sold_out", widget: "boolean", default: false }
       - { label: "Featured on Homepage", name: "featured", widget: "boolean", default: false }
-      - { label: "Image", name: "image", widget: "image" }
-      - { label: "Square Payment Link", name: "square_link", widget: "string" }
-      - { label: "Description", name: "body", widget: "markdown" }
+      - { label: "Image", name: "image", widget: "image", required: false }
+      - { label: "Square Payment Link", name: "square_link", widget: "string", required: false }
+      - { label: "Description", name: "body", widget: "markdown", required: false }
+
+  - name: "site"
+    label: "Site Settings"
+    files:
+      - name: "home"
+        label: "Homepage"
+        file: "_data/home.yml"
+        fields:
+          - label: "Hero"
+            name: "hero"
+            widget: "object"
+            fields:
+              - { label: "Headline", name: "headline", widget: "string" }
+              - { label: "Subheadline", name: "subheadline", widget: "text" }
+              - { label: "Primary Button Text", name: "primary_button_text", widget: "string" }
+              - { label: "Primary Button Link", name: "primary_button_link", widget: "string" }
+              - { label: "Secondary Button Text", name: "secondary_button_text", widget: "string" }
+              - { label: "Secondary Button Link", name: "secondary_button_link", widget: "string" }
+              - { label: "Hero Image", name: "image", widget: "image", required: false }
+
+          - label: "Categories"
+            name: "categories"
+            widget: "object"
+            fields:
+              - { label: "Section Title", name: "title", widget: "string" }
+              - label: "Items"
+                name: "items"
+                widget: "list"
+                fields:
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Description", name: "description", widget: "text" }
+                  - { label: "Link", name: "link", widget: "string" }
+                  - { label: "Image", name: "image", widget: "image", required: false }
+
+          - label: "Featured"
+            name: "featured"
+            widget: "object"
+            fields:
+              - { label: "Section Title", name: "title", widget: "string" }
+              - { label: "Max Items", name: "max_items", widget: "number", value_type: "int", min: 0 }
+
+          - label: "Why Section"
+            name: "why"
+            widget: "object"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Bullets", name: "bullets", widget: "list" }
+
+          - label: "Footer"
+            name: "footer"
+            widget: "object"
+            fields:
+              - { label: "Footer Text", name: "text", widget: "string" }
