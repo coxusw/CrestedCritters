@@ -1,3 +1,52 @@
+.site-header {
+  background: #0b0c0d;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 900;
+  font-size: 1.1rem;
+  letter-spacing: .5px;
+  color: #e9ecef;
+}
+
+.nav-links {
+  display: flex;
+  gap: 18px;
+}
+
+.nav-links a {
+  color: #a8b0b8;
+  font-weight: 600;
+  transition: color .15s ease;
+}
+
+.nav-links a:hover {
+  color: #7fb069;
+}
+
+.site-footer {
+  margin-top: 80px;
+  padding: 30px 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: #0b0c0d;
+  text-align: center;
+  color: #a8b0b8;
+  font-size: .9rem;
+}
+
 :root{
   --bg:#0e0f10;
   --panel:#141618;
