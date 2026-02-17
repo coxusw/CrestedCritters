@@ -2,7 +2,7 @@ title: Crested Critters
 collections:
   products:
     output: true
-    permalink: /product/:name/
+    permalink: /products/:name/
 
 defaults:
   - scope:
