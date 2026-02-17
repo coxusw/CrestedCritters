@@ -30,16 +30,15 @@ title: Shop
           <a href="{{ product.url | relative_url }}" class="p-link">
             <div class="p-img">
               {% if product.image %}
-                <img src="{{ product.image }}" alt="{{ product.title }}">
-              {% else %}
-                <div class="p-img-placeholder">No image</div>
-              {% endif %}
-
-              {% if is_sold %}
-                <span class="badge sold">Sold Out</span>
-              {% else %}
-                <span class="badge stock">{{ product.inventory }} in stock</span>
-              {% endif %}
+  {% assign img = product.image %}
+  {% if img contains '://' %}
+    <img src="{{ img }}" alt="{{ product.title }}">
+  {% else %}
+    <img src="{{ img | relative_url }}" alt="{{ product.title }}">
+  {% endif %}
+{% else %}
+  <div class="p-img-placeholder">No image</div>
+{% endif %}
             </div>
 
             <div class="p-body">
