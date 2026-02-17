@@ -77,3 +77,22 @@ collections:
             widget: "object"
             fields:
               - { label: "Footer Text", name: "text", widget: "string" }
+
+  - name: "pages"
+    label: "Pages"
+    files:
+      - name: "about"
+        label: "About Page"
+        file: "about/index.md"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Content", name: "body", widget: "markdown" }
+
+      - name: "contact"
+        label: "Contact Page"
+        file: "contact/index.md"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Form Action URL (Formspree Endpoint)", name: "form_action", widget: "string" }
+          - { label: "Submit Button Text", name: "submit_button_text", widget: "string", required: false }
+          - { label: "Intro Text", name: "body", widget: "markdown" }
