@@ -4,80 +4,153 @@
   <meta charset="UTF-8">
   <title>{{ page.title }} | Crested Critters</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="{{ '/favicon.ico' | relative_url }}">
+  <link rel="shortcut icon" href="{{ '/favicon.ico' | relative_url }}">
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
 </head>
 
 <body>
 
+  <!-- NAV -->
   <header class="site-header">
     <div class="nav-container">
       <a href="{{ '/' | relative_url }}" class="logo">Crested Critters</a>
       <nav class="nav-links">
         <a href="{{ '/' | relative_url }}">Home</a>
         <a href="{{ '/shop/' | relative_url }}">Shop</a>
+        <a href="{{ '/contact/' | relative_url }}">Contact</a>
       </nav>
     </div>
   </header>
 
+  {% assign is_sold = false %}
+  {% if page.sold_out == true or page.inventory == 0 %}
+    {% assign is_sold = true %}
+  {% endif %}
+
   <main class="section">
     <div class="container product-layout">
 
+      <!-- LEFT: IMAGE -->
       <div class="product-media">
         {% if page.image %}
-          <img src="{{ page.image | relative_url }}" alt="{{ page.title }}">
+          {% assign img = page.image %}
+          {% if img contains '://' %}
+            <img src="{{ img }}" alt="{{ page.title }}">
+          {% else %}
+            <img src="{{ img | relative_url }}" alt="{{ page.title }}">
+          {% endif %}
+        {% else %}
+          <div class="p-img-placeholder">No image</div>
         {% endif %}
       </div>
 
+      <!-- RIGHT: DETAILS -->
       <div class="product-info">
-        <span class="category-badge">{{ page.category }}</span>
+        {% if page.category %}
+          <span class="category-badge">{{ page.category }}</span>
+        {% endif %}
 
         <h1>{{ page.title }}</h1>
 
-        <div class="product-price">${{ page.price }}</div>
+        {% if page.price %}
+          <div class="product-price">${{ page.price }}</div>
+        {% endif %}
 
-        {% if page.sold_out or page.inventory == 0 %}
+        {% if is_sold %}
           <div class="stock-status sold">Sold Out</div>
         {% else %}
           <div class="stock-status in-stock">{{ page.inventory }} in stock</div>
-        {% endif %}
-
-        {% if page.sold_out or page.inventory == 0 %}
-          <button class="btn ghost btn-full" disabled>Sold Out</button>
-        {% else %}
-          {% if page.square_link %}
-            <a class="btn primary btn-full" href="{{ page.square_link }}" target="_blank">
-              Buy Now
-            </a>
+          {% if page.inventory and page.inventory <= 4 %}
+            <div class="low-stock-text">Low stock — selling fast</div>
           {% endif %}
         {% endif %}
 
-        <div class="product-description">
-          {{ content }}
+        <div class="p-actions" style="padding:0; margin-top:14px;">
+          {% if is_sold %}
+            <button class="btn ghost btn-full" disabled>Sold Out</button>
+          {% else %}
+            {% if page.square_link and page.square_link != "" %}
+              <a class="btn primary btn-full" href="{{ page.square_link }}" target="_blank" rel="noopener">
+                Buy Now
+              </a>
+            {% else %}
+              <button class="btn ghost btn-full" disabled>Add Square Link</button>
+            {% endif %}
+          {% endif %}
+        </div>
+
+        {% if content %}
+          <div class="product-description">
+            {{ content }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- RELATED PRODUCTS -->
+    <section class="section" style="padding-top:40px;">
+      <div class="container">
+        <div class="section-head">
+          <h2>Related</h2>
+          <p class="muted">More in {{ page.category }}</p>
+        </div>
+
+        <div class="product-grid">
+          {% assign related = site.products | where: "category", page.category %}
+          {% assign shown = 0 %}
+          {% for product in related %}
+            {% unless product.url == page.url %}
+              {% if shown < 3 %}
+                <a class="p-card" href="{{ product.url | relative_url }}">
+                  <div class="p-img">
+                    {% if product.image %}
+                      {% assign rimg = product.image %}
+                      {% if rimg contains '://' %}
+                        <img src="{{ rimg }}" alt="{{ product.title }}">
+                      {% else %}
+                        <img src="{{ rimg | relative_url }}" alt="{{ product.title }}">
+                      {% endif %}
+                    {% else %}
+                      <div class="p-img-placeholder">No image</div>
+                    {% endif %}
+                  </div>
+                  <div class="p-body">
+                    <div class="p-top">
+                      <h3>{{ product.title }}</h3>
+                      <span class="price">${{ product.price }}</span>
+                    </div>
+                    <p class="muted p-cat">{{ product.category }}</p>
+                  </div>
+                </a>
+                {% assign shown = shown | plus: 1 %}
+              {% endif %}
+            {% endunless %}
+          {% endfor %}
         </div>
       </div>
+    </section>
 
-    </div>
+    <!-- STICKY MOBILE BUY BAR -->
+    {% if is_sold == false and page.square_link and page.square_link != "" %}
+      <div class="mobile-buybar">
+        <div class="mb-left">
+          <div class="mb-title">{{ page.title }}</div>
+          <div class="mb-sub">
+            <span class="mb-price">${{ page.price }}</span>
+            {% if page.inventory and page.inventory <= 4 %}
+              <span class="mb-low">Low stock</span>
+            {% else %}
+              <span class="mb-stock">{{ page.inventory }} in stock</span>
+            {% endif %}
+          </div>
+        </div>
 
-    <!-- Related products -->
-    <div class="container section">
-      <h2>Related {{ page.category }}</h2>
-      <div class="product-grid">
-        {% assign related = site.products | where: "category", page.category %}
-        {% for product in related limit:3 %}
-          {% unless product.url == page.url %}
-            <a class="p-card" href="{{ product.url | relative_url }}">
-              <div class="p-img">
-                <img src="{{ product.image | relative_url }}" alt="{{ product.title }}">
-              </div>
-              <div class="p-body">
-                <h3>{{ product.title }}</h3>
-                <span class="price">${{ product.price }}</span>
-              </div>
-            </a>
-          {% endunless %}
-        {% endfor %}
+        <a class="btn primary mb-btn" href="{{ page.square_link }}" target="_blank" rel="noopener">
+          Buy Now
+        </a>
       </div>
-    </div>
+    {% endif %}
 
   </main>
 
