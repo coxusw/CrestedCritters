@@ -11,7 +11,7 @@ title: Home
       <p class="sub">{{ site.data.home.hero.subheadline }}</p>
 
       <div class="hero-actions">
-        <a class="btn primary" href="{{ site.data.home.hero.primary_button_link }}">
+        <a class="btn primary" href="{{ site.data.home.hero.primary_button_link | relative_url }}">
           {{ site.data.home.hero.primary_button_text }}
         </a>
         <a class="btn ghost" href="{{ site.data.home.hero.secondary_button_link }}">
