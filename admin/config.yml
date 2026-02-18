@@ -25,52 +25,61 @@ collections:
       - { label: "Square Payment Link", name: "square_link", widget: "string", required: false }
       - { label: "Description", name: "body", widget: "markdown", required: false }
 
-  - name: "site"
-    label: "Site Settings"
-    files:
-      - name: "home"
+        - name: "home"
         label: "Homepage"
         file: "_data/home.yml"
         fields:
-          - label: "Hero"
-            name: "hero"
-            widget: "object"
-            fields:
-              - { label: "Headline", name: "headline", widget: "string" }
-              - { label: "Subheadline", name: "subheadline", widget: "text" }
-              - { label: "Primary Button Text", name: "primary_button_text", widget: "string" }
-              - { label: "Primary Button Link", name: "primary_button_link", widget: "string" }
-              - { label: "Secondary Button Text", name: "secondary_button_text", widget: "string" }
-              - { label: "Secondary Button Link", name: "secondary_button_link", widget: "string" }
-              - { label: "Hero Image", name: "image", widget: "image", required: false }
+          - label: "Blocks"
+            name: "blocks"
+            widget: "list"
+            types:
+              - label: "Hero"
+                name: "hero"
+                widget: "object"
+                fields:
+                  - { label: "Kicker", name: "kicker", widget: "string", required: false }
+                  - { label: "Headline", name: "headline", widget: "string" }
+                  - { label: "Subheadline", name: "subheadline", widget: "text", required: false }
+                  - { label: "Hero Image", name: "image", widget: "image", required: false }
+                  - label: "Buttons"
+                    name: "buttons"
+                    widget: "list"
+                    fields:
+                      - { label: "Label", name: "label", widget: "string" }
+                      - { label: "Link", name: "link", widget: "string" }
+                      - { label: "Style", name: "style", widget: "select", options: ["primary", "ghost"], default: "ghost" }
 
-          - label: "Categories"
-            name: "categories"
-            widget: "object"
-            fields:
-              - { label: "Section Title", name: "title", widget: "string" }
-              - label: "Items"
-                name: "items"
-                widget: "list"
+              - label: "Categories"
+                name: "categories"
+                widget: "object"
                 fields:
                   - { label: "Title", name: "title", widget: "string" }
-                  - { label: "Description", name: "description", widget: "text" }
-                  - { label: "Link", name: "link", widget: "string" }
-                  - { label: "Image", name: "image", widget: "image", required: false }
+                  - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+                  - label: "Items"
+                    name: "items"
+                    widget: "list"
+                    fields:
+                      - { label: "Title", name: "title", widget: "string" }
+                      - { label: "Description", name: "description", widget: "text" }
+                      - { label: "Link", name: "link", widget: "string" }
+                      - { label: "Image", name: "image", widget: "image", required: false }
 
-          - label: "Featured"
-            name: "featured"
-            widget: "object"
-            fields:
-              - { label: "Section Title", name: "title", widget: "string" }
-              - { label: "Max Items", name: "max_items", widget: "number", value_type: "int", min: 0 }
+              - label: "Featured Products"
+                name: "featured_products"
+                widget: "object"
+                fields:
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+                  - { label: "Max Items", name: "max_items", widget: "number", value_type: "int", min: 0, default: 6 }
+                  - { label: "CTA Label", name: "cta_label", widget: "string", required: false }
+                  - { label: "CTA Link", name: "cta_link", widget: "string", required: false }
 
-          - label: "Why Section"
-            name: "why"
-            widget: "object"
-            fields:
-              - { label: "Title", name: "title", widget: "string" }
-              - { label: "Bullets", name: "bullets", widget: "list" }
+              - label: "Bullet Cards"
+                name: "bullet_cards"
+                widget: "object"
+                fields:
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Bullets", name: "bullets", widget: "list" }
 
           - label: "Footer"
             name: "footer"
@@ -78,21 +87,3 @@ collections:
             fields:
               - { label: "Footer Text", name: "text", widget: "string" }
 
-  - name: "pages"
-    label: "Pages"
-    files:
-      - name: "about"
-        label: "About Page"
-        file: "about/index.md"
-        fields:
-          - { label: "Title", name: "title", widget: "string" }
-          - { label: "Content", name: "body", widget: "markdown" }
-
-      - name: "contact"
-        label: "Contact Page"
-        file: "contact/index.md"
-        fields:
-          - { label: "Title", name: "title", widget: "string" }
-          - { label: "Form Action URL (Formspree Endpoint)", name: "form_action", widget: "string" }
-          - { label: "Submit Button Text", name: "submit_button_text", widget: "string", required: false }
-          - { label: "Intro Text", name: "body", widget: "markdown" }
