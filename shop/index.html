@@ -7,53 +7,66 @@ title: Shop
   <div class="container">
     <div class="section-head">
       <h2>Shop</h2>
-      <p class="muted">Isopods • Botanicals • 3D Printed Accessories</p>
+      <p class="muted">Browse by category or view everything.</p>
     </div>
 
-    <!-- Anchor targets (so homepage buttons can jump here) -->
-    <div id="isopods"></div>
-    <div id="botanicals"></div>
-    <div id="3d-printed-accessories"></div>
+    {%- assign categories = site.products | map: "category" | uniq | sort -%}
 
-    <!-- Filter Tabs -->
+    <!-- Anchor targets for /shop/#category-slug deep links -->
+    <div class="shop-anchors">
+      {%- for cat in categories -%}
+        <div id="{{ cat | slugify }}"></div>
+      {%- endfor -%}
+    </div>
+
+    <!-- Filter Tabs (auto-generated) -->
     <div class="filters" id="filters">
-      <button class="filter-btn is-active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="Isopods">Isopods</button>
-      <button class="filter-btn" data-filter="Botanicals">Botanicals</button>
-      <button class="filter-btn" data-filter="3D Printed Accessories">3D Printed Accessories</button>
+      <button class="filter-btn is-active" data-filter="all" data-slug="">All</button>
+
+      {%- for cat in categories -%}
+        <button class="filter-btn"
+                data-filter="{{ cat }}"
+                data-slug="{{ cat | slugify }}">
+          {{ cat }}
+        </button>
+      {%- endfor -%}
     </div>
 
     <div class="product-grid" id="productGrid">
-      {% assign sorted = site.products | sort: "title" %}
-      {% for product in sorted %}
-        {% assign is_sold = false %}
-        {% if product.sold_out == true or product.inventory == 0 %}
-          {% assign is_sold = true %}
-        {% endif %}
+      {%- assign sorted = site.products | sort: "title" -%}
+      {%- for product in sorted -%}
 
-        <div class="p-card" data-category="{{ product.category }}">
+        {%- assign is_sold = false -%}
+        {%- if product.sold_out == true or product.inventory == 0 -%}
+          {%- assign is_sold = true -%}
+        {%- endif -%}
+
+        <div class="p-card"
+             data-category="{{ product.category }}"
+             data-category-slug="{{ product.category | slugify }}">
+
           <a href="{{ product.url | relative_url }}" class="p-link">
             <div class="p-img">
-              {% if product.image %}
-                {% assign img = product.image %}
-                {% if img contains '://' %}
+              {%- if product.image -%}
+                {%- assign img = product.image -%}
+                {%- if img contains '://' -%}
                   <img src="{{ img }}" alt="{{ product.title }}">
-                {% else %}
+                {%- else -%}
                   <img src="{{ img | relative_url }}" alt="{{ product.title }}">
-                {% endif %}
-              {% else %}
+                {%- endif -%}
+              {%- else -%}
                 <div class="p-img-placeholder">No image</div>
-              {% endif %}
+              {%- endif -%}
 
-              {% if is_sold %}
+              {%- if is_sold -%}
                 <span class="badge sold">Sold Out</span>
-              {% else %}
-                {% if product.inventory and product.inventory <= 4 %}
+              {%- else -%}
+                {%- if product.inventory and product.inventory <= 4 -%}
                   <span class="badge low">Low stock: {{ product.inventory }}</span>
-                {% else %}
+                {%- else -%}
                   <span class="badge stock">{{ product.inventory }} in stock</span>
-                {% endif %}
-              {% endif %}
+                {%- endif -%}
+              {%- endif -%}
             </div>
 
             <div class="p-body">
@@ -66,32 +79,36 @@ title: Shop
           </a>
 
           <div class="p-actions">
-            {% if is_sold %}
+            {%- if is_sold -%}
               <button class="btn ghost btn-full" disabled>Sold Out</button>
-            {% else %}
-              {% if product.square_link and product.square_link != "" %}
-                <a class="btn primary btn-full" href="{{ product.square_link }}" target="_blank" rel="noopener">
+            {%- else -%}
+              {%- if product.square_link and product.square_link != "" -%}
+                <a class="btn primary btn-full"
+                   href="{{ product.square_link }}"
+                   target="_blank"
+                   rel="noopener">
                   Buy Now
                 </a>
-              {% else %}
+              {%- else -%}
                 <button class="btn ghost btn-full" disabled>Add Square Link</button>
-              {% endif %}
-            {% endif %}
+              {%- endif -%}
+            {%- endif -%}
           </div>
+
         </div>
-      {% endfor %}
+      {%- endfor -%}
     </div>
 
-    {% if site.products.size == 0 %}
+    {%- if site.products.size == 0 -%}
       <p class="muted">No products yet. Add products in Admin → Products → New.</p>
-    {% endif %}
+    {%- endif -%}
   </div>
 </section>
 
 <script>
   (function () {
-    const buttons = document.querySelectorAll(".filter-btn");
-    const cards = document.querySelectorAll(".p-card");
+    const buttons = Array.from(document.querySelectorAll(".filter-btn"));
+    const cards = Array.from(document.querySelectorAll(".p-card"));
 
     function setActive(btn) {
       buttons.forEach(b => b.classList.remove("is-active"));
@@ -106,42 +123,50 @@ title: Shop
       });
     }
 
-    // If someone visits with a hash, auto-select that category filter
+    function findButtonBySlug(slug) {
+      return buttons.find(b => (b.getAttribute("data-slug") || "") === slug) || null;
+    }
+
     function applyHashFilter() {
-      const hash = (window.location.hash || "").toLowerCase();
-      if (hash === "#isopods") {
-        const btn = document.querySelector('.filter-btn[data-filter="Isopods"]');
-        if (btn) { setActive(btn); applyFilter("Isopods"); }
-      } else if (hash === "#botanicals") {
-        const btn = document.querySelector('.filter-btn[data-filter="Botanicals"]');
-        if (btn) { setActive(btn); applyFilter("Botanicals"); }
-      } else if (hash === "#3d-printed-accessories") {
-        const btn = document.querySelector('.filter-btn[data-filter="3D Printed Accessories"]');
-        if (btn) { setActive(btn); applyFilter("3D Printed Accessories"); }
+      const slug = (window.location.hash || "").replace("#", "").toLowerCase();
+
+      if (!slug) {
+        const allBtn = buttons.find(b => b.getAttribute("data-filter") === "all");
+        if (allBtn) setActive(allBtn);
+        applyFilter("all");
+        return;
+      }
+
+      const btn = findButtonBySlug(slug);
+      if (btn) {
+        setActive(btn);
+        applyFilter(btn.getAttribute("data-filter"));
       } else {
-        const btn = document.querySelector('.filter-btn[data-filter="all"]');
-        if (btn) { setActive(btn); applyFilter("all"); }
+        // Unknown slug => show all
+        const allBtn = buttons.find(b => b.getAttribute("data-filter") === "all");
+        if (allBtn) setActive(allBtn);
+        applyFilter("all");
       }
     }
 
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
         const cat = btn.getAttribute("data-filter");
+        const slug = btn.getAttribute("data-slug") || "";
+
         setActive(btn);
         applyFilter(cat);
 
-        // Update URL hash when selecting a category (optional nicety)
-        if (cat === "Isopods") window.location.hash = "isopods";
-        else if (cat === "Botanicals") window.location.hash = "botanicals";
-        else if (cat === "3D Printed Accessories") window.location.hash = "3d-printed-accessories";
-        else history.replaceState(null, "", window.location.pathname);
+        if (cat === "all") {
+          history.replaceState(null, "", window.location.pathname);
+        } else {
+          window.location.hash = slug;
+        }
       });
     });
 
-    // Apply filter on initial load (supports homepage category buttons)
+    // Initial load (supports /shop/#category)
     applyHashFilter();
-
-    // If user manually changes hash
     window.addEventListener("hashchange", applyHashFilter);
   })();
 </script>
