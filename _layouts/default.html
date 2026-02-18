@@ -45,7 +45,6 @@
            rel="noopener"
            aria-label="Facebook Page">
 
-          <!-- Facebook SVG Icon -->
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M22 12.073C22 6.477 17.523 2 12 2S2 6.477 2 12.073c0 4.994 3.657 9.128 8.438 9.927v-7.023H7.898v-2.904h2.54V9.845c0-2.507 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562v1.876h2.773l-.443 2.904h-2.33V22c4.78-.799 8.437-4.933 8.437-9.927z"/>
           </svg>
@@ -54,12 +53,18 @@
       </div>
     {% endif %}
 
-    <p class="footer-text">
-      {{ site.data.home.footer.text }}
-    </p>
+    {% if site.data.home.footer.trust_badge_text %}
+      <div class="trust-badge">
+        <span class="trust-dot"></span>
+        <span>{{ site.data.home.footer.trust_badge_text }}</span>
+      </div>
+    {% endif %}
+
+    <p class="footer-text">{{ site.data.home.footer.text }}</p>
 
   </div>
 </footer>
+
 
 
 
