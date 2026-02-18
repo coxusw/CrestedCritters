@@ -146,6 +146,55 @@ title: Home
       </div>
     </section>
 
+  {% when "image_text" %}
+    {% if block.enabled != false %}
+      <section class="section">
+        <div class="container">
+          <div class="it-grid {% if block.image_side == 'right' %}it-right{% endif %}">
+            <div class="it-media">
+              {% if block.image %}
+                <img src="{{ block.image | relative_url }}" alt="{{ block.title }}">
+              {% else %}
+                <div class="p-img-placeholder">No image</div>
+              {% endif %}
+            </div>
+
+            <div class="it-text">
+              <h2 style="margin-top:0;">{{ block.title }}</h2>
+              <p class="muted" style="line-height:1.75;">{{ block.text }}</p>
+
+              {% if block.button_label and block.button_link %}
+                {% if block.button_style == "ghost" %}
+                  <a class="btn ghost" href="{{ block.button_link | relative_url }}">{{ block.button_label }}</a>
+                {% else %}
+                  <a class="btn primary" href="{{ block.button_link | relative_url }}">{{ block.button_label }}</a>
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
+  {% when "cta_strip" %}
+    {% if block.enabled != false %}
+      <section class="section" style="padding:30px 0;">
+        <div class="container">
+          <div class="cta-strip">
+            <div class="cta-text">{{ block.text }}</div>
+
+            {% if block.button_label and block.button_link %}
+              {% if block.button_style == "ghost" %}
+                <a class="btn ghost" href="{{ block.button_link | relative_url }}">{{ block.button_label }}</a>
+              {% else %}
+                <a class="btn primary" href="{{ block.button_link | relative_url }}">{{ block.button_label }}</a>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
   {% else %}
     <!-- Unknown block type: {{ block.type }} -->
 
