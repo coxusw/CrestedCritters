@@ -194,6 +194,46 @@ title: Home
         </div>
       </section>
     {% endif %}
+  {% when "testimonials" %}
+    {% if block.enabled != false %}
+      <section class="section alt">
+        <div class="container">
+          <div class="section-head">
+            <h2>{{ block.title }}</h2>
+            {% if block.subtitle %}<p class="muted">{{ block.subtitle }}</p>{% endif %}
+          </div>
+
+          <div class="t-grid">
+            {% for t in block.items %}
+              <div class="t-card">
+                <div class="t-top">
+                  {% if t.photo %}
+                    <img class="t-photo" src="{{ t.photo | relative_url }}" alt="{{ t.name }}">
+                  {% else %}
+                    <div class="t-photo t-photo-placeholder"></div>
+                  {% endif %}
+
+                  <div class="t-meta">
+                    <div class="t-name">{{ t.name }}</div>
+                    {% if t.source %}<div class="t-source">{{ t.source }}</div>{% endif %}
+                    {% if t.rating %}
+                      <div class="t-stars" aria-label="{{ t.rating }} out of 5">
+                        {% for i in (1..5) %}
+                          {% if i <= t.rating %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="t-quote">“{{ t.quote }}”</div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </section>
+    {% endif %}
+
 
   {% else %}
     <!-- Unknown block type: {{ block.type }} -->
