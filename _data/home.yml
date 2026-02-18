@@ -1,77 +1,76 @@
 blocks:
   - type: hero
-    kicker: "Crested Critters"
-    headline: "Premium Bioactive Supplies"
-    subheadline: "Isopods, botanicals, and 3D printed accessories for thriving enclosures."
-    image: "/assets/images/hero.jpg"
+    kicker: Crested Critters
+    headline: Premium Bioactive Supplies
+    subheadline: Isopods, botanicals, and 3D printed accessories for thriving enclosures.
+    image: /assets/images/hero.jpg
     buttons:
-      - label: "Shop Now"
-        link: "/shop/"
-        style: "primary"
-      - label: "Isopods"
-        link: "/shop/#isopods"
-        style: "ghost"
-      - label: "Botanicals"
-        link: "/shop/#botanicals"
-        style: "ghost"
-      - label: "3D Printed"
-        link: "/shop/#3d-printed-accessories"
-        style: "ghost"
-
+      - label: Shop Now
+        link: /shop/
+        style: primary
+      - label: Isopods
+        link: /shop/#isopods
+        style: ghost
+      - label: Botanicals
+        link: /shop/#botanicals
+        style: ghost
+      - label: 3D Printed
+        link: /shop/#3d-printed-accessories
+        style: ghost
   - type: categories
-    title: "Shop by Category"
-    subtitle: "Browse by what you’re building today."
+    title: Shop by Category
+    subtitle: Browse by what you’re building today.
     items:
-      - title: "Isopods"
-        description: "Hardy cleanup crews and cultures for bioactive builds."
-        link: "/shop/#isopods"
-        image: "/assets/images/cat-isopods.jpg"
-      - title: "Botanicals"
-        description: "Leaf litter, seed pods, and natural décor for enrichment."
-        link: "/shop/#botanicals"
-        image: "/assets/images/cat-botanicals.jpg"
-      - title: "3D Printed Accessories"
-        description: "Functional prints made for reptile & invert setups."
-        link: "/shop/#3d-printed-accessories"
-        image: "/assets/images/cat-prints.jpg"
-
+      - title: Isopods
+        description: Hardy cleanup crews and cultures for bioactive builds.
+        link: /shop/#isopods
+        image: /assets/images/cat-isopods.jpg
+      - title: Botanicals
+        description: Leaf litter, seed pods, and natural décor for enrichment.
+        link: /shop/#botanicals
+        image: /assets/images/cat-botanicals.jpg
+      - title: 3D Printed Accessories
+        description: Functional prints made for reptile & invert setups.
+        link: /shop/#3d-printed-accessories
+        image: /assets/images/cat-prints.jpg
   - type: featured_products
-    title: "Featured Drops"
-    subtitle: "Keeper-favorites and fresh restocks."
+    title: Featured Drops
+    subtitle: Keeper-favorites and fresh restocks.
     max_items: 6
-    cta_label: "View All Products"
-    cta_link: "/shop/"
-
+    cta_label: View All Products
+    cta_link: /shop/
   - type: testimonials
     enabled: true
-    title: "What Keepers Are Saying"
-    subtitle: "Real feedback from fellow hobbyists."
+    title: What Keepers Are Saying
+    subtitle: Real feedback from fellow hobbyists.
     items:
-      - quote: "The dairy cows came in active and healthy. You can tell these are well cared for cultures."
-        name: "Ryan M."
-        source: "Crested Gecko Owner"
+      - quote: The dairy cows came in active and healthy. You can tell these are well
+          cared for cultures.
+        name: Ryan M.
+        source: ""
         rating: 5
-      - quote: "Shipping was fast and everything was packed really well. My bioactive setup looks way better now."
-        name: "Ashley P."
-        source: "Reptile Hobbyist"
+      - quote: Shipping was fast and everything was packed really well. My bioactive
+          setup looks way better now.
+        name: Ashley P.
+        source: Reptile Hobbyist
         rating: 5
-      - quote: "Inventory was accurate and checkout was simple. Appreciate that a lot."
-        name: "Daniel K."
-        source: "Isopod Keeper"
+      - quote: Count was accurate with extra actually and checkout was simple.
+          Appreciate that a lot.
+        name: Daniel K.
+        source: Isopod Keeper
         rating: 5
-      - quote: "The 3D printed hide fit perfectly in my enclosure. Solid print quality too."
-        name: "Melissa R."
-        source: "Ball Python Owner"
+      - quote: The 3D printed hide fit perfectly in my enclosure. Solid print quality
+          too.
+        name: Melissa R.
+        source: Ball Python Owner
         rating: 5
-
   - type: bullet_cards
-    title: "Built for Keepers"
+    title: Built for Keepers
     bullets:
-      - "Hand-picked supplies for healthy bioactive enclosures"
-      - "Clear inventory counts + fast updates"
-      - "Secure checkout via Square payment links"
-
+      - Hand-picked supplies for healthy bioactive enclosures
+      - Clear inventory counts + fast updates
+      - Secure checkout via Square payment links
 footer:
-  text: "© Crested Critters — Bioactive supplies for reptiles & inverts."
-  facebook_url: "https://www.facebook.com/YOUR_PAGE_LINK"
-  trust_badge_text: "Secure checkout powered by Square"
+  text: © Crested Critters — Bioactive supplies for reptiles & inverts.
+  facebook_url: https://www.facebook.com/YOUR_PAGE_LINK
+  trust_badge_text: Secure checkout powered by Square
