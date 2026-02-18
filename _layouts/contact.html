@@ -1,39 +1,122 @@
-<form class="cc-form" action="{{ page.form_action }}" method="POST">
-  <!-- Redirect to thank you page after submit -->
-  <input type="hidden" name="redirect" value="https://coxusw.github.io/CrestedCritters/contact/thanks/">
-  <input type="hidden" name="page" value="" id="cc_page">
-  <input type="hidden" name="ua" value="" id="cc_ua">
+---
+layout: default
+---
 
-  <!-- Honeypot anti-spam field (bots fill this) -->
-  <div style="position:absolute; left:-9999px; top:-9999px;">
-    <label>Company <input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>{{ page.title }}</h2>
+      <p class="muted">Questions? Want recommendations? Reach out.</p>
+    </div>
+
+    <div class="card" style="max-width: 820px;">
+      <div class="card-body">
+        <div style="line-height:1.75; margin-bottom:16px;">
+          {{ content }}
+        </div>
+
+        <form class="cc-form" id="ccContactForm" action="{{ page.form_action }}" method="POST" target="_top" novalidate>
+          <!-- Hidden fields -->
+          <input type="hidden" name="redirect" value="https://coxusw.github.io/CrestedCritters/contact/thanks/">
+          <input type="hidden" name="page" value="" id="cc_page">
+          <input type="hidden" name="ua" value="" id="cc_ua">
+
+          <!-- Honeypot anti-spam field (bots fill this) -->
+          <div style="position:absolute; left:-9999px; top:-9999px;">
+            <label>Company <input type="text" name="company" tabindex="-1" autocomplete="off"></label>
+          </div>
+
+          <label>
+            Name *
+            <input type="text" name="name" id="cc_name" required>
+          </label>
+
+          <label>
+            Email *
+            <input type="email" name="email" id="cc_email" required>
+          </label>
+
+          <label>
+            Message *
+            <textarea name="message" rows="6" id="cc_message" required></textarea>
+          </label>
+
+          <button class="btn primary" type="submit" id="cc_submit">
+            {{ page.submit_button_text | default: "Send Message" }}
+          </button>
+
+          <p class="muted" style="margin-top:12px; font-size:.9rem;">
+            * Required fields.
+          </p>
+
+          <noscript>
+            <p class="muted" style="margin-top:12px;">
+              JavaScript is disabled. Submitting will open the form handler in this tab.
+            </p>
+          </noscript>
+        </form>
+
+        <p class="muted" id="cc_error" style="display:none; margin-top:12px;">
+          Something went wrong sending your message. Please refresh and try again.
+        </p>
+      </div>
+    </div>
   </div>
-
-  <label>
-    Name *
-    <input type="text" name="name" required>
-  </label>
-
-  <label>
-    Email *
-    <input type="email" name="email" required>
-  </label>
-
-  <label>
-    Message *
-    <textarea name="message" rows="6" required></textarea>
-  </label>
-
-  <button class="btn primary" type="submit">
-    {{ page.submit_button_text | default: "Send Message" }}
-  </button>
-</form>
+</section>
 
 <script>
   (function(){
+    var form = document.getElementById("ccContactForm");
+    if (!form) return;
+
+    // Fill hidden fields
     var p = document.getElementById("cc_page");
     var u = document.getElementById("cc_ua");
     if (p) p.value = window.location.href;
     if (u) u.value = navigator.userAgent;
+
+    var submitBtn = document.getElementById("cc_submit");
+    var err = document.getElementById("cc_error");
+
+    form.addEventListener("submit", function(e){
+      // Basic required validation (cleaner than browser bubbles)
+      var name = document.getElementById("cc_name").value.trim();
+      var email = document.getElementById("cc_email").value.trim();
+      var message = document.getElementById("cc_message").value.trim();
+
+      if (!name || !email || !message) {
+        e.preventDefault();
+        alert("Please fill in Name, Email, and Message.");
+        return;
+      }
+
+      // Background submit so users never see script.google.com
+      e.preventDefault();
+
+      if (submitBtn) {
+        submitBtn.setAttribute("disabled", "disabled");
+        submitBtn.textContent = "Sending…";
+      }
+      if (err) err.style.display = "none";
+
+      var actionUrl = form.getAttribute("action");
+      var data = new URLSearchParams(new FormData(form));
+
+      // Send without reading response (avoids CORS issues)
+      fetch(actionUrl, {
+        method: "POST",
+        mode: "no-cors",
+        body: data
+      }).then(function(){
+        // Always redirect to thank-you page
+        window.location.href = "{{ '/contact/thanks/' | relative_url }}";
+      }).catch(function(){
+        if (submitBtn) {
+          submitBtn.removeAttribute("disabled");
+          submitBtn.textContent = "{{ page.submit_button_text | default: 'Send Message' }}";
+        }
+        if (err) err.style.display = "block";
+      });
+    });
   })();
 </script>
