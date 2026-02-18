@@ -6,7 +6,7 @@ hero:
   primary_button_link: /shop/
   secondary_button_text: See Categories
   secondary_button_link: "#categories"
-  image: /assets/images/dairy-cow-isopods.jpg
+  image: /assets/images/logo.png
 categories:
   title: Shop by Category
   items:
