@@ -33,6 +33,10 @@ blocks:
         description: Functional prints made for reptile & invert setups.
         link: /shop/#3d-printed-accessories
         image: /assets/images/3d-prints.jpeg
+      - title: Merch
+        link: /shop/#merch
+        description: Get your Swag and handmade crocheted Isopods!
+        image: /assets/images/thechalkinwildchild-logo.jpeg
   - type: featured_products
     title: Featured Drops
     subtitle: Keeper-favorites and fresh restocks.
