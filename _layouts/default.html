@@ -32,12 +32,27 @@
     {{ content }}
   </main>
 
-  <!-- ===== FOOTER ===== -->
   <footer class="site-footer">
-    <div class="container">
+  <div class="container footer-inner">
+
+    <div class="footer-left">
       <p>{{ site.data.home.footer.text }}</p>
     </div>
-  </footer>
+
+    <div class="footer-right">
+      {% if site.data.home.footer.facebook_url %}
+        <a class="social-btn facebook"
+           href="{{ site.data.home.footer.facebook_url }}"
+           target="_blank"
+           rel="noopener">
+          Facebook
+        </a>
+      {% endif %}
+    </div>
+
+  </div>
+</footer>
+
 
 </body>
 </html>
