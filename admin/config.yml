@@ -87,3 +87,27 @@ collections:
             fields:
               - { label: "Footer Text", name: "text", widget: "string" }
 
+                            - label: "Image + Text"
+                name: "image_text"
+                widget: "object"
+                fields:
+                  - { label: "Enabled", name: "enabled", widget: "boolean", default: true }
+                  - { label: "Image Side", name: "image_side", widget: "select", options: ["left", "right"], default: "left" }
+                  - { label: "Title", name: "title", widget: "string" }
+                  - { label: "Text", name: "text", widget: "text" }
+                  - { label: "Image", name: "image", widget: "image", required: false }
+                  - { label: "Button Label", name: "button_label", widget: "string", required: false }
+                  - { label: "Button Link", name: "button_link", widget: "string", required: false }
+                  - { label: "Button Style", name: "button_style", widget: "select", options: ["primary", "ghost"], default: "primary" }
+
+              - label: "CTA Strip"
+                name: "cta_strip"
+                widget: "object"
+                fields:
+                  - { label: "Enabled", name: "enabled", widget: "boolean", default: true }
+                  - { label: "Text", name: "text", widget: "string" }
+                  - { label: "Button Label", name: "button_label", widget: "string", required: false }
+                  - { label: "Button Link", name: "button_link", widget: "string", required: false }
+                  - { label: "Button Style", name: "button_style", widget: "select", options: ["primary", "ghost"], default: "primary" }
+
+
