@@ -3,109 +3,152 @@ layout: default
 title: Home
 ---
 
-<section class="hero">
-  <div class="hero-inner">
-    <div class="hero-copy">
-      <p class="kicker">Crested Critters</p>
-      <h1>{{ site.data.home.hero.headline }}</h1>
-      <p class="sub">{{ site.data.home.hero.subheadline }}</p>
+{% for block in site.data.home.blocks %}
 
-      <div class="hero-actions">
-  <a class="btn primary" href="{{ site.data.home.hero.primary_button_link | relative_url }}">
-    {{ site.data.home.hero.primary_button_text }}
-  </a>
+  {% case block.type %}
 
-  <a class="btn ghost" href="{{ '/shop/#isopods' | relative_url }}">Isopods</a>
-  <a class="btn ghost" href="{{ '/shop/#botanicals' | relative_url }}">Botanicals</a>
-  <a class="btn ghost" href="{{ '/shop/#3d-printed-accessories' | relative_url }}">3D Printed</a>
-</div>
-    </div>
+  {% when "hero" %}
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-text">
+          {% if block.kicker %}<p class="kicker">{{ block.kicker }}</p>{% endif %}
+          <h1>{{ block.headline }}</h1>
+          {% if block.subheadline %}<p class="sub">{{ block.subheadline }}</p>{% endif %}
 
-    <div class="hero-media">
-      <img src="{{ site.data.home.hero.image | relative_url }}" alt="Crested Critters hero image">
-    </div>
-  </div>
-</section>
-
-<section id="categories" class="section">
-  <div class="container">
-    <div class="section-head">
-      <h2>{{ site.data.home.categories.title }}</h2>
-      <p class="muted">Browse by what you’re building today.</p>
-    </div>
-
-    <div class="card-grid">
-      {% for cat in site.data.home.categories.items %}
-      <a class="card" href="{{ cat.link }}">
-        <div class="card-img">
-          <img src="{{ cat.image }}" alt="{{ cat.title }}">
-        </div>
-        <div class="card-body">
-          <h3>{{ cat.title }}</h3>
-          <p class="muted">{{ cat.description }}</p>
-          <span class="card-cta">Shop →</span>
-        </div>
-      </a>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-
-<section class="section alt">
-  <div class="container">
-    <div class="section-head">
-      <h2>{{ site.data.home.featured.title }}</h2>
-      <p class="muted">Keeper-favorites and fresh restocks.</p>
-    </div>
-
-    <div class="product-grid">
-      {% assign featured_products = site.products | where: "featured", true %}
-      {% assign max_items = site.data.home.featured.max_items | default: 6 %}
-      {% for product in featured_products limit: max_items %}
-        <a class="p-card" href="{{ product.url | relative_url }}">
-          <div class="p-img">
-            <img src="{{ product.image }}" alt="{{ product.title }}">
-            {% if product.sold_out or product.inventory == 0 %}
-              <span class="badge sold">Sold Out</span>
-            {% else %}
-              <span class="badge stock">{{ product.inventory }} in stock</span>
-            {% endif %}
-          </div>
-          <div class="p-body">
-            <div class="p-top">
-              <h3>{{ product.title }}</h3>
-              <span class="price">${{ product.price }}</span>
+          {% if block.buttons %}
+            <div class="hero-actions">
+              {% for btn in block.buttons %}
+                {% assign href = btn.link | relative_url %}
+                {% if btn.style == "primary" %}
+                  <a class="btn primary" href="{{ href }}">{{ btn.label }}</a>
+                {% else %}
+                  <a class="btn ghost" href="{{ href }}">{{ btn.label }}</a>
+                {% endif %}
+              {% endfor %}
             </div>
-            <p class="muted p-cat">{{ product.category }}</p>
-          </div>
-        </a>
-      {% endfor %}
+          {% endif %}
+        </div>
 
-      {% if featured_products.size == 0 %}
-        <div class="muted">No featured products yet — open a product in Admin and toggle “Featured on Homepage”.</div>
-      {% endif %}
-    </div>
+        <div class="hero-media">
+          {% if block.image %}
+            <img src="{{ block.image | relative_url }}" alt="Crested Critters hero image">
+          {% endif %}
+        </div>
+      </div>
+    </section>
 
-    <div class="center">
-      <a class="btn primary" href="{{ '/shop/' | relative_url }}">View All Products</a>
-    </div>
-  </div>
-</section>
+  {% when "categories" %}
+    <section class="section" id="categories">
+      <div class="container">
+        <div class="section-head">
+          <h2>{{ block.title }}</h2>
+          {% if block.subtitle %}<p class="muted">{{ block.subtitle }}</p>{% endif %}
+        </div>
 
-<section class="section">
-  <div class="container split">
-    <div>
-      <h2>{{ site.data.home.why.title }}</h2>
-      <ul class="bullets">
-        {% for b in site.data.home.why.bullets %}
-          <li>{{ b }}</li>
-        {% endfor %}
-      </ul>
-    </div>
-    <div class="callout">
-      <h3>Need help choosing?</h3>
-      <p class="muted">Message us and we’ll recommend the right supplies for your enclosure setup.</p>
-      <a class="btn ghost" href="/contact/">Contact</a>
-    </div>
-  </div>
-</section>
+        <div class="card-grid">
+          {% for item in block.items %}
+            <a class="card" href="{{ item.link | relative_url }}">
+              <div class="card-img">
+                {% if item.image %}
+                  <img src="{{ item.image | relative_url }}" alt="{{ item.title }}">
+                {% endif %}
+              </div>
+              <div class="card-body">
+                <h3>{{ item.title }}</h3>
+                <p class="muted">{{ item.description }}</p>
+                <span class="card-cta">Shop →</span>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+  {% when "featured_products" %}
+    <section class="section alt">
+      <div class="container">
+        <div class="section-head">
+          <h2>{{ block.title }}</h2>
+          {% if block.cta_link and block.cta_label %}
+            <a class="btn ghost" href="{{ block.cta_link | relative_url }}">{{ block.cta_label }}</a>
+          {% endif %}
+        </div>
+
+        {% if block.subtitle %}<p class="muted" style="margin-top:-12px;">{{ block.subtitle }}</p>{% endif %}
+
+        <div class="product-grid">
+          {% assign featured_products = site.products | where: "featured", true | sort: "title" %}
+          {% for product in featured_products limit: block.max_items %}
+            {% assign is_sold = false %}
+            {% if product.sold_out == true or product.inventory == 0 %}
+              {% assign is_sold = true %}
+            {% endif %}
+
+            <div class="p-card">
+              <a href="{{ product.url | relative_url }}" class="p-link">
+                <div class="p-img">
+                  {% if product.image %}
+                    {% assign img = product.image %}
+                    {% if img contains '://' %}
+                      <img src="{{ img }}" alt="{{ product.title }}">
+                    {% else %}
+                      <img src="{{ img | relative_url }}" alt="{{ product.title }}">
+                    {% endif %}
+                  {% else %}
+                    <div class="p-img-placeholder">No image</div>
+                  {% endif %}
+
+                  {% if is_sold %}
+                    <span class="badge sold">Sold Out</span>
+                  {% else %}
+                    {% if product.inventory and product.inventory <= 4 %}
+                      <span class="badge low">Low stock: {{ product.inventory }}</span>
+                    {% else %}
+                      <span class="badge stock">{{ product.inventory }} in stock</span>
+                    {% endif %}
+                  {% endif %}
+                </div>
+
+                <div class="p-body">
+                  <div class="p-top">
+                    <h3>{{ product.title }}</h3>
+                    <span class="price">${{ product.price }}</span>
+                  </div>
+                  <p class="muted p-cat">{{ product.category }}</p>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if featured_products.size == 0 %}
+          <p class="muted">No featured products yet — open a product in Admin and toggle “Featured on Homepage”.</p>
+        {% endif %}
+      </div>
+    </section>
+
+  {% when "bullet_cards" %}
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>{{ block.title }}</h2>
+        </div>
+
+        <div class="card-grid">
+          {% for b in block.bullets %}
+            <div class="card">
+              <div class="card-body">
+                <p>{{ b }}</p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+  {% else %}
+    <!-- Unknown block type: {{ block.type }} -->
+
+  {% endcase %}
+
+{% endfor %}
