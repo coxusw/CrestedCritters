@@ -1,56 +1,50 @@
 blocks:
   - type: hero
-    kicker: "Crested Critters"
-    headline: "Premium Bioactive Supplies"
-    subheadline: "Isopods, botanicals, and 3D printed accessories designed for thriving enclosures."
-    image: "/assets/images/hero.jpg"
+    kicker: Crested Critters
+    headline: Premium Bioactive Supplies
+    subheadline: Isopods, botanicals, and 3D printed accessories designed for
+      thriving enclosures.
+    image: /assets/images/hero.jpg
     buttons:
-      - label: "Shop Now"
-        link: "/shop/"
-        style: "primary"
-      - label: "Isopods"
-        link: "/shop/#isopods"
-        style: "ghost"
-      - label: "Botanicals"
-        link: "/shop/#botanicals"
-        style: "ghost"
-      - label: "3D Printed"
-        link: "/shop/#3d-printed-accessories"
-        style: "ghost"
-
+      - label: Shop Now
+        link: /shop/
+        style: primary
+      - label: Isopods
+        link: /shop/#isopods
+        style: ghost
+      - label: Botanicals
+        link: /shop/#botanicals
+        style: ghost
+      - label: 3D Printed
+        link: /shop/#3d-printed-accessories
+        style: ghost
   - type: categories
-    title: "Shop by Category"
-    subtitle: "Browse by what you’re building today."
+    title: Shop by Category
+    subtitle: Browse by what you’re building today.
     items:
-      - title: "Isopods"
-        description: "Hardy cleanup crews and cultures for bioactive builds."
-        link: "/shop/#isopods"
-        image: "/assets/images/cat-isopods.jpg"
-      - title: "Botanicals"
-        description: "Leaf litter, seed pods, and natural décor for enrichment."
-        link: "/shop/#botanicals"
-        image: "/assets/images/cat-botanicals.jpg"
-      - title: "3D Printed Accessories"
-        description: "Functional prints made for reptile & invert setups."
-        link: "/shop/#3d-printed-accessories"
-        image: "/assets/images/cat-prints.jpg"
-
+      - title: Isopods
+        description: Hardy cleanup crews and cultures for bioactive builds.
+        link: /shop/#isopods
+        image: /assets/images/dairy-cow-isopods.jpg
+      - title: Botanicals
+        description: Leaf litter, seed pods, and natural décor for enrichment.
+        link: /shop/#botanicals
+        image: /assets/images/leaf-3.png
+      - title: 3D Printed Accessories
+        description: Functional prints made for reptile & invert setups.
+        link: /shop/#3d-printed-accessories
+        image: /assets/images/3d-prints.jpeg
   - type: featured_products
-    title: "Featured Drops"
-    subtitle: "Keeper-favorites and fresh restocks."
+    title: Featured Drops
+    subtitle: Keeper-favorites and fresh restocks.
     max_items: 6
-    cta_label: "View All Products"
-    cta_link: "/shop/"
-
+    cta_label: View All Products
+    cta_link: /shop/
   - type: bullet_cards
-    title: "Built for Keepers"
+    title: Built for Keepers
     bullets:
-      - "Hand-picked supplies for healthy bioactive enclosures"
-      - "Clear inventory counts + fast updates"
-      - "Simple Square checkout links per product"
-
+      - Hand-picked supplies for healthy bioactive enclosures
+      - Clear inventory counts + fast updates
+      - Simple Square checkout links per product
 footer:
-  text: "© Crested Critters — Bioactive supplies for reptiles & inverts."
-  facebook_url: "https://www.facebook.com/people/Crested-Critters/61576805665752/"
-  trust_badge_text: "Secure checkout powered by Square"
-
+  text: © Crested Critters — Bioactive supplies for reptiles & inverts.
