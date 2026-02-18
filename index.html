@@ -11,13 +11,14 @@ title: Home
       <p class="sub">{{ site.data.home.hero.subheadline }}</p>
 
       <div class="hero-actions">
-        <a class="btn primary" href="{{ site.data.home.hero.primary_button_link | relative_url }}">
-          {{ site.data.home.hero.primary_button_text }}
-        </a>
-        <a class="btn ghost" href="{{ site.data.home.hero.secondary_button_link }}">
-          {{ site.data.home.hero.secondary_button_text }}
-        </a>
-      </div>
+  <a class="btn primary" href="{{ site.data.home.hero.primary_button_link | relative_url }}">
+    {{ site.data.home.hero.primary_button_text }}
+  </a>
+
+  <a class="btn ghost" href="{{ '/shop/#isopods' | relative_url }}">Isopods</a>
+  <a class="btn ghost" href="{{ '/shop/#botanicals' | relative_url }}">Botanicals</a>
+  <a class="btn ghost" href="{{ '/shop/#3d-printed-accessories' | relative_url }}">3D Printed</a>
+</div>
     </div>
 
     <div class="hero-media">
