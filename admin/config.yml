@@ -108,11 +108,30 @@ collections:
                   - { label: "Button Link", name: "button_link", widget: "string", required: false }
                   - { label: "Button Style", name: "button_style", widget: "select", options: ["primary", "ghost"], default: "primary" }
 
+              - label: "Testimonials"
+                name: "testimonials"
+                widget: "object"
+                fields:
+                  - { label: "Enabled", name: "enabled", widget: "boolean", default: true }
+                  - { label: "Title", name: "title", widget: "string", default: "What Keepers Say" }
+                  - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+                  - label: "Reviews"
+                    name: "items"
+                    widget: "list"
+                    fields:
+                      - { label: "Quote", name: "quote", widget: "text" }
+                      - { label: "Name", name: "name", widget: "string" }
+                      - { label: "Source / Role", name: "source", widget: "string", required: false }
+                      - { label: "Rating (1–5)", name: "rating", widget: "number", value_type: "int", min: 1, max: 5, default: 5 }
+                      - { label: "Photo (optional)", name: "photo", widget: "image", required: false }
+
           - label: "Footer"
             name: "footer"
             widget: "object"
             fields:
               - { label: "Footer Text", name: "text", widget: "string" }
+              - { label: "Facebook URL", name: "facebook_url", widget: "string", required: false }
+              - { label: "Trust Badge Text", name: "trust_badge_text", widget: "string", required: false }
 
   - name: "pages"
     label: "Pages"
@@ -132,20 +151,3 @@ collections:
           - { label: "Form Action URL (Apps Script Web App)", name: "form_action", widget: "string" }
           - { label: "Submit Button Text", name: "submit_button_text", widget: "string", required: false }
           - { label: "Intro Text", name: "body", widget: "markdown" }
-                        - label: "Testimonials"
-                name: "testimonials"
-                widget: "object"
-                fields:
-                  - { label: "Enabled", name: "enabled", widget: "boolean", default: true }
-                  - { label: "Title", name: "title", widget: "string", default: "What Keepers Say" }
-                  - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
-                  - label: "Reviews"
-                    name: "items"
-                    widget: "list"
-                    fields:
-                      - { label: "Quote", name: "quote", widget: "text" }
-                      - { label: "Name", name: "name", widget: "string" }
-                      - { label: "Source / Role", name: "source", widget: "string", required: false }
-                      - { label: "Rating (1–5)", name: "rating", widget: "number", value_type: "int", min: 1, max: 5, default: 5 }
-                      - { label: "Photo (optional)", name: "photo", widget: "image", required: false }
-
