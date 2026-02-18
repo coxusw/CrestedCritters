@@ -10,6 +10,11 @@ title: Shop
       <p class="muted">Isopods • Botanicals • 3D Printed Accessories</p>
     </div>
 
+    <!-- Anchor targets (so homepage buttons can jump here) -->
+    <div id="isopods"></div>
+    <div id="botanicals"></div>
+    <div id="3d-printed-accessories"></div>
+
     <!-- Filter Tabs -->
     <div class="filters" id="filters">
       <button class="filter-btn is-active" data-filter="all">All</button>
@@ -64,7 +69,7 @@ title: Shop
             {% if is_sold %}
               <button class="btn ghost btn-full" disabled>Sold Out</button>
             {% else %}
-              {% if product.square_link %}
+              {% if product.square_link and product.square_link != "" %}
                 <a class="btn primary btn-full" href="{{ product.square_link }}" target="_blank" rel="noopener">
                   Buy Now
                 </a>
@@ -101,12 +106,42 @@ title: Shop
       });
     }
 
+    // If someone visits with a hash, auto-select that category filter
+    function applyHashFilter() {
+      const hash = (window.location.hash || "").toLowerCase();
+      if (hash === "#isopods") {
+        const btn = document.querySelector('.filter-btn[data-filter="Isopods"]');
+        if (btn) { setActive(btn); applyFilter("Isopods"); }
+      } else if (hash === "#botanicals") {
+        const btn = document.querySelector('.filter-btn[data-filter="Botanicals"]');
+        if (btn) { setActive(btn); applyFilter("Botanicals"); }
+      } else if (hash === "#3d-printed-accessories") {
+        const btn = document.querySelector('.filter-btn[data-filter="3D Printed Accessories"]');
+        if (btn) { setActive(btn); applyFilter("3D Printed Accessories"); }
+      } else {
+        const btn = document.querySelector('.filter-btn[data-filter="all"]');
+        if (btn) { setActive(btn); applyFilter("all"); }
+      }
+    }
+
     buttons.forEach(btn => {
       btn.addEventListener("click", () => {
         const cat = btn.getAttribute("data-filter");
         setActive(btn);
         applyFilter(cat);
+
+        // Update URL hash when selecting a category (optional nicety)
+        if (cat === "Isopods") window.location.hash = "isopods";
+        else if (cat === "Botanicals") window.location.hash = "botanicals";
+        else if (cat === "3D Printed Accessories") window.location.hash = "3d-printed-accessories";
+        else history.replaceState(null, "", window.location.pathname);
       });
     });
+
+    // Apply filter on initial load (supports homepage category buttons)
+    applyHashFilter();
+
+    // If user manually changes hash
+    window.addEventListener("hashchange", applyHashFilter);
   })();
 </script>
