@@ -454,5 +454,23 @@ img{max-width:100%;display:block}
   background: var(--accent);
   box-shadow: 0 0 18px rgba(127,176,105,0.35);
 }
+/* Product trust micro badge */
+.product-trust{
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:.85rem;
+  font-weight:900;
+  color:var(--muted);
+}
+
+.product-trust .trust-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 12px rgba(127,176,105,0.35);
+}
 
 
