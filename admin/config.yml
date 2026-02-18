@@ -124,6 +124,20 @@ collections:
                       - { label: "Source / Role", name: "source", widget: "string", required: false }
                       - { label: "Rating (1–5)", name: "rating", widget: "number", value_type: "int", min: 1, max: 5, default: 5 }
                       - { label: "Photo (optional)", name: "photo", widget: "image", required: false }
+                            - name: "category_meta"
+        label: "Category Metadata"
+        file: "_data/category_meta.yml"
+        fields:
+          - label: "Categories"
+            name: "categories"
+            widget: "list"
+            fields:
+              - { label: "Name (must match product category exactly)", name: "name", widget: "string" }
+              - { label: "Enabled", name: "enabled", widget: "boolean", default: true }
+              - { label: "Order", name: "order", widget: "number", value_type: "int", min: 0, default: 0 }
+              - { label: "Description", name: "description", widget: "text", required: false }
+              - { label: "Image", name: "image", widget: "image", required: false }
+
 
           - label: "Footer"
             name: "footer"
