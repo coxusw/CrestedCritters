@@ -472,5 +472,78 @@ img{max-width:100%;display:block}
   background:var(--accent);
   box-shadow:0 0 12px rgba(127,176,105,0.35);
 }
+/* Testimonials block */
+.t-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:18px;
+}
+
+.t-card{
+  background: var(--panel);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+}
+
+.t-top{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.t-photo{
+  width:44px;
+  height:44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.04);
+}
+
+.t-photo-placeholder{
+  position: relative;
+}
+.t-photo-placeholder::after{
+  content:"";
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border: 2px solid rgba(255,255,255,0.18);
+  display:block;
+  margin: 11px auto;
+  opacity:.6;
+}
+
+.t-name{
+  font-weight: 900;
+}
+.t-source{
+  color: var(--muted);
+  font-weight: 800;
+  font-size: .88rem;
+  margin-top:2px;
+}
+
+.t-stars{
+  margin-top:4px;
+  letter-spacing: 1px;
+  color: var(--accent2);
+  font-weight: 900;
+  font-size: .95rem;
+}
+
+.t-quote{
+  color: var(--text);
+  line-height: 1.65;
+  font-weight: 700;
+}
+
+@media (max-width: 900px){
+  .t-grid{ grid-template-columns: 1fr; }
+}
+
 
 
