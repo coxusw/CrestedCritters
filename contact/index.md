@@ -1,7 +1,7 @@
 ---
 layout: contact
 title: Contact
-form_action: "[https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID](https://formspree.io/f/xkovblnl)"
+form_action: "https://script.google.com/macros/s/AKfycbxhMS2549gMvt2lC1y9-nkqANCDJN0I96rkpPoPPdSstNQWrQfDRMqrzCXjFZwhARWDvw/exec"
 submit_button_text: "Send Message"
 ---
 
