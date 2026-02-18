@@ -25,7 +25,10 @@ collections:
       - { label: "Square Payment Link", name: "square_link", widget: "string", required: false }
       - { label: "Description", name: "body", widget: "markdown", required: false }
 
-        - name: "home"
+  - name: "site"
+    label: "Site Settings"
+    files:
+      - name: "home"
         label: "Homepage"
         file: "_data/home.yml"
         fields:
@@ -44,6 +47,7 @@ collections:
                   - label: "Buttons"
                     name: "buttons"
                     widget: "list"
+                    required: false
                     fields:
                       - { label: "Label", name: "label", widget: "string" }
                       - { label: "Link", name: "link", widget: "string" }
@@ -81,13 +85,7 @@ collections:
                   - { label: "Title", name: "title", widget: "string" }
                   - { label: "Bullets", name: "bullets", widget: "list" }
 
-          - label: "Footer"
-            name: "footer"
-            widget: "object"
-            fields:
-              - { label: "Footer Text", name: "text", widget: "string" }
-
-                            - label: "Image + Text"
+              - label: "Image + Text"
                 name: "image_text"
                 widget: "object"
                 fields:
@@ -110,4 +108,27 @@ collections:
                   - { label: "Button Link", name: "button_link", widget: "string", required: false }
                   - { label: "Button Style", name: "button_style", widget: "select", options: ["primary", "ghost"], default: "primary" }
 
+          - label: "Footer"
+            name: "footer"
+            widget: "object"
+            fields:
+              - { label: "Footer Text", name: "text", widget: "string" }
 
+  - name: "pages"
+    label: "Pages"
+    files:
+      - name: "about"
+        label: "About Page"
+        file: "about/index.md"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Content", name: "body", widget: "markdown" }
+
+      - name: "contact"
+        label: "Contact Page"
+        file: "contact/index.md"
+        fields:
+          - { label: "Title", name: "title", widget: "string" }
+          - { label: "Form Action URL (Apps Script Web App)", name: "form_action", widget: "string" }
+          - { label: "Submit Button Text", name: "submit_button_text", widget: "string", required: false }
+          - { label: "Intro Text", name: "body", widget: "markdown" }
