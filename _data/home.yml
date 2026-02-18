@@ -3,7 +3,7 @@ blocks:
     kicker: Crested Critters
     headline: Premium Bioactive Supplies
     subheadline: Isopods, botanicals, and 3D printed accessories for thriving enclosures.
-    image: /assets/images/hero.jpg
+    image: /assets/images/logo.png
     buttons:
       - label: Shop Now
         link: /shop/
@@ -24,15 +24,15 @@ blocks:
       - title: Isopods
         description: Hardy cleanup crews and cultures for bioactive builds.
         link: /shop/#isopods
-        image: /assets/images/cat-isopods.jpg
+        image: /assets/images/dairy-cow-isopods.jpg
       - title: Botanicals
         description: Leaf litter, seed pods, and natural décor for enrichment.
         link: /shop/#botanicals
-        image: /assets/images/cat-botanicals.jpg
+        image: /assets/images/leaf-3.png
       - title: 3D Printed Accessories
         description: Functional prints made for reptile & invert setups.
         link: /shop/#3d-printed-accessories
-        image: /assets/images/cat-prints.jpg
+        image: /assets/images/3d-prints.jpeg
   - type: featured_products
     title: Featured Drops
     subtitle: Keeper-favorites and fresh restocks.
