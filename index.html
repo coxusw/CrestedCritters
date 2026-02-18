@@ -37,7 +37,7 @@ title: Home
       </div>
     </section>
 
-  {% when "categories" %}
+    {% when "categories" %}
     <section class="section" id="categories">
       <div class="container">
         <div class="section-head">
@@ -45,24 +45,56 @@ title: Home
           {% if block.subtitle %}<p class="muted">{{ block.subtitle }}</p>{% endif %}
         </div>
 
+        {%- assign product_categories = site.products | map: "category" | uniq | sort -%}
+        {%- assign meta_list = site.data.category_meta.categories | default: empty | sort: "order" -%}
+
         <div class="card-grid">
-          {% for item in block.items %}
-            <a class="card" href="{{ item.link | relative_url }}">
-              <div class="card-img">
-                {% if item.image %}
-                  <img src="{{ item.image | relative_url }}" alt="{{ item.title }}">
-                {% endif %}
-              </div>
-              <div class="card-body">
-                <h3>{{ item.title }}</h3>
-                <p class="muted">{{ item.description }}</p>
-                <span class="card-cta">Shop →</span>
-              </div>
-            </a>
-          {% endfor %}
+
+          {%- comment -%}
+          1) Render categories that exist in category_meta (ordered)
+          {%- endcomment -%}
+          {%- for m in meta_list -%}
+            {%- if m.enabled != false and product_categories contains m.name -%}
+              <a class="card" href="{{ '/shop/#' | append: (m.name | slugify) | relative_url }}">
+                <div class="card-img">
+                  {% if m.image %}
+                    <img src="{{ m.image | relative_url }}" alt="{{ m.name }}">
+                  {% endif %}
+                </div>
+                <div class="card-body">
+                  <h3>{{ m.name }}</h3>
+                  {% if m.description %}<p class="muted">{{ m.description }}</p>{% endif %}
+                  <span class="card-cta">Shop →</span>
+                </div>
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- comment -%}
+          2) Render any categories that exist in products but NOT in category_meta yet
+          (still shows automatically, just without image/description)
+          {%- endcomment -%}
+          {%- for cat in product_categories -%}
+            {%- assign found = false -%}
+            {%- for m in meta_list -%}
+              {%- if m.name == cat -%}{%- assign found = true -%}{%- endif -%}
+            {%- endfor -%}
+
+            {%- if found == false -%}
+              <a class="card" href="{{ '/shop/#' | append: (cat | slugify) | relative_url }}">
+                <div class="card-body">
+                  <h3>{{ cat }}</h3>
+                  <p class="muted">Browse {{ cat | downcase }} products.</p>
+                  <span class="card-cta">Shop →</span>
+                </div>
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+
         </div>
       </div>
     </section>
+
 
   {% when "featured_products" %}
     <section class="section alt">
