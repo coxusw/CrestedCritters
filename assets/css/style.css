@@ -418,4 +418,44 @@ img{max-width:100%;display:block}
   border-color:#1877f2;
   background:rgba(24,119,242,0.12);
 }
+/* Footer social layout */
+.social-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+
+.social-label{
+  font-size:.85rem;
+  font-weight:900;
+  letter-spacing:.5px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+
+/* Icon button */
+.social-icon{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,0.14);
+  background:rgba(255,255,255,0.04);
+  transition:all .18s ease;
+}
+
+.social-icon svg{
+  width:20px;
+  height:20px;
+}
+
+.social-icon.facebook:hover{
+  background:#1877f2;
+  border-color:#1877f2;
+  color:white;
+  transform:translateY(-3px);
+}
 
