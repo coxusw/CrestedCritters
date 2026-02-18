@@ -46,5 +46,30 @@ blocks:
       - Hand-picked supplies for healthy bioactive enclosures
       - Clear inventory counts + fast updates
       - Simple Square checkout links per product
+        - type: testimonials
+    enabled: true
+    title: "What Keepers Are Saying"
+    subtitle: "Real feedback from fellow hobbyists."
+    items:
+      - quote: "The dairy cows came in active and healthy. You can tell these are well cared for cultures."
+        name: "Ryan M."
+        source: "Crested Gecko Owner"
+        rating: 5
+
+      - quote: "Shipping was fast and everything was packed really well. My bioactive setup looks way better now."
+        name: "Ashley P."
+        source: "Reptile Hobbyist"
+        rating: 5
+
+      - quote: "Inventory was accurate and checkout was simple. Appreciate that a lot."
+        name: "Daniel K."
+        source: "Isopod Keeper"
+        rating: 5
+
+      - quote: "The 3D printed hide fit perfectly in my enclosure. Solid print quality too."
+        name: "Melissa R."
+        source: "Ball Python Owner"
+        rating: 5
+
 footer:
   text: © Crested Critters — Bioactive supplies for reptiles & inverts.
