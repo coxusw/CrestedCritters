@@ -4,7 +4,7 @@ blocks:
     headline: Premium Bioactive Supplies
     subheadline: Isopods, botanicals, and 3D printed accessories designed for
       thriving enclosures.
-    image: /assets/images/hero.jpg
+    image: /assets/images/logo.png
     buttons:
       - label: Shop Now
         link: /shop/
