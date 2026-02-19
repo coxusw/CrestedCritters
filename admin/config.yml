@@ -9,6 +9,7 @@ media_folder: "assets/images"
 public_folder: "/assets/images"
 
 collections:
+
   - name: "products"
     label: "Products"
     folder: "_products"
@@ -16,26 +17,40 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "Product Name", name: "title", widget: "string" }
-      - { label: "Category", name: "category", widget: "select", options: ["Isopods", "Botanicals", "3D Printed Accessories"] }
+
+      - label: "Category"
+        name: "category"
+        widget: "string"
+
       - { label: "Price", name: "price", widget: "number", value_type: "float", min: 0 }
+
       - { label: "Inventory", name: "inventory", widget: "number", value_type: "int", min: 0 }
+
       - { label: "Sold Out", name: "sold_out", widget: "boolean", default: false }
+
       - { label: "Featured on Homepage", name: "featured", widget: "boolean", default: false }
+
       - { label: "Image", name: "image", widget: "image", required: false }
+
       - { label: "Square Payment Link", name: "square_link", widget: "string", required: false }
+
       - { label: "Description", name: "body", widget: "markdown", required: false }
+
 
   - name: "site"
     label: "Site Settings"
     files:
+
       - name: "home"
         label: "Homepage"
         file: "_data/home.yml"
         fields:
+
           - label: "Blocks"
             name: "blocks"
             widget: "list"
             types:
+
               - label: "Hero"
                 name: "hero"
                 widget: "object"
@@ -44,6 +59,7 @@ collections:
                   - { label: "Headline", name: "headline", widget: "string" }
                   - { label: "Subheadline", name: "subheadline", widget: "text", required: false }
                   - { label: "Hero Image", name: "image", widget: "image", required: false }
+
                   - label: "Buttons"
                     name: "buttons"
                     widget: "list"
@@ -51,7 +67,12 @@ collections:
                     fields:
                       - { label: "Label", name: "label", widget: "string" }
                       - { label: "Link", name: "link", widget: "string" }
-                      - { label: "Style", name: "style", widget: "select", options: ["primary", "ghost"], default: "ghost" }
+                      - label: "Style"
+                        name: "style"
+                        widget: "select"
+                        options: ["primary", "ghost"]
+                        default: "ghost"
+
 
               - label: "Categories"
                 name: "categories"
@@ -59,14 +80,7 @@ collections:
                 fields:
                   - { label: "Title", name: "title", widget: "string" }
                   - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
-                  - label: "Items"
-                    name: "items"
-                    widget: "list"
-                    fields:
-                      - { label: "Title", name: "title", widget: "string" }
-                      - { label: "Description", name: "description", widget: "text" }
-                      - { label: "Link", name: "link", widget: "string" }
-                      - { label: "Image", name: "image", widget: "image", required: false }
+
 
               - label: "Featured Products"
                 name: "featured_products"
@@ -78,25 +92,45 @@ collections:
                   - { label: "CTA Label", name: "cta_label", widget: "string", required: false }
                   - { label: "CTA Link", name: "cta_link", widget: "string", required: false }
 
+
               - label: "Bullet Cards"
                 name: "bullet_cards"
                 widget: "object"
                 fields:
                   - { label: "Title", name: "title", widget: "string" }
-                  - { label: "Bullets", name: "bullets", widget: "list" }
+                  - label: "Bullets"
+                    name: "bullets"
+                    widget: "list"
+
 
               - label: "Image + Text"
                 name: "image_text"
                 widget: "object"
                 fields:
                   - { label: "Enabled", name: "enabled", widget: "boolean", default: true }
-                  - { label: "Image Side", name: "image_side", widget: "select", options: ["left", "right"], default: "left" }
+
+                  - label: "Image Side"
+                    name: "image_side"
+                    widget: "select"
+                    options: ["left", "right"]
+                    default: "left"
+
                   - { label: "Title", name: "title", widget: "string" }
+
                   - { label: "Text", name: "text", widget: "text" }
+
                   - { label: "Image", name: "image", widget: "image", required: false }
+
                   - { label: "Button Label", name: "button_label", widget: "string", required: false }
+
                   - { label: "Button Link", name: "button_link", widget: "string", required: false }
-                  - { label: "Button Style", name: "button_style", widget: "select", options: ["primary", "ghost"], default: "primary" }
+
+                  - label: "Button Style"
+                    name: "button_style"
+                    widget: "select"
+                    options: ["primary", "ghost"]
+                    default: "primary"
+
 
               - label: "CTA Strip"
                 name: "cta_strip"
@@ -106,7 +140,7 @@ collections:
                   - { label: "Text", name: "text", widget: "string" }
                   - { label: "Button Label", name: "button_label", widget: "string", required: false }
                   - { label: "Button Link", name: "button_link", widget: "string", required: false }
-                  - { label: "Button Style", name: "button_style", widget: "select", options: ["primary", "ghost"], default: "primary" }
+
 
               - label: "Testimonials"
                 name: "testimonials"
@@ -115,6 +149,7 @@ collections:
                   - { label: "Enabled", name: "enabled", widget: "boolean", default: true }
                   - { label: "Title", name: "title", widget: "string", default: "What Keepers Say" }
                   - { label: "Subtitle", name: "subtitle", widget: "string", required: false }
+
                   - label: "Reviews"
                     name: "items"
                     widget: "list"
@@ -122,12 +157,25 @@ collections:
                       - { label: "Quote", name: "quote", widget: "text" }
                       - { label: "Name", name: "name", widget: "string" }
                       - { label: "Source / Role", name: "source", widget: "string", required: false }
-                      - { label: "Rating (1–5)", name: "rating", widget: "number", value_type: "int", min: 1, max: 5, default: 5 }
-                      - { label: "Photo (optional)", name: "photo", widget: "image", required: false }
-                            - name: "category_meta"
+                      - { label: "Rating", name: "rating", widget: "number", value_type: "int", min: 1, max: 5, default: 5 }
+                      - { label: "Photo", name: "photo", widget: "image", required: false }
+
+
+          - label: "Footer"
+            name: "footer"
+            widget: "object"
+            fields:
+              - { label: "Footer Text", name: "text", widget: "string" }
+              - { label: "Facebook URL", name: "facebook_url", widget: "string", required: false }
+              - { label: "Trust Badge Text", name: "trust_badge_text", widget: "string", required: false }
+
+
+
+      - name: "category_meta"
         label: "Category Metadata"
         file: "_data/category_meta.yml"
         fields:
+
           - label: "Categories"
             name: "categories"
             widget: "list"
@@ -139,17 +187,11 @@ collections:
               - { label: "Image", name: "image", widget: "image", required: false }
 
 
-          - label: "Footer"
-            name: "footer"
-            widget: "object"
-            fields:
-              - { label: "Footer Text", name: "text", widget: "string" }
-              - { label: "Facebook URL", name: "facebook_url", widget: "string", required: false }
-              - { label: "Trust Badge Text", name: "trust_badge_text", widget: "string", required: false }
 
   - name: "pages"
     label: "Pages"
     files:
+
       - name: "about"
         label: "About Page"
         file: "about/index.md"
@@ -157,11 +199,12 @@ collections:
           - { label: "Title", name: "title", widget: "string" }
           - { label: "Content", name: "body", widget: "markdown" }
 
+
       - name: "contact"
         label: "Contact Page"
         file: "contact/index.md"
         fields:
           - { label: "Title", name: "title", widget: "string" }
-          - { label: "Form Action URL (Apps Script Web App)", name: "form_action", widget: "string" }
+          - { label: "Form Action URL", name: "form_action", widget: "string" }
           - { label: "Submit Button Text", name: "submit_button_text", widget: "string", required: false }
-          - { label: "Intro Text", name: "body", widget: "markdown" }
+          - { label: "Content", name: "body", widget: "markdown" }
