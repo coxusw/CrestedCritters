@@ -10,11 +10,3 @@ defaults:
       type: "products"
     values:
       layout: product
-
-      collections:
-  products:
-    output: true
-  guides:
-    output: true
-    permalink: /care/:slug/
-
