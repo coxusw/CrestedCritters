@@ -1,18 +1,21 @@
 categories:
-  - name: "Isopods"
+  - name: Isopods
     enabled: true
     order: 1
-    description: "Hardy cleanup crews and cultures for bioactive builds."
-    image: "/assets/images/cat-isopods.jpg"
-
-  - name: "Botanicals"
+    description: Hardy cleanup crews and cultures for bioactive builds.
+    image: /assets/images/dairy-cow-isopods.jpg
+  - name: Botanicals
     enabled: true
     order: 2
-    description: "Leaf litter, seed pods, and natural décor for enrichment."
-    image: "/assets/images/cat-botanicals.jpg"
-
-  - name: "3D Printed Accessories"
+    description: Leaf litter, seed pods, and natural décor for enrichment.
+    image: /assets/images/leaf-3.png
+  - name: 3D Printed Accessories
     enabled: true
     order: 3
-    description: "Functional prints made for reptile & invert setups."
-    image: "/assets/images/cat-prints.jpg"
+    description: Functional prints made for reptile & invert setups.
+    image: /assets/images/3d-prints.jpeg
+  - enabled: true
+    order: 4
+    name: Merch
+    description: Merch is all handmade by TheChalkinWildChild
+    image: /assets/images/thechalkinwildchild-logo.jpeg
