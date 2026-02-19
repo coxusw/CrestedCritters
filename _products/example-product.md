@@ -3,7 +3,7 @@ title: Orange Powder Isopods
 category: Isopods
 price: 20
 inventory: 12
-sold_out: false
+sold_out: true
 featured: true
 image: /assets/images/powder-orange.jpeg
 square_link: https://square.link/u/XXXX
