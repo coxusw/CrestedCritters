@@ -5,7 +5,7 @@ price: 10
 inventory: 5
 sold_out: false
 featured: true
-image: /assets/images/leaf-litter.png
+image: /assets/images/maple-leaf.png
 square_link: https://square.link/u/cXCvKmNM
 ---
 vacuum sealed bag of Maple Leaf 
