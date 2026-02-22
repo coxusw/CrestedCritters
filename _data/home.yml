@@ -21,7 +21,7 @@ blocks:
         link: /shop/#merch
         label: Merch
       - style: ghost
-        link: /shop/#springtails
+        link: /shop/#springtail
         label: Springtail
   - type: categories
     title: Shop by Category
