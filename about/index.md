@@ -2,15 +2,13 @@
 layout: page
 title: About / Q&A
 ---
-Crested Critters provides premium isopods, botanicals, and accessories designed to support thriving bioactive enclosures.
+Crested Critters was officially established in 2025 to provided premium isopods, botanicals, and accessories designed to support thriving bioactive enclosures. If you have any questions beyond what is listed below please do not hesitate to reach out via the Contact page.
 
 ## What we focus on
 
 * Healthy cultures and enclosure-safe materials  
-* Clear inventory + fast updates  
 * Supplies built for real keepers
-
-
+* Fair Pricing
 
 ### Do you ship isopods or springtails?
 
