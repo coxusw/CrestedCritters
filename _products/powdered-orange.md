@@ -1,21 +1,15 @@
 ---
-title: Powdered Orange
+title: High White Zebra
 category: Isopods
-price: 15
+price: 45
 inventory: 0
 sold_out: true
 featured: false
-image: /assets/images/powder-orange.jpeg
-square_link: https://square.link/u/1irrg6qq
+image: /assets/images/high-white-zebra-isopod.png
+square_link: https://square.link/u/dzMTJC58
 ---
 
-**Powder Orange Isopods (10 Count)**
-
- Bright, hardy, and fast-breeding cleanup crew ideal for bioactive 
-terrariums. These vivid orange isopods thrive in a wide range of 
-conditions and help control waste while aerating your substrate. Great 
-for reptile, amphibian, or isopod-only enclosures.
-🧡 Easy to care for • Fast-reproducing • Excellent for beginners
+🤍 High White Zebra Isopods (10 Count)*Armadillidium maculatum “High White”* A bold twist on the classic zebra—crisp white striping that looks painted by hand. **Care:** Same husbandry as other Zebra morphs; humidity control and calcium supplementation are key. ⚡ *Rarely offered! Their clean, contrasting look is a showstopper in bioactive tanks.*
 
 
 **All
