@@ -1,5 +1,5 @@
 ---
-title: Orange Powder Isopods
+title: Powder Orange
 category: Isopods
 price: 20
 inventory: 12
@@ -9,4 +9,15 @@ image: /assets/images/powder-orange.jpeg
 square_link: https://square.link/u/XXXX
 ---
 
-Hardy, fast-breeding cleanup crew isopods perfect for bioactive enclosures.
+**Powder Orange Isopods (10 Count)**
+
+ Bright, hardy, and fast-breeding cleanup crew ideal for bioactive 
+terrariums. These vivid orange isopods thrive in a wide range of 
+conditions and help control waste while aerating your substrate. Great 
+for reptile, amphibian, or isopod-only enclosures.
+🧡 Easy to care for • Fast-reproducing • Excellent for beginners
+
+
+**All Live purchases need additional 
+care. If purchased please watch for an email for coordination of 
+shipping. Climate and timing will have to be discussed before shipping.**
