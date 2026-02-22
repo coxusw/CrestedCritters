@@ -5,6 +5,9 @@ price: 10
 inventory: 5
 sold_out: false
 featured: true
-image: /assets/images/leaf-3.png
+image: /assets/images/leaf-litter.png
+square_link: https://square.link/u/cXCvKmNM
 ---
-1 vacuum sealed bag of Maple leaf litter
+vacuum sealed bag of Maple Leaf 
+
+Clean no chemicals sanitized via freeze before shipping.
