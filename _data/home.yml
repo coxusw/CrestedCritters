@@ -20,6 +20,9 @@ blocks:
       - style: ghost
         link: /shop/#merch
         label: Merch
+      - style: ghost
+        link: /shop/#springtails
+        label: Springtails
   - type: categories
     title: Shop by Category
     subtitle: Browse by what you’re building today.
