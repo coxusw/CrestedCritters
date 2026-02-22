@@ -1,15 +1,15 @@
 ---
-title: High White Zebra
+title: Yellow Zebra
 category: Isopods
 price: 45
 inventory: 0
 sold_out: true
 featured: false
-image: /assets/images/high-white-zebra-isopod.png
-square_link: https://square.link/u/dzMTJC58
+image: /assets/images/yellow-zebra-isopod.png
+square_link: https://square.link/u/m4xd1ioa
 ---
 
-🤍 High White Zebra Isopods (10 Count)*Armadillidium maculatum “High White”* A bold twist on the classic zebra—crisp white striping that looks painted by hand. **Care:** Same husbandry as other Zebra morphs; humidity control and calcium supplementation are key. ⚡ *Rarely offered! Their clean, contrasting look is a showstopper in bioactive tanks.*
+💛 High Yellow Zebra Isopods (10 Count)*Armadillidium maculatum “High Yellow”* Vibrant stripes of sunshine yellow make these isopods pop against dark substrate. **Care:** Keep humidity around 60–70%, offer bark hides, and a mix of decayed wood and leaf litter. 🌟 *Perfect for brightening up displays—eye-catching, lively, and easy to breed.*
 
 
 **All
