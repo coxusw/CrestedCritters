@@ -19,3 +19,8 @@ categories:
     name: Merch
     description: Merch is all handmade by TheChalkinWildChild
     image: /assets/images/thechalkinwildchild-logo.jpeg
+  - enabled: true
+    order: 0
+    name: Springtails
+    description: The Clean up Crews Clean up Crew
+    image: /assets/images/springtail-culture.png
