@@ -25,7 +25,7 @@ blocks:
         label: Springtail
   - type: categories
     title: Shop by Category
-    subtitle: Browse by what you’re building today.
+    subtitle: ""
     items:
       - title: Isopods
         description: Hardy cleanup crews and cultures for bioactive builds.
