@@ -43,12 +43,6 @@ blocks:
         link: /shop/#merch
         description: Get your Swag and handmade crocheted Isopods!
         image: /assets/images/thechalkinwildchild-logo.jpeg
-  - type: featured_products
-    title: Featured Drops
-    subtitle: Keeper-favorites and fresh restocks.
-    max_items: 6
-    cta_label: View All Products
-    cta_link: /shop/
   - type: testimonials
     enabled: true
     title: What Keepers Are Saying
@@ -74,12 +68,6 @@ blocks:
         name: Melissa R.
         source: Ball Python Owner
         rating: 5
-  - type: bullet_cards
-    title: Built for Keepers
-    bullets:
-      - Hand-picked supplies for healthy bioactive enclosures
-      - Clear inventory counts + fast updates
-      - Secure checkout via Square payment links
 footer:
   text: © Crested Critters — Bioactive supplies for reptiles & inverts.
   facebook_url: https://www.facebook.com/YOUR_PAGE_LINK
