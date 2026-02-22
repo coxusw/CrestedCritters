@@ -8,18 +8,18 @@ blocks:
       - label: Shop Now
         link: /shop/
         style: primary
-      - label: Isopods
-        link: /shop/#isopods
-        style: ghost
-      - label: Botanicals
-        link: /shop/#botanicals
-        style: ghost
       - label: 3D Printed
         link: /shop/#3d-printed-accessories
         style: ghost
       - style: ghost
         link: /shop/#merch
         label: Merch
+      - label: Botanicals
+        link: /shop/#botanicals
+        style: ghost
+      - label: Isopods
+        link: /shop/#isopods
+        style: ghost
       - style: ghost
         link: /shop/#springtail
         label: Springtail
