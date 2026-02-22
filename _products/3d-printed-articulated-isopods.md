@@ -5,7 +5,7 @@ price: 5
 inventory: 100
 sold_out: false
 featured: false
-image: /assets/images/3d-prints.jpeg
+image: /assets/images/3d-printed-isopods.png
 square_link: https://square.link/u/TOQniir2
 ---
 3D printed articulating isopods!\
