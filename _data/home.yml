@@ -22,7 +22,7 @@ blocks:
         label: Merch
       - style: ghost
         link: /shop/#springtails
-        label: Springtails
+        label: Springtail
   - type: categories
     title: Shop by Category
     subtitle: Browse by what you’re building today.
