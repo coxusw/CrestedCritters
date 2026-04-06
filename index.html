@@ -37,7 +37,7 @@ title: Home
       </div>
     </section>
 
-    {% when "categories" %}
+  {% when "categories" %}
     <section class="section" id="categories">
       <div class="container">
         <div class="section-head">
@@ -47,15 +47,13 @@ title: Home
 
         {%- assign product_categories = site.products | map: "category" | uniq | sort -%}
         {%- assign meta_list = site.data.category_meta.categories | default: empty | sort: "order" -%}
+        {%- assign shop_url = '/shop/' | relative_url -%}
 
         <div class="card-grid">
 
-          {%- comment -%}
-          1) Render categories that exist in category_meta (ordered)
-          {%- endcomment -%}
           {%- for m in meta_list -%}
             {%- if m.enabled != false and product_categories contains m.name -%}
-              <a class="card" href="{{ '/shop/#' | append: (m.name | slugify) | relative_url }}">
+              <a class="card" href="{{ shop_url }}#{{ m.name | slugify }}">
                 <div class="card-img">
                   {% if m.image %}
                     <img src="{{ m.image | relative_url }}" alt="{{ m.name }}">
@@ -70,10 +68,6 @@ title: Home
             {%- endif -%}
           {%- endfor -%}
 
-          {%- comment -%}
-          2) Render any categories that exist in products but NOT in category_meta yet
-          (still shows automatically, just without image/description)
-          {%- endcomment -%}
           {%- for cat in product_categories -%}
             {%- assign found = false -%}
             {%- for m in meta_list -%}
@@ -81,7 +75,7 @@ title: Home
             {%- endfor -%}
 
             {%- if found == false -%}
-              <a class="card" href="{{ '/shop/#' | append: (cat | slugify) | relative_url }}">
+              <a class="card" href="{{ shop_url }}#{{ cat | slugify }}">
                 <div class="card-body">
                   <h3>{{ cat }}</h3>
                   <p class="muted">Browse {{ cat | downcase }} products.</p>
@@ -94,7 +88,6 @@ title: Home
         </div>
       </div>
     </section>
-
 
   {% when "featured_products" %}
     <section class="section alt">
@@ -226,6 +219,7 @@ title: Home
         </div>
       </section>
     {% endif %}
+
   {% when "testimonials" %}
     {% if block.enabled != false %}
       <section class="section alt">
@@ -249,7 +243,7 @@ title: Home
                     <div class="t-name">{{ t.name }}</div>
                     {% if t.source %}<div class="t-source">{{ t.source }}</div>{% endif %}
                     {% if t.rating %}
-                      <div class="t-stars" aria-label="{{ t.rating }} out of 5">
+                      <div class="t-stars">
                         {% for i in (1..5) %}
                           {% if i <= t.rating %}★{% else %}☆{% endif %}
                         {% endfor %}
@@ -265,10 +259,6 @@ title: Home
         </div>
       </section>
     {% endif %}
-
-
-  {% else %}
-    <!-- Unknown block type: {{ block.type }} -->
 
   {% endcase %}
 
