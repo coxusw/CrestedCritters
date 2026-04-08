@@ -1097,12 +1097,12 @@ renderShell("guide", `
 
 <div class="iso-card">
 <h3>2. Population Tab</h3>
-<p class="iso-muted">See combined totals by type, then open each type to view which colonies make up the total.</p>
+<p class="iso-muted">See combined totals by type, then open each type to view which colonies make up the total. This helps when you have multiple colonies of the same type.</p>
 </div>
 
 <div class="iso-card">
 <h3>3. Botanicals Tab</h3>
-<p class="iso-muted">Track stock and notes for bark, pods, moss, leaf litter, and similar items. No prices are stored here.</p>
+<p class="iso-muted">Track stock and notes for bark, lotuspods, moss, leaf litter, and similar items.</p>
 </div>
 
 <div class="iso-card">
@@ -1112,7 +1112,7 @@ renderShell("guide", `
 
 <div class="iso-card">
 <h3>5. Price Sheet Rules</h3>
-<p class="iso-muted">Blank prices show as Not Available. The generated sheet uses the logo at the top center and keeps a card-based layout.</p>
+<p class="iso-muted">Blank prices show as Not Available.</p>
 </div>
 
 <div class="iso-card">
