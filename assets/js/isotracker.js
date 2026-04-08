@@ -138,30 +138,31 @@ const sorted = data.colonies.slice().sort((a,b) => daysSince(b.lastUpdated) - da
 let html = `
 <div class="iso-toolbar">
 <button class="iso-btn iso-btn-primary" onclick="showAddColony()">+ Add Colony</button>
-<button class="iso-btn iso-btn-secondary" onclick="exportBackup()">Export Backup</button>
-<label class="iso-btn iso-btn-secondary" style="display:inline-flex;align-items:center;justify-content:center;">
-Import Backup
-<input type="file" accept=".json,application/json" style="display:none" onchange="importBackup(event)">
-</label>
-<button class="iso-btn iso-btn-secondary" onclick="loadDemoData()">Load Demo Data</button>
-<button class="iso-btn iso-btn-danger" onclick="clearAllData()">Clear All Data</button>
 </div>
 `;
 
 if (!sorted.length) {
-html += `<div class="iso-empty">No colonies saved yet.</div>`;
+html += `<div class="iso-empty">No colonies yet.</div>`;
 renderShell("colonies", html);
 return;
 }
 
 html += `<div class="iso-grid-auto">`;
+
 sorted.forEach(c => {
-const realIndex = data.colonies.findIndex(x => x.name === c.name);
+const index = data.colonies.findIndex(x => x.name === c.name);
 const d = daysSince(c.lastUpdated);
 const s = status(d);
 
 html += `
-<div class="iso-card clickable ${s}" onclick="openColony(${realIndex})">
+<div class="iso-card clickable ${s}" onclick="openColony(${index})">
+
+<div style="display:flex; gap:12px; align-items:flex-start;">
+
+${c.image ? `<img class="thumb" src="${c.image}" alt="">` : ""}
+
+<div style="flex:1;">
+
 <div class="iso-card-head">
 <div>
 <h3>${escapeHtml(c.name)}</h3>
@@ -169,18 +170,22 @@ html += `
 </div>
 <span class="iso-badge ${s}-badge">${statusText(d)}</span>
 </div>
-${c.image ? `<img class="thumb" src="${c.image}" alt="">` : ""}
+
 <div class="iso-meta">
 <div><strong>Category:</strong> ${escapeHtml(c.category || "-")}</div>
 <div><strong>Population:</strong> ${Number(c.population) || 0}</div>
 <div><strong>Date Added:</strong> ${escapeHtml(c.dateAdded || "-")}</div>
 <div><strong>Last Updated:</strong> ${escapeHtml(c.lastUpdated || "Never")}</div>
 </div>
+
+</div>
+</div>
+
 </div>
 `;
 });
-html += `</div>`;
 
+html += `</div>`;
 renderShell("colonies", html);
 }
 
