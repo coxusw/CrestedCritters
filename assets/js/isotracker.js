@@ -1,5 +1,5 @@
 const STORAGE = "isoTrackerData_v2";
-const DEFAULT_LOGO = "/assets/images/crested-critters-logo.png";
+const DEFAULT_LOGO = "/assets/images/logo.png";
 
 let data = JSON.parse(localStorage.getItem(STORAGE) || JSON.stringify({
 colonies: [],
