@@ -1,5 +1,8 @@
-const STORAGE = "isoTrackerData_v2";
-const DEFAULT_LOGO = "/assets/images/logo.png";
+const STORAGE = "isoTrackerData_v4";
+const DEFAULT_LOGO = "/assets/images/crested-critters-logo.png";
+
+let activeColonyCategory = "All";
+let activeColonyType = "All";
 
 let data = JSON.parse(localStorage.getItem(STORAGE) || JSON.stringify({
 colonies: [],
@@ -45,8 +48,8 @@ if (!date) return 999;
 const dt = parseDate(date);
 if (!dt) return 999;
 const now = new Date();
-now.setHours(0,0,0,0);
-dt.setHours(0,0,0,0);
+now.setHours(0, 0, 0, 0);
+dt.setHours(0, 0, 0, 0);
 return Math.floor((now - dt) / 86400000);
 }
 
@@ -71,11 +74,24 @@ return data.settings.sheetLogo || data.settings.appLogo || DEFAULT_LOGO;
 }
 
 function getUniqueTypes() {
-return [...new Set(data.colonies.map(c => (c.type || "").trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+return [...new Set(data.colonies.map(c => (c.type || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
 }
 
 function getUniqueCategories() {
-return [...new Set(data.colonies.map(c => (c.category || "").trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+return [...new Set(data.colonies.map(c => (c.category || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+function getColonyFilterCategories() {
+return ["All", ...getUniqueCategories()];
+}
+
+function getTypesForCategory(category) {
+let colonies = data.colonies.slice();
+if (category && category !== "All") {
+colonies = colonies.filter(c => (c.category || "").trim() === category);
+}
+const types = [...new Set(colonies.map(c => (c.type || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+return ["All", ...types];
 }
 
 function slug(str) {
@@ -133,22 +149,76 @@ document.getElementById("isoApp").innerHTML = `
 }
 
 function renderColonies() {
-const sorted = data.colonies.slice().sort((a,b) => daysSince(b.lastUpdated) - daysSince(a.lastUpdated));
+const allCategories = getColonyFilterCategories();
+
+if (!allCategories.includes(activeColonyCategory)) {
+activeColonyCategory = "All";
+}
+
+const allowedTypes = getTypesForCategory(activeColonyCategory);
+
+if (!allowedTypes.includes(activeColonyType)) {
+activeColonyType = "All";
+}
+
+let filtered = data.colonies.slice();
+
+if (activeColonyCategory !== "All") {
+filtered = filtered.filter(c => (c.category || "").trim() === activeColonyCategory);
+}
+
+if (activeColonyType !== "All") {
+filtered = filtered.filter(c => (c.type || "").trim() === activeColonyType);
+}
+
+const sorted = filtered.sort((a, b) => daysSince(b.lastUpdated) - daysSince(a.lastUpdated));
 
 let html = `
 <div class="iso-toolbar">
 <button class="iso-btn iso-btn-primary" onclick="showAddColony()">+ Add Colony</button>
+<button class="iso-btn iso-btn-secondary" onclick="exportBackup()">Export Backup</button>
+<button class="iso-btn iso-btn-secondary" onclick="triggerBackupImport()">Import Backup</button>
+<input id="backupFileInput" type="file" accept=".json,application/json" style="display:none;" onchange="importBackup(event)">
+<button class="iso-btn iso-btn-secondary" onclick="loadDemoData()">Load Demo Data</button>
+<button class="iso-btn iso-btn-danger" onclick="clearAllData()">Clear All Data</button>
+</div>
+
+<div class="iso-muted" style="margin:-4px 0 14px 0;">
+Export saves all colonies, botanicals, price sheet settings, sections, order, and logos into one backup file.
+</div>
+
+<div class="iso-subtabs">
+${allCategories.map(cat => `
+<button class="iso-subtab ${activeColonyCategory === cat ? "active" : ""}" onclick="setColonyCategoryFilter('${escapeJs(cat)}')">
+${escapeHtml(cat)}
+</button>
+`).join("")}
+</div>
+
+<div class="iso-filter-row">
+<div>
+<label>Filter by Type</label>
+<select class="iso-select" onchange="setColonyTypeFilter(this.value)">
+${allowedTypes.map(type => `
+<option value="${escapeHtml(type)}" ${activeColonyType === type ? "selected" : ""}>${escapeHtml(type)}</option>
+`).join("")}
+</select>
+</div>
+
+<div>
+<label>Showing</label>
+<input class="iso-input" value="${sorted.length} colony${sorted.length === 1 ? "" : "ies"}" disabled>
+</div>
 </div>
 `;
 
 if (!sorted.length) {
-html += `<div class="iso-empty">No colonies yet.</div>`;
+html += `<div class="iso-empty">No colonies match this filter.</div>`;
 renderShell("colonies", html);
 return;
 }
 
 html += `<div class="iso-grid-auto">`;
-
 sorted.forEach(c => {
 const index = data.colonies.findIndex(x => x.name === c.name);
 const d = daysSince(c.lastUpdated);
@@ -156,13 +226,9 @@ const s = status(d);
 
 html += `
 <div class="iso-card clickable ${s}" onclick="openColony(${index})">
-
 <div style="display:flex; gap:12px; align-items:flex-start;">
-
 ${c.image ? `<img class="thumb" src="${c.image}" alt="">` : ""}
-
 <div style="flex:1;">
-
 <div class="iso-card-head">
 <div>
 <h3>${escapeHtml(c.name)}</h3>
@@ -177,16 +243,25 @@ ${c.image ? `<img class="thumb" src="${c.image}" alt="">` : ""}
 <div><strong>Date Added:</strong> ${escapeHtml(c.dateAdded || "-")}</div>
 <div><strong>Last Updated:</strong> ${escapeHtml(c.lastUpdated || "Never")}</div>
 </div>
-
 </div>
 </div>
-
 </div>
 `;
 });
-
 html += `</div>`;
+
 renderShell("colonies", html);
+}
+
+function setColonyCategoryFilter(category) {
+activeColonyCategory = category || "All";
+activeColonyType = "All";
+renderColonies();
+}
+
+function setColonyTypeFilter(type) {
+activeColonyType = type || "All";
+renderColonies();
 }
 
 function showAddColony() {
@@ -471,7 +546,7 @@ if (!c.type) return;
 totals[c.type] = (totals[c.type] || 0) + (Number(c.population) || 0);
 });
 
-const types = Object.keys(totals).sort((a,b) => a.localeCompare(b));
+const types = Object.keys(totals).sort((a, b) => a.localeCompare(b));
 
 let html = `
 <h2 class="section-title">Population</h2>
@@ -504,8 +579,8 @@ renderShell("population", html);
 }
 
 function openPopulationBreakdown(type) {
-const matches = data.colonies.filter(c => c.type === type).sort((a,b) => (Number(b.population)||0) - (Number(a.population)||0));
-const total = matches.reduce((sum,c) => sum + (Number(c.population)||0), 0);
+const matches = data.colonies.filter(c => c.type === type).sort((a, b) => (Number(b.population) || 0) - (Number(a.population) || 0));
+const total = matches.reduce((sum, c) => sum + (Number(c.population) || 0), 0);
 
 let html = `
 <h2 class="section-title">${escapeHtml(type)} — Total ${total}</h2>
@@ -553,7 +628,7 @@ return;
 }
 
 html += `<div class="iso-grid-auto">`;
-data.botanicals.slice().sort((a,b) => a.name.localeCompare(b.name)).forEach(item => {
+data.botanicals.slice().sort((a, b) => a.name.localeCompare(b.name)).forEach(item => {
 const index = data.botanicals.findIndex(x => x.name === item.name);
 html += `
 <div class="iso-card clickable" onclick="openBotanical(${index})">
@@ -1092,17 +1167,17 @@ renderShell("guide", `
 <div class="iso-grid-auto">
 <div class="iso-card">
 <h3>1. Colonies Tab</h3>
-<p class="iso-muted">Add colonies, assign category, track care, and use the quick update buttons. The colony list also works as your husbandry queue.</p>
+<p class="iso-muted">Add colonies, assign category, track care, and use quick update buttons. Use category chips and the type dropdown to narrow large collections fast.</p>
 </div>
 
 <div class="iso-card">
 <h3>2. Population Tab</h3>
-<p class="iso-muted">See combined totals by type, then open each type to view which colonies make up the total. This helps when you have multiple colonies of the same type.</p>
+<p class="iso-muted">See combined totals by type, then open each type to view which colonies make up the total.</p>
 </div>
 
 <div class="iso-card">
 <h3>3. Botanicals Tab</h3>
-<p class="iso-muted">Track stock and notes for bark, lotuspods, moss, leaf litter, and similar items.</p>
+<p class="iso-muted">Track stock and notes for bark, pods, moss, leaf litter, and similar items. No prices are stored here.</p>
 </div>
 
 <div class="iso-card">
@@ -1112,37 +1187,76 @@ renderShell("guide", `
 
 <div class="iso-card">
 <h3>5. Price Sheet Rules</h3>
-<p class="iso-muted">Blank prices show as Not Available.</p>
+<p class="iso-muted">Blank prices show as Not Available. The generated sheet uses the logo at the top center and keeps a card-based layout.</p>
 </div>
 
 <div class="iso-card">
 <h3>6. Backup & Restore</h3>
-<p class="iso-muted">Use Export Profile Backup to save everything locally. Import that file on another device to restore your setup.This is only needed if you are switching devices. If you clear your browser memory/cache you will lose your info. So from time to time it wouldnt be a bad idea to make a backup.</p>
+<p class="iso-muted">Use Export Backup to save everything locally. Use Import Backup to restore everything on another device.</p>
 </div>
 </div>
 `);
 }
 
+function triggerBackupImport() {
+const input = document.getElementById("backupFileInput");
+if (input) {
+input.value = "";
+input.click();
+}
+}
+
 function exportBackup() {
-const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+const stamp = new Date();
+const filename = `isotracker-backup-${stamp.getFullYear()}-${String(stamp.getMonth()+1).padStart(2,"0")}-${String(stamp.getDate()).padStart(2,"0")}.json`;
+const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
 const a = document.createElement("a");
 a.href = URL.createObjectURL(blob);
-a.download = "isotracker-backup.json";
+a.download = filename;
 a.click();
+URL.revokeObjectURL(a.href);
 }
 
 function importBackup(e) {
 const file = e.target.files[0];
 if (!file) return;
+
 const reader = new FileReader();
 reader.onload = () => {
 try {
-data = JSON.parse(reader.result);
+const imported = JSON.parse(reader.result);
+
+if (!imported || typeof imported !== "object") {
+throw new Error("Invalid backup");
+}
+
+data = {
+colonies: Array.isArray(imported.colonies) ? imported.colonies : [],
+botanicals: Array.isArray(imported.botanicals) ? imported.botanicals : [],
+prices: imported.prices && typeof imported.prices === "object" ? imported.prices : {},
+botanicalPrices: imported.botanicalPrices && typeof imported.botanicalPrices === "object" ? imported.botanicalPrices : {},
+sections: Array.isArray(imported.sections) ? imported.sections : ["Isopods", "Springtails", "Botanicals"],
+order: imported.order && typeof imported.order === "object" ? imported.order : { colonyTypes: [], botanicals: [] },
+settings: imported.settings && typeof imported.settings === "object" ? imported.settings : {
+appLogo: "",
+sheetLogo: "",
+businessName: "IsoTracker",
+tagline: "Colony Tracker & Price Sheets",
+theme: "botanical",
+bannerText: "",
+footerText: ""
+}
+};
+
+activeColonyCategory = "All";
+activeColonyType = "All";
+
 refreshOrders();
 save();
 renderColonies();
-} catch {
-alert("Backup file could not be imported.");
+alert("Backup restored successfully.");
+} catch (err) {
+alert("That backup file could not be restored.");
 }
 };
 reader.readAsText(file);
@@ -1224,6 +1338,10 @@ bannerText: "",
 footerText: ""
 }
 };
+
+activeColonyCategory = "All";
+activeColonyType = "All";
+
 refreshOrders();
 save();
 renderColonies();
@@ -1252,6 +1370,9 @@ bannerText: "",
 footerText: ""
 }
 };
+
+activeColonyCategory = "All";
+activeColonyType = "All";
 
 save();
 renderColonies();
