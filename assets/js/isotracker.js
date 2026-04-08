@@ -1117,7 +1117,7 @@ renderShell("guide", `
 
 <div class="iso-card">
 <h3>6. Backup & Restore</h3>
-<p class="iso-muted">Use Export Profile Backup to save everything locally. Import that file on another device to restore your setup.</p>
+<p class="iso-muted">Use Export Profile Backup to save everything locally. Import that file on another device to restore your setup.This is only needed if you are switching devices. If you clear your browser memory/cache you will lose your info. So from time to time it wouldnt be a bad idea to make a backup.</p>
 </div>
 </div>
 `);
