@@ -1177,7 +1177,7 @@ renderShell("guide", `
 
 <div class="iso-card">
 <h3>3. Botanicals Tab</h3>
-<p class="iso-muted">Track stock and notes for bark, pods, moss, leaf litter, and similar items. No prices are stored here.</p>
+<p class="iso-muted">Track stock and notes for bark, lotus pods, moss, leaf litter, and similar items.</p>
 </div>
 
 <div class="iso-card">
@@ -1187,7 +1187,7 @@ renderShell("guide", `
 
 <div class="iso-card">
 <h3>5. Price Sheet Rules</h3>
-<p class="iso-muted">Blank prices show as Not Available. The generated sheet uses the logo at the top center and keeps a card-based layout.</p>
+<p class="iso-muted">Blank prices show as Not Available. Dont forget to add your own logo to the price sheet.</p>
 </div>
 
 <div class="iso-card">
