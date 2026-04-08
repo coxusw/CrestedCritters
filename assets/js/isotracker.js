@@ -1,5 +1,5 @@
 const STORAGE = "isoTrackerData_v4";
-const DEFAULT_LOGO = "/assets/images/crested-critters-logo.png";
+const DEFAULT_LOGO = "/assets/images/logo.png";
 
 let activeColonyCategory = "All";
 let activeColonyType = "All";
