@@ -1488,7 +1488,7 @@ app(`
 <h3>3. Update Care Fast</h3>
 <p>Open a colony and use the quick buttons to mark misting, feeding, substrate checks, or botanical checks. The last updated date changes automatically.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guideUpdateCare || "/assets/images/isotracker/guide-update-care.jpg"}" alt="Update care screen">
+<img src="${CONFIG.guideUpdateCare || "/assets/images/isotracker/guide-update-care.jpeg"}" alt="Update care screen">
 </div>
 </div>
 
@@ -1496,7 +1496,7 @@ app(`
 <h3>4. Track Botanicals</h3>
 <p>The Botanicals tab tracks stock and notes only. Pricing for botanicals is handled inside the Price Sheet tab.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guideBotanicals || "/assets/images/isotracker/guide-botanicals.jpg"}" alt="Botanicals screen">
+<img src="${CONFIG.guideBotanicals || "/assets/images/isotracker/guide-botanicals.jpeg"}" alt="Botanicals screen">
 </div>
 </div>
 
@@ -1504,7 +1504,7 @@ app(`
 <h3>5. Build the Price Sheet</h3>
 <p>Choose which colony types and botanicals to include. Assign sections, add count notes and prices, then drag items into the exact order you want.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guidePriceSheet || "/assets/images/isotracker/guide-price-sheet.jpg"}" alt="Price sheet builder screen">
+<img src="${CONFIG.guidePriceSheet || "/assets/images/isotracker/guide-price-sheet.jpeg"}" alt="Price sheet builder screen">
 </div>
 </div>
 
@@ -1512,7 +1512,7 @@ app(`
 <h3>6. Settings Tab</h3>
 <p>Use Settings for export backup, import backup, and clear all data so your main workflow stays uncluttered.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guideSettings || "/assets/images/isotracker/guide-settings.jpg"}" alt="Settings screen">
+<img src="${CONFIG.guideSettings || "/assets/images/isotracker/guide-settings.jpeg"}" alt="Settings screen">
 </div>
 </div>
 </div>
