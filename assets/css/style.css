@@ -40,18 +40,30 @@ img{max-width:100%;display:block}
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 18px;
 }
 
 .logo {
-  font-weight: 900;
-  font-size: 1.1rem;
-  letter-spacing: .5px;
-  color: #e9ecef;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.logo-img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  display: block;
 }
 
 .nav-links {
   display: flex;
   gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .nav-links a {
@@ -294,18 +306,7 @@ img{max-width:100%;display:block}
   border-radius: 14px;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 900px){
-  .hero-inner{grid-template-columns:1fr}
-  .card-grid,.product-grid{grid-template-columns:1fr}
-  .product-layout{grid-template-columns:1fr}
-  .hero h1{font-size:2.35rem}
-
-  /* Show sticky buybar only on mobile */
-  .mobile-buybar{display:flex;}
-  /* Make space so content isn't hidden under buybar */
-  body{padding-bottom: 92px;}
-}
+/* ===== FORMS ===== */
 .cc-form{
   display:grid;
   gap:12px;
@@ -334,7 +335,7 @@ img{max-width:100%;display:block}
   border-color: rgba(127,176,105,0.45);
 }
 
-/* Image + Text block */
+/* ===== IMAGE + TEXT BLOCK ===== */
 .it-grid{
   display:grid;
   grid-template-columns: 1fr 1fr;
@@ -354,12 +355,7 @@ img{max-width:100%;display:block}
 .it-right .it-media{ order: 2; }
 .it-right .it-text{ order: 1; }
 
-@media (max-width: 900px){
-  .it-grid{ grid-template-columns: 1fr; }
-  .it-right .it-media, .it-right .it-text{ order: initial; }
-}
-
-/* CTA strip block */
+/* ===== CTA STRIP BLOCK ===== */
 .cta-strip{
   background: linear-gradient(90deg, rgba(127,176,105,0.14), rgba(214,192,111,0.10));
   border: 1px solid rgba(255,255,255,0.10);
@@ -375,10 +371,8 @@ img{max-width:100%;display:block}
   font-weight: 900;
   letter-spacing: .2px;
 }
-@media (max-width: 700px){
-  .cta-strip{ flex-direction: column; align-items: flex-start; }
-}
-/* Clean centered footer */
+
+/* ===== FOOTER ===== */
 .footer-center{
   display:flex;
   flex-direction:column;
@@ -393,7 +387,7 @@ img{max-width:100%;display:block}
   font-size:.9rem;
 }
 
-/* Social layout */
+/* ===== SOCIAL ===== */
 .social-wrap{
   display:flex;
   flex-direction:column;
@@ -409,7 +403,6 @@ img{max-width:100%;display:block}
   text-transform:uppercase;
 }
 
-/* Icon button */
 .social-icon{
   width:42px;
   height:42px;
@@ -433,7 +426,8 @@ img{max-width:100%;display:block}
   color:white;
   transform:translateY(-3px);
 }
-/* Micro trust badge */
+
+/* ===== TRUST BADGES ===== */
 .trust-badge{
   display:inline-flex;
   align-items:center;
@@ -454,7 +448,7 @@ img{max-width:100%;display:block}
   background: var(--accent);
   box-shadow: 0 0 18px rgba(127,176,105,0.35);
 }
-/* Product trust micro badge */
+
 .product-trust{
   margin-top:10px;
   display:flex;
@@ -472,7 +466,8 @@ img{max-width:100%;display:block}
   background:var(--accent);
   box-shadow:0 0 12px rgba(127,176,105,0.35);
 }
-/* Testimonials block */
+
+/* ===== TESTIMONIALS ===== */
 .t-grid{
   display:grid;
   grid-template-columns: repeat(3, 1fr);
@@ -541,9 +536,60 @@ img{max-width:100%;display:block}
   font-weight: 700;
 }
 
+/* ===== RESPONSIVE ===== */
 @media (max-width: 900px){
-  .t-grid{ grid-template-columns: 1fr; }
+  .hero-inner{grid-template-columns:1fr}
+  .card-grid,.product-grid{grid-template-columns:1fr}
+  .product-layout{grid-template-columns:1fr}
+  .hero h1{font-size:2.35rem}
+
+  .mobile-buybar{display:flex;}
+  body{padding-bottom: 92px;}
+
+  .it-grid{grid-template-columns:1fr}
+  .it-right .it-media,
+  .it-right .it-text{order:initial}
+
+  .t-grid{grid-template-columns:1fr}
+
+  .nav-container{
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .logo-img{
+    width: 44px;
+    height: 44px;
+  }
+
+  .nav-links{
+    width: 100%;
+    justify-content: center;
+    gap: 16px;
+  }
 }
 
+@media (max-width: 700px){
+  .cta-strip{
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
+  .nav-container{
+    padding: 12px 14px;
+  }
 
+  .logo-img{
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-links{
+    gap: 12px 16px;
+  }
+
+  .nav-links a{
+    font-size: .95rem;
+  }
+}
