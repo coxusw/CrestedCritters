@@ -32,6 +32,12 @@
 
   let state = structuredCloneSafe(DEFAULT_STATE);
 
+  const colonyFilters = {
+    search: "",
+    category: "all",
+    status: "all"
+  };
+
   function structuredCloneSafe(obj) {
     return JSON.parse(JSON.stringify(obj));
   }
@@ -314,11 +320,12 @@
     if (tab === "botanicals") renderBotanicals();
     if (tab === "price") renderPriceSheet();
     if (tab === "guide") renderGuide();
+    if (tab === "settings") renderSettings();
   }
 
   async function exportProfile() {
     const profile = {
-      version: 5,
+      version: 6,
       exportedAt: new Date().toISOString(),
       data: state
     };
@@ -361,34 +368,72 @@
       await saveState();
       applyHeaderBranding();
       alert("Profile imported successfully.");
-      renderColonies();
+      renderSettings();
     } catch (err) {
       alert("Could not import backup file.");
     }
   }
 
+  function filterColonies() {
+    const search = colonyFilters.search.trim().toLowerCase();
+    const category = colonyFilters.category;
+    const status = colonyFilters.status;
+
+    return state.colonies
+      .slice()
+      .sort((a, b) => daysSince(b.lastHusbandry) - daysSince(a.lastHusbandry))
+      .filter(c => {
+        const hay = `${c.colonyName || ""} ${c.typeName || ""}`.toLowerCase();
+        if (search && !hay.includes(search)) return false;
+        if (category !== "all" && (c.category || "") !== category) return false;
+        if (status !== "all") {
+          const s = getStatus(daysSince(c.lastHusbandry));
+          if (s !== status) return false;
+        }
+        return true;
+      });
+  }
+
   function renderColonies() {
-    const sorted = state.colonies.slice().sort((a, b) => daysSince(b.lastHusbandry) - daysSince(a.lastHusbandry));
+    const sorted = filterColonies();
+    const categories = uniqueCategories();
 
     let html = `
       <h2 class="iso-section-title">Colonies</h2>
       <p class="iso-subtext">Your main working list. Oldest updated colonies appear first so you can see what needs attention.</p>
+
       <div class="iso-toolbar">
         <button class="iso-btn iso-btn-primary" data-action="show-add-colony">+ Add Colony</button>
-        <button class="iso-btn iso-btn-ghost" data-action="export-backup">Export Profile Backup</button>
-        <label class="iso-btn iso-btn-ghost" style="display:inline-flex;align-items:center;justify-content:center;">
-          Import Profile Backup
-          <input id="isoImportBackup" type="file" accept=".json,application/json" style="display:none">
-        </label>
-        <button class="iso-btn iso-btn-ghost" data-action="load-demo">Load Demo Data</button>
-        <button class="iso-btn iso-btn-ghost" data-action="clear-all">Clear All Data</button>
+      </div>
+
+      <div class="iso-form-grid" style="margin-bottom:14px;">
+        <div>
+          <label>Search</label>
+          <input id="colonySearch" placeholder="Search colony name or type" value="${esc(colonyFilters.search)}">
+        </div>
+        <div>
+          <label>Category</label>
+          <select id="colonyCategoryFilter">
+            <option value="all"${colonyFilters.category === "all" ? " selected" : ""}>All Categories</option>
+            ${categories.map(cat => `<option value="${esc(cat)}"${colonyFilters.category === cat ? " selected" : ""}>${esc(cat)}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <label>Status</label>
+          <select id="colonyStatusFilter">
+            <option value="all"${colonyFilters.status === "all" ? " selected" : ""}>All Statuses</option>
+            <option value="green"${colonyFilters.status === "green" ? " selected" : ""}>Checked Recently</option>
+            <option value="yellow"${colonyFilters.status === "yellow" ? " selected" : ""}>Needs Attention Soon</option>
+            <option value="red"${colonyFilters.status === "red" ? " selected" : ""}>Needs Checked</option>
+          </select>
+        </div>
       </div>
     `;
 
     if (!sorted.length) {
-      html += `<div class="iso-empty">No colonies saved.</div>`;
+      html += `<div class="iso-empty">No colonies match your current filter.</div>`;
       app(html);
-      bindCommonActions();
+      bindColonyListActions();
       return;
     }
 
@@ -420,24 +465,40 @@
     html += `</div>`;
 
     app(html);
-    bindCommonActions();
+    bindColonyListActions();
     $all("[data-open-colony]").forEach(el => {
       el.addEventListener("click", () => openColony(Number(el.dataset.openColony)));
     });
   }
 
-  function bindCommonActions() {
+  function bindColonyListActions() {
     const addColonyBtn = $("[data-action='show-add-colony']");
-    const exportBtn = $("[data-action='export-backup']");
-    const demoBtn = $("[data-action='load-demo']");
-    const clearBtn = $("[data-action='clear-all']");
-    const importInput = $("#isoImportBackup");
-
     if (addColonyBtn) addColonyBtn.onclick = showAddColonyForm;
-    if (exportBtn) exportBtn.onclick = exportProfile;
-    if (demoBtn) demoBtn.onclick = loadDemoData;
-    if (clearBtn) clearBtn.onclick = clearAllData;
-    if (importInput) importInput.onchange = function () { importProfileFromInput(this); };
+
+    const search = $("#colonySearch");
+    const cat = $("#colonyCategoryFilter");
+    const status = $("#colonyStatusFilter");
+
+    if (search) {
+      search.addEventListener("input", () => {
+        colonyFilters.search = search.value;
+        renderColonies();
+      });
+    }
+
+    if (cat) {
+      cat.addEventListener("change", () => {
+        colonyFilters.category = cat.value;
+        renderColonies();
+      });
+    }
+
+    if (status) {
+      status.addEventListener("change", () => {
+        colonyFilters.status = status.value;
+        renderColonies();
+      });
+    }
   }
 
   function showAddColonyForm() {
@@ -636,6 +697,14 @@
         </div>
       </div>
 
+      <label>Replace Type Picture</label>
+      <input id="replaceTypeImage" type="file" accept="image/*">
+
+      <div class="iso-actions" style="margin-top:8px;">
+        <button class="iso-btn" id="replaceImageBtn">Save New Image</button>
+        <button class="iso-btn iso-btn-danger" id="removeImageBtn" ${c.typeImageUri ? "" : "disabled"}>Remove Image</button>
+      </div>
+
       <label>Custom Note</label>
       <textarea id="editNote">${esc(c.customNote || "")}</textarea>
 
@@ -656,9 +725,37 @@
       btn.onclick = () => quickAction(index, btn.dataset.quick);
     });
 
+    $("#replaceImageBtn").onclick = () => replaceColonyImage(index);
+    $("#removeImageBtn").onclick = () => removeColonyImage(index);
     $("#saveColonyEditsBtn").onclick = () => saveColonyEdits(index);
     $("#backToColoniesBtn").onclick = renderColonies;
     $("#deleteColonyBtn").onclick = () => deleteColony(index);
+  }
+
+  async function replaceColonyImage(index) {
+    const file = $("#replaceTypeImage").files[0];
+    if (!file) {
+      alert("Choose an image first.");
+      return;
+    }
+
+    state.colonies[index].typeImageUri = await compressImageFile(file, {
+      maxWidth: 800,
+      maxHeight: 800,
+      quality: 0.72
+    });
+
+    await saveState();
+    openColony(index);
+    alert("Image updated.");
+  }
+
+  async function removeColonyImage(index) {
+    if (!confirm("Remove this colony image?")) return;
+    state.colonies[index].typeImageUri = "";
+    await saveState();
+    openColony(index);
+    alert("Image removed.");
   }
 
   async function saveColonyEdits(index) {
@@ -1389,16 +1486,17 @@
 
         <div class="iso-guide-card">
           <h3>2. Work From the Colony List</h3>
-          <p>The Colonies tab is also the care queue. Older updates stay on top. Each card shows a status badge and last updated date.</p>
+          <p>The Colonies tab is also the care queue. Older updates stay on top. Search and filters help you quickly find exactly what you need.</p>
           <div class="iso-guide-visual">
             <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
               <rect width="420" height="220" fill="#112018"/>
-              <rect x="24" y="20" width="372" height="50" rx="16" fill="#1e3025"/>
-              <rect x="34" y="34" width="120" height="18" rx="9" fill="#d75a5a"/>
-              <rect x="24" y="84" width="372" height="50" rx="16" fill="#1e3025"/>
-              <rect x="34" y="98" width="150" height="18" rx="9" fill="#efc24d"/>
-              <rect x="24" y="148" width="372" height="50" rx="16" fill="#1e3025"/>
-              <rect x="34" y="162" width="130" height="18" rx="9" fill="#34c27a"/>
+              <rect x="24" y="20" width="372" height="28" rx="10" fill="#2a4034"/>
+              <rect x="24" y="58" width="178" height="28" rx="10" fill="#2a4034"/>
+              <rect x="218" y="58" width="178" height="28" rx="10" fill="#2a4034"/>
+              <rect x="24" y="100" width="372" height="40" rx="14" fill="#1e3025"/>
+              <rect x="34" y="112" width="150" height="16" rx="8" fill="#efc24d"/>
+              <rect x="24" y="152" width="372" height="40" rx="14" fill="#1e3025"/>
+              <rect x="34" y="164" width="120" height="16" rx="8" fill="#34c27a"/>
             </svg>
           </div>
         </div>
@@ -1453,20 +1551,66 @@
         </div>
 
         <div class="iso-guide-card">
-          <h3>6. Export and Move Devices</h3>
-          <p>Use Export Profile Backup to save everything to a JSON file. Import that same file on another device to restore your full setup locally.</p>
+          <h3>6. Settings Tab</h3>
+          <p>Use Settings for export backup, import backup, and clear all data so your main workflow stays uncluttered.</p>
           <div class="iso-guide-visual">
             <svg viewBox="0 0 420 220" xmlns="http://www.w3.org/2000/svg">
               <rect width="420" height="220" fill="#112018"/>
-              <rect x="40" y="34" width="110" height="150" rx="20" fill="#1c2d23"/>
-              <rect x="270" y="34" width="110" height="150" rx="20" fill="#1c2d23"/>
-              <path d="M175 110h70" stroke="#e2c17f" stroke-width="8" stroke-linecap="round"/>
-              <path d="M225 86l28 24-28 24" fill="none" stroke="#e2c17f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="30" y="36" width="160" height="36" rx="12" fill="#2a4034"/>
+              <rect x="30" y="92" width="160" height="36" rx="12" fill="#2a4034"/>
+              <rect x="30" y="148" width="160" height="36" rx="12" fill="#8a2f2f"/>
+              <circle cx="300" cy="110" r="42" fill="#1e3025"/>
+              <circle cx="300" cy="110" r="18" fill="#d6bb7b"/>
             </svg>
           </div>
         </div>
       </div>
     `);
+  }
+
+  function renderSettings() {
+    app(`
+      <h2 class="iso-section-title">Settings</h2>
+      <p class="iso-subtext">Manage your local data and backups here.</p>
+
+      <div class="iso-grid">
+        <div class="iso-card">
+          <h3 class="iso-card-title" style="margin-bottom:8px;">Backup</h3>
+          <p class="iso-subtext">Export your full local profile so you can move it to another device later.</p>
+          <div class="iso-actions">
+            <button class="iso-btn iso-btn-primary" id="exportProfileBtn">Export Profile Backup</button>
+          </div>
+        </div>
+
+        <div class="iso-card">
+          <h3 class="iso-card-title" style="margin-bottom:8px;">Restore</h3>
+          <p class="iso-subtext">Import a previously exported backup file.</p>
+          <div class="iso-actions">
+            <label class="iso-btn iso-btn-ghost" style="display:inline-flex;align-items:center;justify-content:center;">
+              Import Profile Backup
+              <input id="settingsImportBackup" type="file" accept=".json,application/json" style="display:none">
+            </label>
+          </div>
+        </div>
+
+        <div class="iso-card">
+          <h3 class="iso-card-title" style="margin-bottom:8px;">Danger Zone</h3>
+          <p class="iso-subtext">Clear all locally stored IsoTracker data from this device.</p>
+          <div class="iso-actions">
+            <button class="iso-btn iso-btn-danger" id="clearAllDataBtn">Clear All Data</button>
+          </div>
+        </div>
+      </div>
+    `);
+
+    $("#exportProfileBtn").onclick = exportProfile;
+    const importInput = $("#settingsImportBackup");
+    if (importInput) {
+      importInput.onchange = function () {
+        importProfileFromInput(this);
+      };
+    }
+    $("#clearAllDataBtn").onclick = clearAllData;
   }
 
   async function loadDemoData() {
@@ -1562,9 +1706,13 @@
     if (!confirm("Clear all saved data?")) return;
 
     state = structuredCloneSafe(DEFAULT_STATE);
+    colonyFilters.search = "";
+    colonyFilters.category = "all";
+    colonyFilters.status = "all";
+
     await saveState();
     applyHeaderBranding();
-    renderColonies();
+    renderSettings();
   }
 
   function bindTabEvents() {
