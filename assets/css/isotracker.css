@@ -1,711 +1,736 @@
 #isoAppShell.iso-shell {
-  --iso-bg: #0f1713;
-  --iso-panel: #17241d;
-  --iso-card: #1b2b22;
-  --iso-card-2: #21352a;
-  --iso-line: rgba(255,255,255,.08);
-  --iso-text: #f3f5f2;
-  --iso-muted: #b9c4bc;
-  --iso-green: #2b6b4e;
-  --iso-green-2: #1f4e39;
-  --iso-gold: #d6bb7b;
-  --iso-gold-2: #f0dbab;
-  --iso-red: #d75a5a;
-  --iso-yellow: #efc24d;
-  --iso-ok: #34c27a;
-  --iso-shadow: 0 12px 28px rgba(0,0,0,.24);
+--iso-bg: #0f1713;
+--iso-panel: #17241d;
+--iso-card: #1b2b22;
+--iso-card-2: #21352a;
+--iso-line: rgba(255,255,255,.08);
+--iso-text: #f3f5f2;
+--iso-muted: #b9c4bc;
+--iso-green: #2b6b4e;
+--iso-green-2: #1f4e39;
+--iso-gold: #d6bb7b;
+--iso-gold-2: #f0dbab;
+--iso-red: #d75a5a;
+--iso-yellow: #efc24d;
+--iso-ok: #34c27a;
+--iso-shadow: 0 12px 28px rgba(0,0,0,.24);
 
-  color: var(--iso-text);
-  margin: 18px auto 60px;
+color: var(--iso-text);
+margin: 18px auto 60px;
 }
 
 #isoAppShell * {
-  box-sizing: border-box;
+box-sizing: border-box;
 }
 
 #isoAppShell .iso-hero {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-  border: 1px solid var(--iso-line);
-  border-radius: 28px;
-  padding: 20px;
-  background:
-    linear-gradient(135deg, rgba(214,187,123,.12), rgba(214,187,123,.03)),
-    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
-  box-shadow: var(--iso-shadow);
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 18px;
+flex-wrap: wrap;
+border: 1px solid var(--iso-line);
+border-radius: 28px;
+padding: 20px;
+background:
+linear-gradient(135deg, rgba(214,187,123,.12), rgba(214,187,123,.03)),
+linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+box-shadow: var(--iso-shadow);
 }
 
 #isoAppShell .iso-hero-left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
+display: flex;
+align-items: center;
+gap: 14px;
+flex-wrap: wrap;
 }
 
 #isoAppShell .iso-header-logo {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid rgba(255,255,255,.08);
-  background: #0e1511;
+width: 56px;
+height: 56px;
+border-radius: 50%;
+object-fit: cover;
+border: 2px solid rgba(255,255,255,.08);
+background: #0e1511;
 }
 
 #isoAppShell h1 {
-  margin: 0;
-  font-size: clamp(28px, 5vw, 42px);
-  line-height: 1;
+margin: 0;
+font-size: clamp(28px, 5vw, 42px);
+line-height: 1;
 }
 
 #isoAppShell .iso-hero p {
-  margin: 8px 0 0;
-  color: var(--iso-muted);
-  font-size: 15px;
+margin: 8px 0 0;
+color: var(--iso-muted);
+font-size: 15px;
 }
 
 #isoAppShell .iso-credit {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(214,187,123,.25);
-  background: rgba(214,187,123,.08);
-  color: var(--iso-gold-2);
-  font-weight: 700;
-  font-size: 13px;
-  white-space: nowrap;
+display: inline-flex;
+align-items: center;
+gap: 10px;
+padding: 10px 14px;
+border-radius: 999px;
+border: 1px solid rgba(214,187,123,.25);
+background: rgba(214,187,123,.08);
+color: var(--iso-gold-2);
+font-weight: 700;
+font-size: 13px;
+white-space: nowrap;
 }
 
 #isoAppShell .iso-credit img {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid rgba(255,255,255,.15);
-  background: #fff;
+width: 22px;
+height: 22px;
+border-radius: 50%;
+object-fit: cover;
+border: 1px solid rgba(255,255,255,.15);
+background: #fff;
 }
 
 #isoAppShell .iso-tabs {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin: 16px 0;
+display: grid;
+grid-template-columns: repeat(6, 1fr);
+gap: 10px;
+margin: 16px 0;
 }
 
 #isoAppShell .iso-tab {
-  appearance: none;
-  border: none;
-  cursor: pointer;
-  border-radius: 16px;
-  padding: 14px 10px;
-  font-weight: 800;
-  color: var(--iso-text);
-  border: 1px solid var(--iso-line);
-  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-  box-shadow: var(--iso-shadow);
-  transition: .18s ease;
+appearance: none;
+border: none;
+cursor: pointer;
+border-radius: 16px;
+padding: 14px 10px;
+font-weight: 800;
+color: var(--iso-text);
+border: 1px solid var(--iso-line);
+background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+box-shadow: var(--iso-shadow);
+transition: .18s ease;
 }
 
 #isoAppShell .iso-tab:hover {
-  transform: translateY(-1px);
+transform: translateY(-1px);
 }
 
 #isoAppShell .iso-tab.active {
-  background: linear-gradient(180deg, rgba(214,187,123,.22), rgba(214,187,123,.10));
-  border-color: rgba(214,187,123,.38);
-  color: #fff6de;
+background: linear-gradient(180deg, rgba(214,187,123,.22), rgba(214,187,123,.10));
+border-color: rgba(214,187,123,.38);
+color: #fff6de;
 }
 
 #isoAppShell .iso-panel {
-  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
-  border: 1px solid var(--iso-line);
-  border-radius: 24px;
-  padding: 16px;
-  box-shadow: var(--iso-shadow);
+background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015));
+border: 1px solid var(--iso-line);
+border-radius: 24px;
+padding: 16px;
+box-shadow: var(--iso-shadow);
 }
 
 #isoAppShell .iso-section-title {
-  margin: 0 0 8px;
-  font-size: 24px;
+margin: 0 0 8px;
+font-size: 24px;
 }
 
 #isoAppShell .iso-subtext {
-  margin: 0 0 16px;
-  color: var(--iso-muted);
-  font-size: 14px;
+margin: 0 0 16px;
+color: var(--iso-muted);
+font-size: 14px;
 }
 
 #isoAppShell .iso-toolbar,
 #isoAppShell .iso-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
 }
 
 #isoAppShell .iso-toolbar {
-  margin-bottom: 14px;
+margin-bottom: 14px;
 }
 
 #isoAppShell .iso-actions {
-  margin-top: 16px;
+margin-top: 16px;
 }
 
 #isoAppShell .iso-btn {
-  appearance: none;
-  border: none;
-  cursor: pointer;
-  border-radius: 14px;
-  padding: 11px 14px;
-  font-weight: 800;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,.08);
-  background: linear-gradient(180deg, #304238, #223028);
-  box-shadow: var(--iso-shadow);
-  transition: .18s ease;
+appearance: none;
+border: none;
+cursor: pointer;
+border-radius: 14px;
+padding: 11px 14px;
+font-weight: 800;
+color: #fff;
+border: 1px solid rgba(255,255,255,.08);
+background: linear-gradient(180deg, #304238, #223028);
+box-shadow: var(--iso-shadow);
+transition: .18s ease;
 }
 
 #isoAppShell .iso-btn:hover {
-  transform: translateY(-1px);
+transform: translateY(-1px);
 }
 
 #isoAppShell .iso-btn-primary {
-  background: linear-gradient(180deg, #e2c17f, #bd944a);
-  color: #1d1406;
-  border-color: rgba(255,220,160,.35);
+background: linear-gradient(180deg, #e2c17f, #bd944a);
+color: #1d1406;
+border-color: rgba(255,220,160,.35);
 }
 
 #isoAppShell .iso-btn-danger {
-  background: linear-gradient(180deg, #be5555, #842d2d);
+background: linear-gradient(180deg, #be5555, #842d2d);
 }
 
 #isoAppShell .iso-btn-ghost {
-  background: rgba(255,255,255,.05);
+background: rgba(255,255,255,.05);
 }
 
 #isoAppShell .iso-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-  gap: 14px;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+gap: 14px;
 }
 
 #isoAppShell .iso-card {
-  border: 1px solid var(--iso-line);
-  border-radius: 20px;
-  padding: 14px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)),
-    linear-gradient(180deg, rgba(255,255,255,.02), transparent);
-  box-shadow: var(--iso-shadow);
+border: 1px solid var(--iso-line);
+border-radius: 20px;
+padding: 14px;
+background:
+linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)),
+linear-gradient(180deg, rgba(255,255,255,.02), transparent);
+box-shadow: var(--iso-shadow);
 }
 
 #isoAppShell .iso-card-clickable {
-  cursor: pointer;
+cursor: pointer;
 }
 
 #isoAppShell .iso-card-clickable:hover {
-  transform: translateY(-2px);
-  transition: .18s ease;
+transform: translateY(-2px);
+transition: .18s ease;
 }
 
 #isoAppShell .iso-status-green {
-  border-left: 6px solid var(--iso-ok);
+border-left: 6px solid var(--iso-ok);
 }
 
 #isoAppShell .iso-status-yellow {
-  border-left: 6px solid var(--iso-yellow);
+border-left: 6px solid var(--iso-yellow);
 }
 
 #isoAppShell .iso-status-red {
-  border-left: 6px solid var(--iso-red);
+border-left: 6px solid var(--iso-red);
 }
 
 #isoAppShell .iso-card-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  align-items: flex-start;
-  margin-bottom: 8px;
+display: flex;
+justify-content: space-between;
+gap: 10px;
+align-items: flex-start;
+margin-bottom: 8px;
+}
+
+#isoAppShell .iso-card-title-wrap {
+display: flex;
+align-items: center;
+gap: 10px;
+min-width: 0;
+}
+
+#isoAppShell .iso-colony-avatar {
+width: 42px;
+height: 42px;
+border-radius: 50%;
+object-fit: cover;
+flex: 0 0 42px;
+border: 1px solid rgba(255,255,255,.10);
+background: #0f1411;
 }
 
 #isoAppShell .iso-card-title {
-  margin: 0;
-  font-size: 18px;
-  line-height: 1.15;
+margin: 0;
+font-size: 18px;
+line-height: 1.15;
 }
 
 #isoAppShell .iso-muted {
-  color: var(--iso-muted);
+color: var(--iso-muted);
 }
 
 #isoAppShell .iso-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: 800;
-  white-space: nowrap;
-  border: 1px solid rgba(255,255,255,.08);
-  background: rgba(255,255,255,.06);
-  color: var(--iso-muted);
+display: inline-flex;
+align-items: center;
+justify-content: center;
+border-radius: 999px;
+padding: 6px 10px;
+font-size: 12px;
+font-weight: 800;
+white-space: nowrap;
+border: 1px solid rgba(255,255,255,.08);
+background: rgba(255,255,255,.06);
+color: var(--iso-muted);
 }
 
 #isoAppShell .iso-badge-green {
-  background: rgba(52,194,122,.12);
-  color: #a8f0cb;
-  border-color: rgba(52,194,122,.2);
+background: rgba(52,194,122,.12);
+color: #a8f0cb;
+border-color: rgba(52,194,122,.2);
 }
 
 #isoAppShell .iso-badge-yellow {
-  background: rgba(239,194,77,.12);
-  color: #ffe3a0;
-  border-color: rgba(239,194,77,.2);
+background: rgba(239,194,77,.12);
+color: #ffe3a0;
+border-color: rgba(239,194,77,.2);
 }
 
 #isoAppShell .iso-badge-red {
-  background: rgba(215,90,90,.12);
-  color: #ffc0c0;
-  border-color: rgba(215,90,90,.2);
+background: rgba(215,90,90,.12);
+color: #ffc0c0;
+border-color: rgba(215,90,90,.2);
 }
 
 #isoAppShell .iso-meta {
-  display: grid;
-  gap: 7px;
-  margin-top: 10px;
-  font-size: 14px;
-  color: var(--iso-muted);
+display: grid;
+gap: 7px;
+margin-top: 10px;
+font-size: 14px;
+color: var(--iso-muted);
 }
 
 #isoAppShell .iso-meta strong {
-  color: var(--iso-text);
+color: var(--iso-text);
 }
 
 #isoAppShell .iso-thumb {
-  width: 100%;
-  max-height: 180px;
-  object-fit: cover;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.08);
-  background: #0f1411;
-  display: block;
-  margin: 10px 0 2px;
+width: 100%;
+max-height: 220px;
+object-fit: cover;
+border-radius: 14px;
+border: 1px solid rgba(255,255,255,.08);
+background: #0f1411;
+display: block;
+margin: 10px 0 2px;
 }
 
 #isoAppShell label {
-  display: block;
-  margin: 10px 0 6px;
-  font-size: 14px;
-  font-weight: 800;
-  color: #eef2f7;
+display: block;
+margin: 10px 0 6px;
+font-size: 14px;
+font-weight: 800;
+color: #eef2f7;
 }
 
 #isoAppShell input,
 #isoAppShell textarea,
 #isoAppShell select {
-  width: 100%;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,.08);
-  background: #0f1713;
-  color: var(--iso-text);
-  padding: 12px 13px;
-  font-size: 15px;
-  outline: none;
+width: 100%;
+border-radius: 14px;
+border: 1px solid rgba(255,255,255,.08);
+background: #0f1713;
+color: var(--iso-text);
+padding: 12px 13px;
+font-size: 15px;
+outline: none;
 }
 
 #isoAppShell input[type="checkbox"] {
-  width: auto;
-  transform: scale(1.2);
-  margin-right: 8px;
+width: auto;
+transform: scale(1.2);
+margin-right: 8px;
 }
 
 #isoAppShell textarea {
-  min-height: 108px;
-  resize: vertical;
+min-height: 108px;
+resize: vertical;
 }
 
 #isoAppShell .iso-form-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 12px;
 }
 
 #isoAppShell .iso-empty {
-  text-align: center;
-  padding: 34px 18px;
-  border-radius: 20px;
-  border: 1px dashed rgba(255,255,255,.14);
-  color: var(--iso-muted);
-  background: rgba(255,255,255,.02);
+text-align: center;
+padding: 34px 18px;
+border-radius: 20px;
+border: 1px dashed rgba(255,255,255,.14);
+color: var(--iso-muted);
+background: rgba(255,255,255,.02);
 }
 
 #isoAppShell .iso-split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 16px;
 }
 
 #isoAppShell .iso-info-note {
-  font-size: 13px;
-  color: #fff1cf;
-  background: rgba(214,187,123,.12);
-  border: 1px solid rgba(214,187,123,.20);
-  border-radius: 14px;
-  padding: 10px 12px;
-  margin: 0 0 14px;
+font-size: 13px;
+color: #fff1cf;
+background: rgba(214,187,123,.12);
+border: 1px solid rgba(214,187,123,.20);
+border-radius: 14px;
+padding: 10px 12px;
+margin: 0 0 14px;
 }
 
 #isoAppShell .iso-section-manager {
-  border: 1px solid var(--iso-line);
-  border-radius: 16px;
-  padding: 12px;
-  margin-bottom: 16px;
-  background: rgba(255,255,255,.02);
+border: 1px solid var(--iso-line);
+border-radius: 16px;
+padding: 12px;
+margin-bottom: 16px;
+background: rgba(255,255,255,.02);
 }
 
 #isoAppShell .iso-section-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid var(--iso-line);
-  margin: 0 8px 8px 0;
-  font-size: 13px;
-  font-weight: 700;
+display: inline-flex;
+align-items: center;
+gap: 8px;
+padding: 8px 12px;
+border-radius: 999px;
+background: rgba(255,255,255,.06);
+border: 1px solid var(--iso-line);
+margin: 0 8px 8px 0;
+font-size: 13px;
+font-weight: 700;
 }
 
 #isoAppShell .iso-mini-btn {
-  border: none;
-  background: transparent;
-  color: #ffc0c0;
-  cursor: pointer;
-  font-weight: 800;
-  font-size: 14px;
+border: none;
+background: transparent;
+color: #ffc0c0;
+cursor: pointer;
+font-weight: 800;
+font-size: 14px;
 }
 
 #isoAppShell .iso-price-row {
-  border: 1px solid var(--iso-line);
-  border-radius: 16px;
-  padding: 12px;
-  margin-bottom: 12px;
-  background: rgba(255,255,255,.02);
+border: 1px solid var(--iso-line);
+border-radius: 16px;
+padding: 12px;
+margin-bottom: 12px;
+background: rgba(255,255,255,.02);
 }
 
 #isoAppShell .iso-price-row.dragging {
-  opacity: .55;
-  border-color: rgba(214,187,123,.60);
-  background: rgba(214,187,123,.08);
+opacity: .55;
+border-color: rgba(214,187,123,.60);
+background: rgba(214,187,123,.08);
 }
 
 #isoAppShell .iso-builder-topline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 10px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 10px;
+margin-bottom: 10px;
 }
 
 #isoAppShell .iso-builder-left {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+display: flex;
+align-items: center;
+gap: 8px;
+flex-wrap: wrap;
 }
 
 #isoAppShell .iso-drag-handle {
-  cursor: grab;
-  user-select: none;
-  font-size: 18px;
-  margin-right: 10px;
-  color: var(--iso-gold-2);
+cursor: grab;
+user-select: none;
+font-size: 18px;
+margin-right: 10px;
+color: var(--iso-gold-2);
 }
 
 #isoAppShell .iso-guide-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 14px;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 14px;
 }
 
 #isoAppShell .iso-guide-card {
-  border: 1px solid var(--iso-line);
-  border-radius: 20px;
-  padding: 14px;
-  background: rgba(255,255,255,.02);
-  box-shadow: var(--iso-shadow);
+border: 1px solid var(--iso-line);
+border-radius: 20px;
+padding: 14px;
+background: rgba(255,255,255,.02);
+box-shadow: var(--iso-shadow);
 }
 
 #isoAppShell .iso-guide-card h3 {
-  margin: 0 0 8px;
-  font-size: 18px;
+margin: 0 0 8px;
+font-size: 18px;
 }
 
 #isoAppShell .iso-guide-card p {
-  margin: 0 0 10px;
-  color: var(--iso-muted);
-  font-size: 14px;
-  line-height: 1.45;
+margin: 0 0 10px;
+color: var(--iso-muted);
+font-size: 14px;
+line-height: 1.45;
 }
 
 #isoAppShell .iso-guide-visual {
-  width: 100%;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.08);
-  background: #101814;
-  margin-top: 10px;
+width: 100%;
+border-radius: 14px;
+overflow: hidden;
+border: 1px solid rgba(255,255,255,.08);
+background: #101814;
+margin-top: 10px;
 }
 
-#isoAppShell .iso-guide-visual svg {
-  display: block;
-  width: 100%;
-  height: auto;
+#isoAppShell .iso-guide-visual img {
+display: block;
+width: 100%;
+height: auto;
 }
 
 #isoAppShell .iso-sheet-wrap {
-  margin-top: 18px;
-  padding: 20px;
-  background: rgba(255,255,255,.03);
-  border: 1px solid var(--iso-line);
-  border-radius: 24px;
-  overflow: auto;
+margin-top: 18px;
+padding: 20px;
+background: rgba(255,255,255,.03);
+border: 1px solid var(--iso-line);
+border-radius: 24px;
+overflow: auto;
 }
 
 #isoAppShell .iso-sheet {
-  width: 960px;
-  margin: 0 auto;
-  overflow: hidden;
-  border-radius: 24px;
-  box-shadow: 0 14px 34px rgba(0,0,0,.20);
+width: 960px;
+margin: 0 auto;
+overflow: hidden;
+border-radius: 24px;
+box-shadow: 0 14px 34px rgba(0,0,0,.20);
 }
 
 #isoAppShell .iso-sheet-header {
-  padding: 28px 28px 18px;
-  text-align: center;
+padding: 28px 28px 18px;
+text-align: center;
 }
 
 #isoAppShell .iso-sheet-logo {
-  width: 92px;
-  height: 92px;
-  object-fit: cover;
-  border-radius: 50%;
-  display: block;
-  margin: 0 auto 14px;
-  background: #fff;
-  border: 3px solid rgba(255,255,255,.15);
-  box-shadow: 0 10px 22px rgba(0,0,0,.18);
+width: 92px;
+height: 92px;
+object-fit: cover;
+border-radius: 50%;
+display: block;
+margin: 0 auto 14px;
+background: #fff;
+border: 3px solid rgba(255,255,255,.15);
+box-shadow: 0 10px 22px rgba(0,0,0,.18);
 }
 
 #isoAppShell .iso-sheet-title {
-  margin: 0;
-  font-size: 42px;
-  line-height: 1.05;
-  font-weight: 800;
+margin: 0;
+font-size: 42px;
+line-height: 1.05;
+font-weight: 800;
 }
 
 #isoAppShell .iso-sheet-sub {
-  margin: 6px 0 0;
-  font-size: 18px;
+margin: 6px 0 0;
+font-size: 18px;
 }
 
 #isoAppShell .iso-sheet-banner {
-  margin: 16px 28px 18px;
-  text-align: center;
-  padding: 10px 14px;
-  font-weight: 800;
-  border-radius: 999px;
-  font-size: 16px;
+margin: 16px 28px 18px;
+text-align: center;
+padding: 10px 14px;
+font-weight: 800;
+border-radius: 999px;
+font-size: 16px;
 }
 
 #isoAppShell .iso-sheet-body {
-  padding: 0 24px 28px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
+padding: 0 24px 28px;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+gap: 16px;
 }
 
 #isoAppShell .iso-sheet-section {
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(0,0,0,.08);
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+border-radius: 18px;
+overflow: hidden;
+border: 1px solid rgba(0,0,0,.08);
+box-shadow: 0 6px 18px rgba(0,0,0,.08);
 }
 
 #isoAppShell .iso-sheet-section-title {
-  font-weight: 800;
-  font-size: 17px;
-  text-align: center;
-  padding: 12px;
+font-weight: 800;
+font-size: 17px;
+text-align: center;
+padding: 12px;
 }
 
 #isoAppShell .iso-sheet-cards {
-  padding: 12px;
-  display: grid;
-  gap: 10px;
+padding: 12px;
+display: grid;
+gap: 10px;
 }
 
 #isoAppShell .iso-sheet-item {
-  border-radius: 14px;
-  padding: 12px;
-  display: grid;
-  gap: 6px;
+border-radius: 14px;
+padding: 12px;
+display: grid;
+gap: 6px;
 }
 
 #isoAppShell .iso-sheet-item-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: flex-start;
+display: flex;
+justify-content: space-between;
+gap: 12px;
+align-items: flex-start;
 }
 
 #isoAppShell .iso-sheet-item-name {
-  font-weight: 800;
-  font-size: 17px;
-  line-height: 1.15;
+font-weight: 800;
+font-size: 17px;
+line-height: 1.15;
 }
 
 #isoAppShell .iso-sheet-item-price {
-  font-weight: 800;
-  font-size: 16px;
-  white-space: nowrap;
+font-weight: 800;
+font-size: 16px;
+white-space: nowrap;
 }
 
 #isoAppShell .iso-sheet-item-note {
-  font-size: 13px;
-  opacity: .88;
+font-size: 13px;
+opacity: .88;
 }
 
 #isoAppShell .iso-sheet-footer {
-  text-align: center;
-  padding: 16px 24px 24px;
-  font-size: 12px;
-  opacity: .82;
+text-align: center;
+padding: 16px 24px 24px;
+font-size: 12px;
+opacity: .82;
 }
 
 #isoAppShell .iso-theme-botanical {
-  background: #f4f2ea;
-  color: #213528;
+background: #f4f2ea;
+color: #213528;
 }
 #isoAppShell .iso-theme-botanical .iso-sheet-header {
-  background:
-    radial-gradient(circle at top left, rgba(214,187,123,.20), transparent 30%),
-    linear-gradient(135deg, #edf2e7 0%, #dbe7d8 100%);
-  border-bottom: 1px solid rgba(33,53,40,.10);
+background:
+radial-gradient(circle at top left, rgba(214,187,123,.20), transparent 30%),
+linear-gradient(135deg, #edf2e7 0%, #dbe7d8 100%);
+border-bottom: 1px solid rgba(33,53,40,.10);
 }
 #isoAppShell .iso-theme-botanical .iso-sheet-banner {
-  background: #295a3a;
-  color: #fff7e4;
+background: #295a3a;
+color: #fff7e4;
 }
 #isoAppShell .iso-theme-botanical .iso-sheet-section {
-  background: #f9f7f0;
+background: #f9f7f0;
 }
 #isoAppShell .iso-theme-botanical .iso-sheet-section-title {
-  background: #295a3a;
-  color: #fff7e4;
+background: #295a3a;
+color: #fff7e4;
 }
 #isoAppShell .iso-theme-botanical .iso-sheet-item {
-  background: #eef3ea;
+background: #eef3ea;
 }
 #isoAppShell .iso-theme-botanical .iso-sheet-item:nth-child(even) {
-  background: #e4ede1;
+background: #e4ede1;
 }
 
 #isoAppShell .iso-theme-parchment {
-  background: #efe2c9;
-  color: #1f160a;
-  border: 4px solid #1d140a;
-  border-radius: 0;
-  position: relative;
+background: #efe2c9;
+color: #1f160a;
+border: 4px solid #1d140a;
+border-radius: 0;
+position: relative;
 }
 #isoAppShell .iso-theme-parchment::before {
-  content: "";
-  position: absolute;
-  inset: 14px;
-  border: 2px solid rgba(33,20,10,.75);
-  pointer-events: none;
+content: "";
+position: absolute;
+inset: 14px;
+border: 2px solid rgba(33,20,10,.75);
+pointer-events: none;
 }
 #isoAppShell .iso-theme-parchment .iso-sheet-header {
-  background:
-    radial-gradient(circle at center, rgba(255,255,255,.22), transparent 45%),
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.02));
+background:
+radial-gradient(circle at center, rgba(255,255,255,.22), transparent 45%),
+linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.02));
 }
 #isoAppShell .iso-theme-parchment .iso-sheet-banner {
-  background: #1d140a;
-  color: #f6e7c7;
+background: #1d140a;
+color: #f6e7c7;
 }
 #isoAppShell .iso-theme-parchment .iso-sheet-section {
-  background: rgba(255,255,255,.16);
-  border: 1px solid rgba(31,22,10,.22);
+background: rgba(255,255,255,.16);
+border: 1px solid rgba(31,22,10,.22);
 }
 #isoAppShell .iso-theme-parchment .iso-sheet-section-title {
-  background: rgba(31,22,10,.08);
-  color: #1d140a;
-  text-decoration: underline;
+background: rgba(31,22,10,.08);
+color: #1d140a;
+text-decoration: underline;
 }
 #isoAppShell .iso-theme-parchment .iso-sheet-item {
-  background: rgba(255,255,255,.12);
+background: rgba(255,255,255,.12);
 }
 
 #isoAppShell .iso-theme-luxe {
-  background: #101820;
-  color: #f3efe6;
+background: #101820;
+color: #f3efe6;
 }
 #isoAppShell .iso-theme-luxe .iso-sheet-header {
-  background:
-    radial-gradient(circle at top left, rgba(214,187,123,.22), transparent 28%),
-    linear-gradient(135deg, #101820 0%, #1d2b35 100%);
-  border-bottom: 1px solid rgba(255,255,255,.08);
+background:
+radial-gradient(circle at top left, rgba(214,187,123,.22), transparent 28%),
+linear-gradient(135deg, #101820 0%, #1d2b35 100%);
+border-bottom: 1px solid rgba(255,255,255,.08);
 }
 #isoAppShell .iso-theme-luxe .iso-sheet-banner {
-  background: linear-gradient(90deg, #c9a45c, #e7ca8c);
-  color: #151006;
+background: linear-gradient(90deg, #c9a45c, #e7ca8c);
+color: #151006;
 }
 #isoAppShell .iso-theme-luxe .iso-sheet-section {
-  background: #15222c;
-  border-color: rgba(255,255,255,.08);
+background: #15222c;
+border-color: rgba(255,255,255,.08);
 }
 #isoAppShell .iso-theme-luxe .iso-sheet-section-title {
-  background: linear-gradient(90deg, #233342, #18222d);
-  color: #f8e9c6;
+background: linear-gradient(90deg, #233342, #18222d);
+color: #f8e9c6;
 }
 #isoAppShell .iso-theme-luxe .iso-sheet-item {
-  background: #1a2b36;
+background: #1a2b36;
 }
 #isoAppShell .iso-theme-luxe .iso-sheet-item:nth-child(even) {
-  background: #203340;
+background: #203340;
 }
 
-@media (max-width:980px){
-  #isoAppShell .iso-tabs {
-    grid-template-columns: repeat(3,1fr);
-  }
-  #isoAppShell .iso-split {
-    grid-template-columns: 1fr;
-  }
-  #isoAppShell .iso-sheet {
-    width: 780px;
-  }
-  #isoAppShell .iso-sheet-body {
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  }
+@media (max-width: 1100px) {
+#isoAppShell .iso-tabs {
+grid-template-columns: repeat(3, 1fr);
+}
+}
+
+@media (max-width: 980px){
+#isoAppShell .iso-split {
+grid-template-columns: 1fr;
+}
+#isoAppShell .iso-sheet {
+width: 780px;
+}
+#isoAppShell .iso-sheet-body {
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
 }
 
 @media (max-width:700px){
-  #isoAppShell .iso-tabs {
-    grid-template-columns: repeat(2,1fr);
-  }
-  #isoAppShell .iso-sheet-wrap {
-    padding: 10px;
-  }
-  #isoAppShell .iso-sheet {
-    width: 690px;
-  }
-  #isoAppShell .iso-sheet-title {
-    font-size: 34px;
-  }
+#isoAppShell .iso-tabs {
+grid-template-columns: repeat(2,1fr);
+}
+#isoAppShell .iso-sheet-wrap {
+padding: 10px;
+}
+#isoAppShell .iso-sheet {
+width: 690px;
+}
+#isoAppShell .iso-sheet-title {
+font-size: 34px;
+}
+#isoAppShell .iso-colony-avatar {
+width: 36px;
+height: 36px;
+flex: 0 0 36px;
+}
 }
