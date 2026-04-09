@@ -1,10 +1,51 @@
 ---
 layout: default
 title: IsoTracker
-permalink: /isotracker/
 ---
 
-<div id="isoApp" class="iso-wrapper"></div>
-
 <link rel="stylesheet" href="{{ '/assets/css/isotracker.css' | relative_url }}">
+
+<section id="isoAppShell" class="iso-shell">
+  <div class="iso-hero">
+    <div class="iso-hero-left">
+      <img
+        id="isoHeaderLogo"
+        class="iso-header-logo"
+        src="{{ '/assets/images/crested-critters-logo.png' | relative_url }}"
+        alt="Crested Critters logo"
+      >
+      <div>
+        <h1>IsoTracker</h1>
+        <p>Colony tracking, botanicals inventory, and premium price sheets.</p>
+      </div>
+    </div>
+
+    <div class="iso-credit">
+      <img
+        id="isoHeaderLogoSmall"
+        src="{{ '/assets/images/crested-critters-logo.png' | relative_url }}"
+        alt="Crested Critters logo"
+      >
+      <span>Brought to you by Crested Critters</span>
+    </div>
+  </div>
+
+  <div class="iso-tabs">
+    <button class="iso-tab active" data-tab="colonies">Colonies</button>
+    <button class="iso-tab" data-tab="population">Population</button>
+    <button class="iso-tab" data-tab="botanicals">Botanicals</button>
+    <button class="iso-tab" data-tab="price">Price Sheet</button>
+    <button class="iso-tab" data-tab="guide">Guide</button>
+  </div>
+
+  <section class="iso-panel">
+    <div id="isoApp"></div>
+  </section>
+</section>
+
+<script>
+  window.ISO_TRACKER_CONFIG = {
+    defaultLogoUrl: "{{ '/assets/images/crested-critters-logo.png' | relative_url }}"
+  };
+</script>
 <script src="{{ '/assets/js/isotracker.js' | relative_url }}"></script>
