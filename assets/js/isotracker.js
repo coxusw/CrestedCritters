@@ -310,6 +310,10 @@ img.src = src;
 });
 }
 
+function guideImagePath(key, fallback) {
+return CONFIG[key] || fallback;
+}
+
 function setTab(tab) {
 $all(".iso-tab").forEach(btn => {
 btn.classList.toggle("active", btn.dataset.tab === tab);
@@ -325,7 +329,7 @@ if (tab === "settings") renderSettings();
 
 async function exportProfile() {
 const profile = {
-version: 6,
+version: 7,
 exportedAt: new Date().toISOString(),
 data: state
 };
@@ -712,6 +716,7 @@ ${knownCats.map(cat => `<option value="${esc(cat)}" ${c.category === cat ? "sele
 
 <div class="iso-actions">
 <button class="iso-btn iso-btn-primary" id="saveColonyEditsBtn">Save Changes</button>
+<button class="iso-btn iso-btn-primary" id="splitColonyBtn">Split Colony</button>
 <button class="iso-btn" id="backToColoniesBtn">Back</button>
 <button class="iso-btn iso-btn-danger" id="deleteColonyBtn">Delete Colony</button>
 </div>
@@ -730,8 +735,101 @@ btn.onclick = () => quickAction(index, btn.dataset.quick);
 $("#replaceImageBtn").onclick = () => replaceColonyImage(index);
 $("#removeImageBtn").onclick = () => removeColonyImage(index);
 $("#saveColonyEditsBtn").onclick = () => saveColonyEdits(index);
+$("#splitColonyBtn").onclick = () => showSplitColonyForm(index);
 $("#backToColoniesBtn").onclick = renderColonies;
 $("#deleteColonyBtn").onclick = () => deleteColony(index);
+}
+
+function showSplitColonyForm(index) {
+const c = state.colonies[index];
+const currentPopulation = Number(c.population) || 0;
+
+if (currentPopulation <= 0) {
+alert("This colony needs a population greater than 0 before it can be split.");
+return;
+}
+
+app(`
+<h2 class="iso-section-title">Split Colony</h2>
+<p class="iso-subtext">Create a new colony from ${esc(c.colonyName)}.</p>
+
+<div class="iso-card">
+<div class="iso-meta" style="margin-top:0;">
+<div><strong>Original Colony:</strong> ${esc(c.colonyName)}</div>
+<div><strong>Type:</strong> ${esc(c.typeName)}</div>
+<div><strong>Current Population:</strong> ${currentPopulation}</div>
+</div>
+</div>
+
+<div class="iso-form-grid" style="margin-top:14px;">
+<div>
+<label>New Colony Name</label>
+<input id="splitNewColonyName" placeholder="Red Panda Bin 2">
+</div>
+<div>
+<label>Population To Move</label>
+<input id="splitPopulation" type="number" min="1" step="1" placeholder="50">
+</div>
+</div>
+
+<div class="iso-actions">
+<button class="iso-btn iso-btn-primary" id="confirmSplitColonyBtn">Create Split Colony</button>
+<button class="iso-btn" id="cancelSplitColonyBtn">Cancel</button>
+</div>
+`);
+
+$("#confirmSplitColonyBtn").onclick = () => splitColony(index);
+$("#cancelSplitColonyBtn").onclick = () => openColony(index);
+}
+
+async function splitColony(index) {
+const original = state.colonies[index];
+const newColonyName = ($("#splitNewColonyName")?.value || "").trim();
+const moveAmount = Math.max(0, parseInt(($("#splitPopulation")?.value || "0"), 10));
+const originalPopulation = Number(original.population) || 0;
+
+if (!newColonyName) {
+alert("New colony name is required.");
+return;
+}
+
+if (state.colonies.some(c => c.colonyName.toLowerCase() === newColonyName.toLowerCase())) {
+alert("That colony name is already in use. Please choose a different name.");
+return;
+}
+
+if (!Number.isInteger(moveAmount) || moveAmount <= 0) {
+alert("Population to move must be greater than 0.");
+return;
+}
+
+if (moveAmount > originalPopulation) {
+alert("Population to move cannot be more than the current colony population.");
+return;
+}
+
+const newColony = {
+colonyName: newColonyName,
+typeName: original.typeName,
+category: original.category,
+typeImageUri: original.typeImageUri || "",
+dateAdded: todayString(),
+population: moveAmount,
+lastMisting: original.lastMisting || "",
+lastBotanicalsCheck: original.lastBotanicalsCheck || "",
+lastSubstrateCheck: original.lastSubstrateCheck || "",
+lastSupplementalFeeding: original.lastSupplementalFeeding || "",
+lastHusbandry: original.lastHusbandry || "",
+customNote: original.customNote || ""
+};
+
+original.population = originalPopulation - moveAmount;
+
+state.colonies.push(newColony);
+refreshOrders();
+await saveState();
+renderColonies();
+alert("Colony split created.");
 }
 
 async function replaceColonyImage(index) {
@@ -1080,7 +1178,7 @@ const allSectionOptions = [...new Set([...state.priceSections, ...uniqueCategori
 
 let html = `
 <h2 class="iso-section-title">Price Sheet</h2>
-<p class="iso-subtext">Choose exactly which colony types and botanicals appear, organize them into sections, and drag items into the order you want.</p>
+<p class="iso-subtext">Choose exactly which colony types and botanicals appear, organize them into sections, and drag items into the exact order you want.</p>
 <p class="iso-info-note">Blank price automatically shows as Not Available.</p>
 
 <div class="iso-section-manager">
@@ -1472,7 +1570,7 @@ app(`
 <h3>1. Add Colonies</h3>
 <p>Use the Colonies tab to save each bin or project. Add a colony name, type name, category, population, care dates, and notes.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guideAddColony || "/assets/images/isotracker/guide-add-colony.jpeg"}" alt="Add colony screen">
+<img src="${guideImagePath("guideAddColony", "/assets/images/isotracker/guide-add-colony.jpeg")}" alt="Add colony screen">
 </div>
 </div>
 
@@ -1480,7 +1578,7 @@ app(`
 <h3>2. Work From the Colony List</h3>
 <p>The Colonies tab is also the care queue. Older updates stay on top. Search and filters help you quickly find exactly what you need.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guideColonyList || "/assets/images/isotracker/guide-colony-list.jpeg"}" alt="Colony list screen">
+<img src="${guideImagePath("guideColonyList", "/assets/images/isotracker/guide-colony-list.jpeg")}" alt="Colony list screen">
 </div>
 </div>
 
@@ -1488,7 +1586,7 @@ app(`
 <h3>3. Update Care Fast</h3>
 <p>Open a colony and use the quick buttons to mark misting, feeding, substrate checks, or botanical checks. The last updated date changes automatically.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guideUpdateCare || "/assets/images/isotracker/guide-update-care.jpeg"}" alt="Update care screen">
+<img src="${guideImagePath("guideUpdateCare", "/assets/images/isotracker/guide-update-care.jpg")}" alt="Update care screen">
 </div>
 </div>
 
@@ -1496,7 +1594,7 @@ app(`
 <h3>4. Track Botanicals</h3>
 <p>The Botanicals tab tracks stock and notes only. Pricing for botanicals is handled inside the Price Sheet tab.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guideBotanicals || "/assets/images/isotracker/guide-botanicals.jpeg"}" alt="Botanicals screen">
+<img src="${guideImagePath("guideBotanicals", "/assets/images/isotracker/guide-botanicals.jpeg")}" alt="Botanicals screen">
 </div>
 </div>
 
@@ -1504,7 +1602,7 @@ app(`
 <h3>5. Build the Price Sheet</h3>
 <p>Choose which colony types and botanicals to include. Assign sections, add count notes and prices, then drag items into the exact order you want.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guidePriceSheet || "/assets/images/isotracker/guide-price-sheet.jpeg"}" alt="Price sheet builder screen">
+<img src="${guideImagePath("guidePriceSheet", "/assets/images/isotracker/guide-price-sheet.jpeg")}" alt="Price sheet builder screen">
 </div>
 </div>
 
@@ -1512,7 +1610,7 @@ app(`
 <h3>6. Settings Tab</h3>
 <p>Use Settings for export backup, import backup, and clear all data so your main workflow stays uncluttered.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guideSettings || "/assets/images/isotracker/guide-settings.jpeg"}" alt="Settings screen">
+<img src="${guideImagePath("guideSettings", "/assets/images/isotracker/guide-settings.jpeg")}" alt="Settings screen">
 </div>
 </div>
 </div>
