@@ -1472,7 +1472,7 @@ app(`
 <h3>1. Add Colonies</h3>
 <p>Use the Colonies tab to save each bin or project. Add a colony name, type name, category, population, care dates, and notes.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guideAddColony || "/assets/images/isotracker/guide-add-colony.jpg"}" alt="Add colony screen">
+<img src="${CONFIG.guideAddColony || "/assets/images/isotracker/guide-add-colony.jpeg"}" alt="Add colony screen">
 </div>
 </div>
 
@@ -1480,7 +1480,7 @@ app(`
 <h3>2. Work From the Colony List</h3>
 <p>The Colonies tab is also the care queue. Older updates stay on top. Search and filters help you quickly find exactly what you need.</p>
 <div class="iso-guide-visual">
-<img src="${CONFIG.guideColonyList || "/assets/images/isotracker/guide-colony-list.jpg"}" alt="Colony list screen">
+<img src="${CONFIG.guideColonyList || "/assets/images/isotracker/guide-colony-list.jpeg"}" alt="Colony list screen">
 </div>
 </div>
 
