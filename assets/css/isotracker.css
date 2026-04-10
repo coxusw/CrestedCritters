@@ -14,7 +14,7 @@
 --iso-yellow: #efc24d;
 --iso-ok: #34c27a;
 --iso-shadow: 0 12px 28px rgba(0,0,0,.24);
-
+--iso-radius: 20px;
 color: var(--iso-text);
 margin: 18px auto 60px;
 }
@@ -129,8 +129,16 @@ box-shadow: var(--iso-shadow);
 }
 
 #isoAppShell .iso-section-title {
-margin: 0 0 8px;
+margin: 0;
 font-size: 24px;
+}
+
+#isoAppShell .iso-section-head {
+display: flex;
+align-items: center;
+gap: 8px;
+flex-wrap: wrap;
+margin-bottom: 8px;
 }
 
 #isoAppShell .iso-subtext {
@@ -140,10 +148,12 @@ font-size: 14px;
 }
 
 #isoAppShell .iso-toolbar,
-#isoAppShell .iso-actions {
+#isoAppShell .iso-actions,
+#isoAppShell .iso-inline {
 display: flex;
 gap: 10px;
 flex-wrap: wrap;
+align-items: center;
 }
 
 #isoAppShell .iso-toolbar {
@@ -186,6 +196,24 @@ background: linear-gradient(180deg, #be5555, #842d2d);
 background: rgba(255,255,255,.05);
 }
 
+#isoAppShell .iso-pill-btn {
+appearance: none;
+border: 1px solid var(--iso-line);
+background: rgba(255,255,255,.04);
+color: var(--iso-text);
+padding: 8px 12px;
+border-radius: 999px;
+cursor: pointer;
+font-size: 13px;
+font-weight: 800;
+}
+
+#isoAppShell .iso-pill-btn.active {
+background: rgba(214,187,123,.16);
+border-color: rgba(214,187,123,.30);
+color: #fff0c6;
+}
+
 #isoAppShell .iso-grid {
 display: grid;
 grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
@@ -194,7 +222,7 @@ gap: 14px;
 
 #isoAppShell .iso-card {
 border: 1px solid var(--iso-line);
-border-radius: 20px;
+border-radius: var(--iso-radius);
 padding: 14px;
 background:
 linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)),
@@ -290,6 +318,42 @@ color: #ffc0c0;
 border-color: rgba(215,90,90,.2);
 }
 
+#isoAppShell .iso-chip-row {
+display: flex;
+gap: 8px;
+flex-wrap: wrap;
+margin-top: 10px;
+}
+
+#isoAppShell .iso-chip {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+padding: 7px 10px;
+border-radius: 999px;
+background: rgba(255,255,255,.06);
+border: 1px solid var(--iso-line);
+font-size: 12px;
+font-weight: 800;
+}
+
+#isoAppShell .iso-chip input {
+width: auto;
+margin: 0;
+}
+
+#isoAppShell .iso-tag {
+display: inline-flex;
+align-items: center;
+border-radius: 999px;
+padding: 5px 10px;
+background: rgba(214,187,123,.14);
+color: #ffecc0;
+border: 1px solid rgba(214,187,123,.22);
+font-size: 12px;
+font-weight: 800;
+}
+
 #isoAppShell .iso-meta {
 display: grid;
 gap: 7px;
@@ -334,10 +398,11 @@ font-size: 15px;
 outline: none;
 }
 
-#isoAppShell input[type="checkbox"] {
+#isoAppShell input[type="checkbox"],
+#isoAppShell input[type="radio"] {
 width: auto;
-transform: scale(1.2);
-margin-right: 8px;
+transform: scale(1.05);
+margin-right: 6px;
 }
 
 #isoAppShell textarea {
@@ -351,6 +416,33 @@ grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 gap: 12px;
 }
 
+#isoAppShell .iso-kv-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+gap: 10px;
+}
+
+#isoAppShell .iso-stat {
+border: 1px solid var(--iso-line);
+border-radius: 16px;
+padding: 12px;
+background: rgba(255,255,255,.02);
+}
+
+#isoAppShell .iso-stat-label {
+color: var(--iso-muted);
+font-size: 12px;
+font-weight: 800;
+text-transform: uppercase;
+letter-spacing: .04em;
+}
+
+#isoAppShell .iso-stat-value {
+margin-top: 4px;
+font-size: 24px;
+font-weight: 900;
+}
+
 #isoAppShell .iso-empty {
 text-align: center;
 padding: 34px 18px;
@@ -358,6 +450,12 @@ border-radius: 20px;
 border: 1px dashed rgba(255,255,255,.14);
 color: var(--iso-muted);
 background: rgba(255,255,255,.02);
+}
+
+#isoAppShell .iso-divider {
+height: 1px;
+background: var(--iso-line);
+margin: 16px 0;
 }
 
 #isoAppShell .iso-split {
@@ -374,6 +472,11 @@ border: 1px solid rgba(214,187,123,.20);
 border-radius: 14px;
 padding: 10px 12px;
 margin: 0 0 14px;
+}
+
+#isoAppShell .iso-note {
+color: var(--iso-muted);
+font-size: 13px;
 }
 
 #isoAppShell .iso-section-manager {
@@ -443,47 +546,6 @@ margin-right: 10px;
 color: var(--iso-gold-2);
 }
 
-#isoAppShell .iso-guide-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-gap: 14px;
-}
-
-#isoAppShell .iso-guide-card {
-border: 1px solid var(--iso-line);
-border-radius: 20px;
-padding: 14px;
-background: rgba(255,255,255,.02);
-box-shadow: var(--iso-shadow);
-}
-
-#isoAppShell .iso-guide-card h3 {
-margin: 0 0 8px;
-font-size: 18px;
-}
-
-#isoAppShell .iso-guide-card p {
-margin: 0 0 10px;
-color: var(--iso-muted);
-font-size: 14px;
-line-height: 1.45;
-}
-
-#isoAppShell .iso-guide-visual {
-width: 100%;
-border-radius: 14px;
-overflow: hidden;
-border: 1px solid rgba(255,255,255,.08);
-background: #101814;
-margin-top: 10px;
-}
-
-#isoAppShell .iso-guide-visual img {
-display: block;
-width: 100%;
-height: auto;
-}
-
 #isoAppShell .iso-sheet-wrap {
 margin-top: 18px;
 padding: 20px;
@@ -522,7 +584,7 @@ box-shadow: 0 10px 22px rgba(0,0,0,.18);
 margin: 0;
 font-size: 42px;
 line-height: 1.05;
-font-weight: 800;
+font-weight: 900;
 }
 
 #isoAppShell .iso-sheet-sub {
@@ -608,26 +670,32 @@ opacity: .82;
 background: #f4f2ea;
 color: #213528;
 }
+
 #isoAppShell .iso-theme-botanical .iso-sheet-header {
 background:
 radial-gradient(circle at top left, rgba(214,187,123,.20), transparent 30%),
 linear-gradient(135deg, #edf2e7 0%, #dbe7d8 100%);
 border-bottom: 1px solid rgba(33,53,40,.10);
 }
+
 #isoAppShell .iso-theme-botanical .iso-sheet-banner {
 background: #295a3a;
 color: #fff7e4;
 }
+
 #isoAppShell .iso-theme-botanical .iso-sheet-section {
 background: #f9f7f0;
 }
+
 #isoAppShell .iso-theme-botanical .iso-sheet-section-title {
 background: #295a3a;
 color: #fff7e4;
 }
+
 #isoAppShell .iso-theme-botanical .iso-sheet-item {
 background: #eef3ea;
 }
+
 #isoAppShell .iso-theme-botanical .iso-sheet-item:nth-child(even) {
 background: #e4ede1;
 }
@@ -639,6 +707,7 @@ border: 4px solid #1d140a;
 border-radius: 0;
 position: relative;
 }
+
 #isoAppShell .iso-theme-parchment::before {
 content: "";
 position: absolute;
@@ -646,24 +715,29 @@ inset: 14px;
 border: 2px solid rgba(33,20,10,.75);
 pointer-events: none;
 }
+
 #isoAppShell .iso-theme-parchment .iso-sheet-header {
 background:
 radial-gradient(circle at center, rgba(255,255,255,.22), transparent 45%),
 linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.02));
 }
+
 #isoAppShell .iso-theme-parchment .iso-sheet-banner {
 background: #1d140a;
 color: #f6e7c7;
 }
+
 #isoAppShell .iso-theme-parchment .iso-sheet-section {
 background: rgba(255,255,255,.16);
 border: 1px solid rgba(31,22,10,.22);
 }
+
 #isoAppShell .iso-theme-parchment .iso-sheet-section-title {
 background: rgba(31,22,10,.08);
 color: #1d140a;
 text-decoration: underline;
 }
+
 #isoAppShell .iso-theme-parchment .iso-sheet-item {
 background: rgba(255,255,255,.12);
 }
@@ -672,29 +746,154 @@ background: rgba(255,255,255,.12);
 background: #101820;
 color: #f3efe6;
 }
+
 #isoAppShell .iso-theme-luxe .iso-sheet-header {
 background:
 radial-gradient(circle at top left, rgba(214,187,123,.22), transparent 28%),
 linear-gradient(135deg, #101820 0%, #1d2b35 100%);
 border-bottom: 1px solid rgba(255,255,255,.08);
 }
+
 #isoAppShell .iso-theme-luxe .iso-sheet-banner {
 background: linear-gradient(90deg, #c9a45c, #e7ca8c);
 color: #151006;
 }
+
 #isoAppShell .iso-theme-luxe .iso-sheet-section {
 background: #15222c;
 border-color: rgba(255,255,255,.08);
 }
+
 #isoAppShell .iso-theme-luxe .iso-sheet-section-title {
 background: linear-gradient(90deg, #233342, #18222d);
 color: #f8e9c6;
 }
+
 #isoAppShell .iso-theme-luxe .iso-sheet-item {
 background: #1a2b36;
 }
+
 #isoAppShell .iso-theme-luxe .iso-sheet-item:nth-child(even) {
 background: #203340;
+}
+
+#isoAppShell .iso-help-wrap {
+position: relative;
+display: inline-flex;
+align-items: center;
+}
+
+#isoAppShell .iso-help-btn {
+width: 20px;
+height: 20px;
+border-radius: 50%;
+border: 1px solid rgba(214,187,123,.35);
+background: rgba(214,187,123,.12);
+color: #fff2cb;
+font-size: 12px;
+font-weight: 900;
+cursor: pointer;
+display: inline-flex;
+align-items: center;
+justify-content: center;
+padding: 0;
+}
+
+#isoAppShell .iso-help-pop {
+position: absolute;
+top: calc(100% + 8px);
+left: 0;
+z-index: 30;
+min-width: 230px;
+max-width: 300px;
+background: #101714;
+border: 1px solid rgba(214,187,123,.25);
+color: #f7f3e7;
+border-radius: 14px;
+padding: 10px 12px;
+box-shadow: 0 16px 36px rgba(0,0,0,.32);
+font-size: 13px;
+line-height: 1.45;
+display: none;
+}
+
+#isoAppShell .iso-help-wrap.open .iso-help-pop {
+display: block;
+}
+
+#isoAppShell .iso-history-list {
+display: grid;
+gap: 10px;
+margin-top: 14px;
+}
+
+#isoAppShell .iso-history-item {
+border: 1px solid var(--iso-line);
+border-radius: 14px;
+padding: 10px 12px;
+background: rgba(255,255,255,.02);
+}
+
+#isoAppShell .iso-history-time {
+font-size: 12px;
+color: var(--iso-gold-2);
+margin-bottom: 4px;
+font-weight: 800;
+}
+
+#isoAppShell .iso-history-text {
+font-size: 13px;
+color: var(--iso-text);
+}
+
+#isoAppShell .iso-modal-overlay {
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,.55);
+display: none;
+align-items: center;
+justify-content: center;
+z-index: 9999;
+padding: 20px;
+}
+
+#isoAppShell .iso-modal-overlay.open {
+display: flex;
+}
+
+#isoAppShell .iso-modal {
+width: min(680px, 100%);
+max-height: 90vh;
+overflow: auto;
+background: #16241d;
+border: 1px solid rgba(255,255,255,.08);
+border-radius: 22px;
+box-shadow: 0 22px 60px rgba(0,0,0,.44);
+padding: 18px;
+}
+
+#isoAppShell .iso-modal-head {
+display: flex;
+justify-content: space-between;
+gap: 10px;
+align-items: center;
+margin-bottom: 10px;
+}
+
+#isoAppShell .iso-modal-title {
+margin: 0;
+font-size: 22px;
+}
+
+#isoAppShell .iso-close-btn {
+width: 36px;
+height: 36px;
+border-radius: 50%;
+border: 1px solid rgba(255,255,255,.10);
+background: rgba(255,255,255,.04);
+color: #fff;
+font-size: 18px;
+cursor: pointer;
 }
 
 @media (max-width: 1100px) {
@@ -703,31 +902,37 @@ grid-template-columns: repeat(3, 1fr);
 }
 }
 
-@media (max-width: 980px){
+@media (max-width: 980px) {
 #isoAppShell .iso-split {
 grid-template-columns: 1fr;
 }
+
 #isoAppShell .iso-sheet {
 width: 780px;
 }
+
 #isoAppShell .iso-sheet-body {
 grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 }
 }
 
-@media (max-width:700px){
+@media (max-width: 700px) {
 #isoAppShell .iso-tabs {
-grid-template-columns: repeat(2,1fr);
+grid-template-columns: repeat(2, 1fr);
 }
+
 #isoAppShell .iso-sheet-wrap {
 padding: 10px;
 }
+
 #isoAppShell .iso-sheet {
 width: 690px;
 }
+
 #isoAppShell .iso-sheet-title {
 font-size: 34px;
 }
+
 #isoAppShell .iso-colony-avatar {
 width: 36px;
 height: 36px;
