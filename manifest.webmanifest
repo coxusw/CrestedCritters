@@ -1,0 +1,24 @@
+{
+"name": "IsoTracker",
+"short_name": "IsoTracker",
+"description": "Colony tracking, sale prep, botanicals inventory, and price sheets.",
+"start_url": "/isotracker/",
+"scope": "/",
+"display": "standalone",
+"background_color": "#0f1713",
+"theme_color": "#17241d",
+"icons": [
+{
+"src": "/assets/images/logo.png",
+"sizes": "192x192",
+"type": "image/png",
+"purpose": "any maskable"
+},
+{
+"src": "/assets/images/logo.png",
+"sizes": "512x512",
+"type": "image/png",
+"purpose": "any maskable"
+}
+]
+}
