@@ -98,6 +98,30 @@ function $(selector) {
 return document.querySelector(selector);
 }
 
+// ===== INPUT STATE PRESERVER =====
+function saveInputState(input) {
+  return {
+    value: input.value,
+    selectionStart: input.selectionStart,
+    selectionEnd: input.selectionEnd
+  };
+}
+
+function restoreInputState(input, state) {
+  if (!input || !state) return;
+  input.value = state.value;
+  input.setSelectionRange(state.selectionStart, state.selectionEnd);
+}
+
+// ===== DEBOUNCE =====
+function debounce(fn, delay = 250) {
+  let timer;
+  return function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
 function $all(selector) {
 return Array.from(document.querySelectorAll(selector));
 }
@@ -799,10 +823,27 @@ const cat = $("#colonyCategoryFilter");
 const status = $("#colonyStatusFilter");
 const tag = $("#colonyTagFilter");
 
-if (search) search.addEventListener("input", () => {
-colonyFilters.search = search.value;
-renderColonies();
-});
+if (search) {
+  const debouncedSearch = debounce(() => {
+    const input = $("#colonySearch");
+
+    const state = saveInputState(input);
+
+    colonyFilters.search = state.value;
+
+    renderColonies();
+
+    // restore AFTER render
+    setTimeout(() => {
+      const newInput = $("#colonySearch");
+      restoreInputState(newInput, state);
+      newInput.focus();
+    }, 0);
+
+  }, 250);
+
+  search.addEventListener("input", debouncedSearch);
+}
 
 if (cat) cat.addEventListener("change", () => {
 colonyFilters.category = cat.value;
