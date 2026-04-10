@@ -3,57 +3,52 @@ layout: default
 title: IsoTracker
 ---
 
+<link rel="manifest" href="/manifest.webmanifest">
 <link rel="stylesheet" href="{{ '/assets/css/isotracker.css' | relative_url }}">
 
 <section id="isoAppShell" class="iso-shell">
-  <div class="iso-hero">
-    <div class="iso-hero-left">
-      <img
-        id="heroBrandLogo"
-        class="iso-header-logo"
-        src="{{ '/assets/images/logo.png' | relative_url }}"
-        alt="Crested Critters logo"
-      >
-      <div>
-        <h1>IsoTracker</h1>
-        <p>Colony tracking, botanicals inventory, and premium price sheets.</p>
-      </div>
-    </div>
+<div class="iso-hero">
+<div class="iso-hero-left">
+<img
+id="heroBrandLogo"
+class="iso-header-logo"
+src="{{ '/assets/images/logo.png' | relative_url }}"
+alt="Crested Critters logo"
+>
+<div>
+<h1>IsoTracker</h1>
+<p>Colony tracking, botanicals inventory, sale prep, and premium price sheets.</p>
+</div>
+</div>
 
-    <div class="iso-credit">
-      <img
-        id="heroCreditLogo"
-        src="{{ '/assets/images/logo.png' | relative_url }}"
-        alt="Crested Critters logo"
-      >
-      <span>Brought to you by Crested Critters</span>
-    </div>
-  </div>
+<div class="iso-credit">
+<img
+id="heroCreditLogo"
+src="{{ '/assets/images/logo.png' | relative_url }}"
+alt="Crested Critters logo"
+>
+<span>Brought to you by Crested Critters</span>
+</div>
+</div>
 
-  <div class="iso-tabs">
-    <button class="iso-tab active" data-tab="colonies">Colonies</button>
-    <button class="iso-tab" data-tab="population">Population</button>
-    <button class="iso-tab" data-tab="botanicals">Botanicals</button>
-    <button class="iso-tab" data-tab="price">Price Sheet</button>
-    <button class="iso-tab" data-tab="guide">Guide</button>
-    <button class="iso-tab" data-tab="settings">Settings</button>
-  </div>
+<div class="iso-tabs">
+<button class="iso-tab active" data-tab="colonies">Colonies</button>
+<button class="iso-tab" data-tab="population">Population</button>
+<button class="iso-tab" data-tab="botanicals">Botanicals</button>
+<button class="iso-tab" data-tab="prep">For Sale Prep</button>
+<button class="iso-tab" data-tab="price">Price Sheet</button>
+<button class="iso-tab" data-tab="settings">Settings</button>
+</div>
 
-  <section class="iso-panel">
-    <div id="isoApp"></div>
-  </section>
+<section class="iso-panel">
+<div id="isoApp"></div>
+</section>
 </section>
 
 <script>
-  window.ISO_TRACKER_CONFIG = {
-    defaultLogoUrl: "{{ '/assets/images/logo.png' | relative_url }}",
-    guideAddColony: "{{ '/assets/images/isotracker/guide-add-colony.jpeg' | relative_url }}",
-    guideColonyList: "{{ '/assets/images/isotracker/guide-colony-list.jpeg' | relative_url }}",
-    guideUpdateCare: "{{ '/assets/images/isotracker/guide-update-care.jpg' | relative_url }}",
-    guideBotanicals: "{{ '/assets/images/isotracker/guide-botanicals.jpeg' | relative_url }}",
-    guidePriceSheet: "{{ '/assets/images/isotracker/guide-price-sheet.jpeg' | relative_url }}",
-    guideSettings: "{{ '/assets/images/isotracker/guide-settings.jpeg' | relative_url }}"
-  };
+window.ISO_TRACKER_CONFIG = {
+defaultLogoUrl: "{{ '/assets/images/logo.png' | relative_url }}"
+};
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
