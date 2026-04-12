@@ -138,6 +138,15 @@
       dateAdded: source?.dateAdded || todayString()
     };
   }
+  
+  function normalizeMaterial(material) {
+  return {
+    id: material?.id || uid(),
+    name: material?.name || "",
+    qty: Math.max(0, parseInt(material?.qty || "0", 10)),
+    lowStockAt: Math.max(0, parseInt(material?.lowStockAt || "0", 10))
+  };
+}
 
   function normalizeColony(colony) {
     return {
