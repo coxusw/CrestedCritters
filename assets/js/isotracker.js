@@ -13,7 +13,11 @@
     colonies: [],
     botanicals: [],
     salePrep: {
-  packaged: []
+  packaged: [],
+  materials: [],
+  search: "",
+  category: "all",
+  type: "all"
 },
     settings: {
   appLogoUri: "",
