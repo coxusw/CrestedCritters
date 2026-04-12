@@ -267,27 +267,35 @@ containerSupplyId: item?.containerSupplyId || ""
 }
 
 function ensureColonyShape(colony) {
-return {
-colonyName: colony?.colonyName || "",
-typeName: colony?.typeName || "",
-category: colony?.category || "Isopods",
-typeImageUri: colony?.typeImageUri || "",
-dateAdded: colony?.dateAdded || todayString(),
-population: Math.max(0, toInt(colony?.population, 0)),
-lastMisting: colony?.lastMisting || "",
-lastBotanicalsCheck: colony?.lastBotanicalsCheck || "",
-lastSubstrateCheck: colony?.lastSubstrateCheck || "",
-lastSupplementalFeeding: colony?.lastSupplementalFeeding || "",
-lastHusbandry: colony?.lastHusbandry || "",
-customNote: colony?.customNote || "",
-tags: Array.isArray(colony?.tags) ? colony.tags : [],
-history: Array.isArray(colony?.history) ? colony.history : [],
-inventoryMode: colony?.inventoryMode === "unit" ? "unit" : "count",
-saleUnitLabel: colony?.saleUnitLabel || "10 count",
-saleUnitSize: Math.max(1, toInt(colony?.saleUnitSize, 10)),
-prepEnabled: typeof colony?.prepEnabled === "boolean" ? colony.prepEnabled : false,
-containerSupplyId: colony?.containerSupplyId || ""
-};
+  return {
+    colonyName: colony?.colonyName || "",
+    typeName: colony?.typeName || "",
+    category: colony?.category || "Isopods",
+    typeImageUri: colony?.typeImageUri || "",
+    dateAdded: colony?.dateAdded || todayString(),
+    population: Math.max(0, toInt(colony?.population, 0)),
+    lastMisting: colony?.lastMisting || "",
+    lastBotanicalsCheck: colony?.lastBotanicalsCheck || "",
+    lastSubstrateCheck: colony?.lastSubstrateCheck || "",
+    lastSupplementalFeeding: colony?.lastSupplementalFeeding || "",
+    lastHusbandry: colony?.lastHusbandry || "",
+    customNote: colony?.customNote || "",
+    tags: Array.isArray(colony?.tags) ? colony.tags : [],
+    history: Array.isArray(colony?.history) ? colony.history : [],
+    inventoryMode: colony?.inventoryMode === "unit" ? "unit" : "count",
+    saleUnitLabel: colony?.saleUnitLabel || "10 count",
+    saleUnitSize: Math.max(1, toInt(colony?.saleUnitSize, 10)),
+    prepEnabled: typeof colony?.prepEnabled === "boolean" ? colony.prepEnabled : false,
+    containerSupplyId: colony?.containerSupplyId || "",
+    sources: Array.isArray(colony?.sources)
+      ? colony.sources.map(source => ({
+          id: source?.id || uid(),
+          name: source?.name || "",
+          quantity: source?.quantity || "",
+          dateAdded: source?.dateAdded || todayString()
+        }))
+      : []
+  };
 }
 
 function getPreset(name) {
@@ -709,7 +717,11 @@ if (aRank !== bRank) return bRank - aRank;
 return daysSince(b.lastHusbandry) - daysSince(a.lastHusbandry);
 })
 .filter(c => {
-const hay = `${c.colonyName || ""} ${c.typeName || ""}`.toLowerCase();
+const sourceText = (c.sources || [])
+  .map(s => `${s.name || ""} ${s.quantity || ""}`)
+  .join(" ");
+
+const hay = `${c.colonyName || ""} ${c.typeName || ""} ${sourceText}`.toLowerCase();
 if (search && !hay.includes(search)) return false;
 if (category !== "all" && (c.category || "") !== category) return false;
 if (status !== "all" && getOverallColonyStatus(c) !== status) return false;
