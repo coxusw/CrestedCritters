@@ -2226,97 +2226,151 @@ updateLastHusbandry(c);
 
 function renderSalePrep() {
   const prepSearch = (state.salePrep.search || "").trim().toLowerCase();
-const prepCategory = state.salePrep.category || "all";
-const prepType = state.salePrep.type || "all";
+  const prepCategory = state.salePrep.category || "all";
+  const prepType = state.salePrep.type || "all";
 
-const eligibleColonies = state.colonies
-  .filter(colony => colony.readyForSale === true)
-  .filter(colony => {
-    const hay = `${colony.colonyName || ""} ${colony.typeName || ""}`.toLowerCase();
+  const prepCategories = uniqueCategories();
+  const prepTypes = uniqueTypes();
 
-    if (prepSearch && !hay.includes(prepSearch)) return false;
-    if (prepCategory !== "all" && (colony.category || "") !== prepCategory) return false;
-    if (prepType !== "all" && (colony.typeName || "") !== prepType) return false;
+  const eligibleColonies = state.colonies
+    .map((colony, originalIndex) => ({ colony, originalIndex }))
+    .filter(row => row.colony.readyForSale === true)
+    .filter(row => {
+      const colony = row.colony;
+      const hay = `${colony.colonyName || ""} ${colony.typeName || ""}`.toLowerCase();
 
-    return true;
-  })
-  .slice()
-  .sort((a, b) => a.colonyName.localeCompare(b.colonyName));
+      if (prepSearch && !hay.includes(prepSearch)) return false;
+      if (prepCategory !== "all" && (colony.category || "") !== prepCategory) return false;
+      if (prepType !== "all" && (colony.typeName || "") !== prepType) return false;
+      return true;
+    })
+    .sort((a, b) => a.colony.colonyName.localeCompare(b.colony.colonyName));
+
+  const packaged = state.salePrep.packaged || [];
+  const materials = state.salePrep.materials || [];
 
   let html = `
     <h2 class="iso-section-title">For Sale Prep</h2>
     <p class="iso-subtext">Prep inventory by subtracting from colony counts and moving it into packaged stock.</p>
+
+    <div class="iso-form-grid" style="margin-bottom:14px;">
+      <div>
+        <label>Search</label>
+        <input id="prepSearch" placeholder="Search colony or type" value="${esc(state.salePrep.search || "")}">
+      </div>
+      <div>
+        <label>Category</label>
+        <select id="prepCategoryFilter">
+          <option value="all"${prepCategory === "all" ? " selected" : ""}>All Categories</option>
+          ${prepCategories.map(cat => `<option value="${esc(cat)}"${prepCategory === cat ? " selected" : ""}>${esc(cat)}</option>`).join("")}
+        </select>
+      </div>
+      <div>
+        <label>Type</label>
+        <select id="prepTypeFilter">
+          <option value="all"${prepType === "all" ? " selected" : ""}>All Types</option>
+          ${prepTypes.map(type => `<option value="${esc(type)}"${prepType === type ? " selected" : ""}>${esc(type)}</option>`).join("")}
+        </select>
+      </div>
+    </div>
   `;
-  
-  const prepCategories = uniqueCategories();
-const prepTypes = uniqueTypes();
 
-html += `
-  <div class="iso-form-grid" style="margin-bottom:14px;">
-    <div>
-      <label>Search</label>
-      <input id="prepSearch" placeholder="Search colony or type" value="${esc(state.salePrep.search || "")}">
+  html += `
+    <div class="iso-divider"></div>
+    <h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaging Materials</h3>
+    <div class="iso-actions" style="margin-bottom:12px;">
+      <button class="iso-btn iso-btn-primary" id="addMaterialBtn">+ Add Packaging Material</button>
     </div>
-    <div>
-      <label>Category</label>
-      <select id="prepCategoryFilter">
-        <option value="all"${(state.salePrep.category || "all") === "all" ? " selected" : ""}>All Categories</option>
-        ${prepCategories.map(cat => `<option value="${esc(cat)}"${state.salePrep.category === cat ? " selected" : ""}>${esc(cat)}</option>`).join("")}
-      </select>
-    </div>
-    <div>
-      <label>Type</label>
-      <select id="prepTypeFilter">
-        <option value="all"${(state.salePrep.type || "all") === "all" ? " selected" : ""}>All Types</option>
-        ${prepTypes.map(type => `<option value="${esc(type)}"${state.salePrep.type === type ? " selected" : ""}>${esc(type)}</option>`).join("")}
-      </select>
-    </div>
-  </div>
-`;
+  `;
 
-  if (!eligibleColonies.length) {
-    html += `<div class="iso-empty">No colonies available for sale prep yet.</div>`;
-    app(html);
-    return;
+  if (!materials.length) {
+    html += `<div class="iso-empty" style="margin-bottom:18px;">No packaging materials added yet.</div>`;
+  } else {
+    html += `<div class="iso-grid" style="margin-bottom:18px;">`;
+    materials.forEach(mat => {
+      const low = mat.lowStockAt > 0 && mat.qty <= mat.lowStockAt;
+      html += `
+        <div class="iso-card ${low ? "iso-status-red" : ""}">
+          <div class="iso-card-head">
+            <div>
+              <h3 class="iso-card-title">${esc(mat.name)}</h3>
+              <div class="iso-muted">Packaging Material</div>
+            </div>
+            <span class="iso-badge ${low ? "iso-badge-red" : ""}">${mat.qty}</span>
+          </div>
+          <div class="iso-meta">
+            <div><strong>Low Stock At:</strong> ${mat.lowStockAt}</div>
+          </div>
+          <div class="iso-actions">
+            <button class="iso-btn" data-edit-material="${mat.id}">Edit</button>
+            <button class="iso-btn iso-btn-danger" data-delete-material="${mat.id}">Delete</button>
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
   }
 
-  html += `<div class="iso-grid">`;
+  html += `
+    <div class="iso-divider"></div>
+    <h3 class="iso-card-title" style="margin:0 0 10px 0;">Ready For Sale Colonies</h3>
+  `;
 
-  eligibleColonies.forEach((colony, index) => {
-    html += `
-      <div class="iso-card">
-        <div class="iso-card-head">
-          <div>
-            <h3 class="iso-card-title">${esc(colony.colonyName)}</h3>
-            <div class="iso-muted">${esc(colony.typeName)}</div>
+  if (!eligibleColonies.length) {
+    html += `<div class="iso-empty">No ready-for-sale colonies match your filters.</div>`;
+  } else {
+    html += `<div class="iso-grid">`;
+
+    eligibleColonies.forEach(row => {
+      const colony = row.colony;
+      const originalIndex = row.originalIndex;
+
+      html += `
+        <div class="iso-card">
+          <div class="iso-card-head">
+            <div>
+              <h3 class="iso-card-title">${esc(colony.colonyName)}</h3>
+              <div class="iso-muted">${esc(colony.typeName)}</div>
+            </div>
+          </div>
+
+          <div class="iso-meta">
+            <div><strong>Available Population:</strong> ${Number(colony.population) || 0}</div>
+            <div><strong>Category:</strong> ${esc(colony.category || "-")}</div>
+          </div>
+
+          <div class="iso-form-grid" style="margin-top:12px;">
+            <div>
+              <label>Pack Count</label>
+              <input id="prepCount_${originalIndex}" type="number" min="1" step="1" value="10">
+            </div>
+            <div>
+              <label>How Many Packs</label>
+              <input id="prepPacks_${originalIndex}" type="number" min="1" step="1" value="1">
+            </div>
+            <div>
+              <label>Packaging Material</label>
+              <select id="prepMaterial_${originalIndex}">
+                <option value="">None</option>
+                ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
+              </select>
+            </div>
+            <div>
+              <label>Material Qty Used</label>
+              <input id="prepMaterialQty_${originalIndex}" type="number" min="1" step="1" value="1">
+            </div>
+          </div>
+
+          <div class="iso-actions">
+            <button class="iso-btn iso-btn-primary" data-prep-index="${originalIndex}">Prep For Sale</button>
           </div>
         </div>
+      `;
+    });
 
-        <div class="iso-meta">
-          <div><strong>Available Population:</strong> ${Number(colony.population) || 0}</div>
-        </div>
+    html += `</div>`;
+  }
 
-        <div class="iso-form-grid" style="margin-top:12px;">
-          <div>
-            <label>Pack Count</label>
-            <input id="prepCount_${index}" type="number" min="1" step="1" placeholder="10">
-          </div>
-          <div>
-            <label>How Many Packs</label>
-            <input id="prepPacks_${index}" type="number" min="1" step="1" value="1">
-          </div>
-        </div>
-
-        <div class="iso-actions">
-          <button class="iso-btn iso-btn-primary" data-prep-index="${index}">Prep For Sale</button>
-        </div>
-      </div>
-    `;
-  });
-
-  html += `</div>`;
-
-  const packaged = state.salePrep.packaged || [];
   html += `
     <div class="iso-divider"></div>
     <h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaged Inventory</h3>
@@ -2332,6 +2386,7 @@ html += `
           <div class="iso-history-time">${esc(item.datePacked || "-")}</div>
           <div class="iso-history-text">
             <strong>${esc(item.colonyName)}</strong> — ${esc(item.typeName)} — ${item.packs} pack(s) of ${item.packCount}
+            ${item.materialName ? `<br><span class="iso-muted">Material: ${esc(item.materialName)} x ${item.materialQtyUsed}</span>` : ""}
           </div>
           <div class="iso-actions" style="margin-top:8px;">
             <button class="iso-btn iso-btn-danger" data-delete-packaged="${i}">Delete Packaged Entry</button>
@@ -2345,37 +2400,48 @@ html += `
   app(html);
 
   const prepSearchInput = $("#prepSearch");
-const prepCategoryFilter = $("#prepCategoryFilter");
-const prepTypeFilter = $("#prepTypeFilter");
+  const prepCategoryFilter = $("#prepCategoryFilter");
+  const prepTypeFilter = $("#prepTypeFilter");
 
-if (prepSearchInput) {
-  prepSearchInput.addEventListener("input", debounce(() => {
-    state.salePrep.search = prepSearchInput.value || "";
-    renderSalePrep();
-  }, 250));
-}
+  if (prepSearchInput) {
+    prepSearchInput.addEventListener("input", debounce(() => {
+      state.salePrep.search = prepSearchInput.value || "";
+      renderSalePrep();
+    }, 250));
+  }
 
-if (prepCategoryFilter) {
-  prepCategoryFilter.addEventListener("change", () => {
-    state.salePrep.category = prepCategoryFilter.value;
-    renderSalePrep();
+  if (prepCategoryFilter) {
+    prepCategoryFilter.addEventListener("change", () => {
+      state.salePrep.category = prepCategoryFilter.value;
+      renderSalePrep();
+    });
+  }
+
+  if (prepTypeFilter) {
+    prepTypeFilter.addEventListener("change", () => {
+      state.salePrep.type = prepTypeFilter.value;
+      renderSalePrep();
+    });
+  }
+
+  const addMaterialBtn = $("#addMaterialBtn");
+  if (addMaterialBtn) addMaterialBtn.onclick = () => openMaterialModal();
+
+  $all("[data-edit-material]").forEach(btn => {
+    btn.onclick = () => openMaterialModal(btn.dataset.editMaterial);
   });
-}
 
-if (prepTypeFilter) {
-  prepTypeFilter.addEventListener("change", () => {
-    state.salePrep.type = prepTypeFilter.value;
-    renderSalePrep();
+  $all("[data-delete-material]").forEach(btn => {
+    btn.onclick = () => deleteMaterial(btn.dataset.deleteMaterial);
   });
-}
 
-$all("[data-prep-index]").forEach(btn => {
-  btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
-});
+  $all("[data-prep-index]").forEach(btn => {
+    btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
+  });
 
-$all("[data-delete-packaged]").forEach(btn => {
-  btn.onclick = () => deletePackagedEntry(Number(btn.dataset.deletePackaged));
-});
+  $all("[data-delete-packaged]").forEach(btn => {
+    btn.onclick = () => deletePackagedEntry(Number(btn.dataset.deletePackaged));
+  });
 }
 
 async function prepColonyForSale(index) {
