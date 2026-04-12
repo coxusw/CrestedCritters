@@ -1094,13 +1094,19 @@ ${colony.history.slice(0, 40).map(item => `
 }
 
 function renderSourcesList(colony, colonyIndex) {
-  if (!colony.sources || !colony.sources.length) {
+  const sortedSources = (colony.sources || []).slice().sort((a, b) => {
+    const aDate = parseDateString(a.dateAdded || "") || new Date(0);
+    const bDate = parseDateString(b.dateAdded || "") || new Date(0);
+    return aDate - bDate;
+  });
+
+  if (!sortedSources.length) {
     return `<div class="iso-empty" style="padding:14px 12px;">No sources added yet.</div>`;
   }
 
   return `
     <div class="iso-history-list">
-      ${(colony.sources || []).map(source => `
+      ${sortedSources.map(source => `
         <div class="iso-history-item">
           <div class="iso-history-time">${esc(source.dateAdded || "-")}</div>
           <div class="iso-history-text">
