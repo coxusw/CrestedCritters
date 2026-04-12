@@ -192,7 +192,9 @@ sources: Array.isArray(colony?.sources) ? colony.sources.map(normalizeSource) : 
 state.botanicals = Array.isArray(state.botanicals) ? state.botanicals : [];
 state.salePrep = state.salePrep || { packaged: [], materials: [], search: "", category: "all", type: "all" };
 state.salePrep.packaged = Array.isArray(state.salePrep.packaged) ? state.salePrep.packaged : [];
-state.salePrep.materials = Array.isArray(state.salePrep.materials) ? state.salePrep.materials : [];
+state.salePrep.materials = Array.isArray(state.salePrep.materials)
+  ? state.salePrep.materials.map(normalizeMaterial)
+  : [];
 state.salePrep.search = state.salePrep.search || "";
 state.salePrep.category = state.salePrep.category || "all";
 state.salePrep.type = state.salePrep.type || "all";
@@ -642,12 +644,6 @@ if (tab === "settings") renderSettings();
       state.salePrep = state.salePrep || { packaged: [], materials: [], search: "", category: "all", type: "all" };
 state.salePrep.packaged = Array.isArray(state.salePrep.packaged) ? state.salePrep.packaged : [];
 state.salePrep.materials = Array.isArray(state.salePrep.materials) ? state.salePrep.materials.map(normalizeMaterial) : [];
-state.salePrep.search = state.salePrep.search || "";
-state.salePrep.category = state.salePrep.category || "all";
-state.salePrep.type = state.salePrep.type || "all";
-state.settings.typeThresholds = state.settings.typeThresholds || {};
-      state.salePrep = state.salePrep || { packaged: [] };
-state.salePrep.packaged = Array.isArray(state.salePrep.packaged) ? state.salePrep.packaged : [];
 state.salePrep.search = state.salePrep.search || "";
 state.salePrep.category = state.salePrep.category || "all";
 state.salePrep.type = state.salePrep.type || "all";
