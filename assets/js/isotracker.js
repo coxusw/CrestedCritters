@@ -1341,6 +1341,16 @@ sources
           <input id="editFeeding" value="${c.lastSupplementalFeeding || ""}" placeholder="mm/dd/yyyy">
         </div>
       </div>
+      
+      <div class="iso-form-grid">
+  <div>
+    <label>Sale Status</label>
+    <select id="editReadyForSale">
+      <option value="no" ${!c.readyForSale ? "selected" : ""}>Not Ready For Sale</option>
+      <option value="yes" ${c.readyForSale ? "selected" : ""}>Ready For Sale</option>
+    </select>
+  </div>
+</div>
 
       <label>Replace Type Picture</label>
       <input id="replaceTypeImage" type="file" accept="image/*">
