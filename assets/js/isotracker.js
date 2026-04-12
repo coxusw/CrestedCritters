@@ -719,86 +719,106 @@
   }
 
   function showAddColonyForm() {
-    const knownCats = ["Isopods", "Springtails", "Botanicals", ...uniqueCategories()]
-      .filter((v, i, a) => v && a.indexOf(v) === i);
+  const knownCats = ["Isopods", "Springtails", "Botanicals", ...uniqueCategories()]
+    .filter((v, i, a) => v && a.indexOf(v) === i);
 
-    app(`
-      <h2 class="iso-section-title">Add Colony</h2>
-      <p class="iso-subtext">Colony names must be unique. Type names can repeat.</p>
+  app(`
+    <h2 class="iso-section-title">Add Colony</h2>
+    <p class="iso-subtext">Colony names must be unique. Type names can repeat.</p>
 
-      <div class="iso-form-grid">
-        <div>
-          <label>Colony Name</label>
-          <input id="colonyName" placeholder="Red Panda Bin 1">
-        </div>
-        <div>
-          <label>Type Name</label>
-          <input id="typeName" placeholder="Red Panda">
-        </div>
-        <div>
-          <label>Date Added</label>
-          <input id="dateAdded" value="${todayString()}" placeholder="mm/dd/yyyy">
-        </div>
-        <div>
-          <label>Population</label>
-          <input id="population" type="number" min="0" step="1" placeholder="0">
-        </div>
+    <div class="iso-form-grid">
+      <div>
+        <label>Colony Name</label>
+        <input id="colonyName" placeholder="Red Panda Bin 1">
       </div>
-
-      <div class="iso-form-grid">
-        <div>
-          <label>Category</label>
-          <select id="categorySelect">
-            ${knownCats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("")}
-            <option value="__custom__">Custom</option>
-          </select>
-        </div>
-        <div id="customCategoryWrap" style="display:none;">
-          <label>Custom Category</label>
-          <input id="customCategory" placeholder="Example: Millipedes">
-        </div>
+      <div>
+        <label>Type Name</label>
+        <input id="typeName" placeholder="Red Panda">
       </div>
-
-      <div class="iso-form-grid">
-        <div>
-          <label>Last Misting</label>
-          <input id="lastMisting" placeholder="mm/dd/yyyy">
-        </div>
-        <div>
-          <label>Last Botanicals Check</label>
-          <input id="lastBotanicalsCheck" placeholder="mm/dd/yyyy">
-        </div>
-        <div>
-          <label>Last Substrate Check</label>
-          <input id="lastSubstrateCheck" placeholder="mm/dd/yyyy">
-        </div>
-        <div>
-          <label>Last Supplemental Feeding</label>
-          <input id="lastSupplementalFeeding" placeholder="mm/dd/yyyy">
-        </div>
+      <div>
+        <label>Date Added</label>
+        <input id="dateAdded" value="${todayString()}" placeholder="mm/dd/yyyy">
       </div>
-
-      <label>Type Picture</label>
-      <input id="typeImage" type="file" accept="image/*">
-
-      <label>Custom Note</label>
-      <textarea id="customNote" placeholder="Any notes for this colony..."></textarea>
-
-      <div class="iso-actions">
-        <button class="iso-btn iso-btn-primary" id="saveNewColonyBtn">Save Colony</button>
-        <button class="iso-btn" id="cancelAddColonyBtn">Cancel</button>
+      <div>
+        <label>Population</label>
+        <input id="population" type="number" min="0" step="1" placeholder="0">
       </div>
-    `);
+    </div>
 
-    const categorySelect = $("#categorySelect");
-    const customWrap = $("#customCategoryWrap");
-    categorySelect.addEventListener("change", () => {
-      customWrap.style.display = categorySelect.value === "__custom__" ? "block" : "none";
-    });
+    <div class="iso-form-grid">
+      <div>
+        <label>Category</label>
+        <select id="categorySelect">
+          ${knownCats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("")}
+          <option value="__custom__">Custom</option>
+        </select>
+      </div>
+      <div id="customCategoryWrap" style="display:none;">
+        <label>Custom Category</label>
+        <input id="customCategory" placeholder="Example: Millipedes">
+      </div>
+    </div>
 
-    $("#saveNewColonyBtn").onclick = saveNewColony;
-    $("#cancelAddColonyBtn").onclick = renderColonies;
-  }
+    <div class="iso-form-grid">
+      <div>
+        <label>Last Misting</label>
+        <input id="lastMisting" placeholder="mm/dd/yyyy">
+      </div>
+      <div>
+        <label>Last Botanicals Check</label>
+        <input id="lastBotanicalsCheck" placeholder="mm/dd/yyyy">
+      </div>
+      <div>
+        <label>Last Substrate Check</label>
+        <input id="lastSubstrateCheck" placeholder="mm/dd/yyyy">
+      </div>
+      <div>
+        <label>Last Supplemental Feeding</label>
+        <input id="lastSupplementalFeeding" placeholder="mm/dd/yyyy">
+      </div>
+    </div>
+
+    <div class="iso-divider"></div>
+
+    <h3 class="iso-card-title" style="margin:0 0 10px 0;">Initial Source</h3>
+    <p class="iso-subtext" style="margin-top:0;">Optional now, and you can still add boosters later inside the colony.</p>
+
+    <div class="iso-form-grid">
+      <div>
+        <label>Source Name</label>
+        <input id="initialSourceName" placeholder="SnJ Terrariums">
+      </div>
+      <div>
+        <label>Quantity</label>
+        <input id="initialSourceQuantity" placeholder="200 count">
+      </div>
+      <div>
+        <label>Date Added</label>
+        <input id="initialSourceDate" value="${todayString()}" placeholder="mm/dd/yyyy">
+      </div>
+    </div>
+
+    <label>Type Picture</label>
+    <input id="typeImage" type="file" accept="image/*">
+
+    <label>Custom Note</label>
+    <textarea id="customNote" placeholder="Any notes for this colony..."></textarea>
+
+    <div class="iso-actions">
+      <button class="iso-btn iso-btn-primary" id="saveNewColonyBtn">Save Colony</button>
+      <button class="iso-btn" id="cancelAddColonyBtn">Cancel</button>
+    </div>
+  `);
+
+  const categorySelect = $("#categorySelect");
+  const customWrap = $("#customCategoryWrap");
+  categorySelect.addEventListener("change", () => {
+    customWrap.style.display = categorySelect.value === "__custom__" ? "block" : "none";
+  });
+
+  $("#saveNewColonyBtn").onclick = saveNewColony;
+  $("#cancelAddColonyBtn").onclick = renderColonies;
+}
 
   function getChosenCategory(prefix = "") {
     const select = document.getElementById(prefix + "categorySelect");
@@ -810,51 +830,74 @@
   }
 
   async function saveNewColony() {
-    const colonyName = $("#colonyName").value.trim();
-    const typeName = $("#typeName").value.trim();
-    const category = getChosenCategory("");
+  const colonyName = $("#colonyName").value.trim();
+  const typeName = $("#typeName").value.trim();
+  const category = getChosenCategory("");
 
-    if (!colonyName) return alert("Colony name is required.");
-    if (!typeName) return alert("Type name is required.");
-    if (!category) return alert("Category is required.");
-    if (state.colonies.some(c => c.colonyName.toLowerCase() === colonyName.toLowerCase())) {
-      return alert("Colony name already in use. Please choose a different colony name.");
-    }
+  if (!colonyName) return alert("Colony name is required.");
+  if (!typeName) return alert("Type name is required.");
+  if (!category) return alert("Category is required.");
 
-    const colony = normalizeColony({
-      colonyName,
-      typeName,
-      category,
-      typeImageUri: "",
-      dateAdded: $("#dateAdded").value.trim() || todayString(),
-      population: Math.max(0, parseInt($("#population").value || "0", 10)),
-      lastMisting: $("#lastMisting").value.trim(),
-      lastBotanicalsCheck: $("#lastBotanicalsCheck").value.trim(),
-      lastSubstrateCheck: $("#lastSubstrateCheck").value.trim(),
-      lastSupplementalFeeding: $("#lastSupplementalFeeding").value.trim(),
-      lastHusbandry: "",
-      customNote: $("#customNote").value.trim(),
-      sources: []
-    });
-
-    updateLastHusbandry(colony);
-    addHistory(colony, "Created colony", `Created colony ${colonyName}.`);
-
-    const file = $("#typeImage").files[0];
-    if (file) {
-      colony.typeImageUri = await compressImageFile(file, {
-        maxWidth: 800,
-        maxHeight: 800,
-        quality: 0.72
-      });
-      addHistory(colony, "Added image", "Added colony image.");
-    }
-
-    state.colonies.push(colony);
-    refreshOrders();
-    await saveState();
-    renderColonies();
+  if (state.colonies.some(c => c.colonyName.toLowerCase() === colonyName.toLowerCase())) {
+    return alert("Colony name already in use. Please choose a different colony name.");
   }
+
+  const initialSourceName = ($("#initialSourceName")?.value || "").trim();
+  const initialSourceQuantity = ($("#initialSourceQuantity")?.value || "").trim();
+  const initialSourceDate = ($("#initialSourceDate")?.value || "").trim() || todayString();
+
+  const sources = [];
+  if (initialSourceName) {
+    sources.push({
+      id: uid(),
+      name: initialSourceName,
+      quantity: initialSourceQuantity,
+      dateAdded: initialSourceDate
+    });
+  }
+
+  const colony = normalizeColony({
+    colonyName,
+    typeName,
+    category,
+    typeImageUri: "",
+    dateAdded: $("#dateAdded").value.trim() || todayString(),
+    population: Math.max(0, parseInt($("#population").value || "0", 10)),
+    lastMisting: $("#lastMisting").value.trim(),
+    lastBotanicalsCheck: $("#lastBotanicalsCheck").value.trim(),
+    lastSubstrateCheck: $("#lastSubstrateCheck").value.trim(),
+    lastSupplementalFeeding: $("#lastSupplementalFeeding").value.trim(),
+    lastHusbandry: "",
+    customNote: $("#customNote").value.trim(),
+    sources
+  });
+
+  updateLastHusbandry(colony);
+  addHistory(colony, "Created colony", `Created colony ${colonyName}.`);
+
+  if (initialSourceName) {
+    addHistory(
+      colony,
+      "Added source",
+      `${initialSourceName}${initialSourceQuantity ? `, ${initialSourceQuantity}` : ""}${initialSourceDate ? `, ${initialSourceDate}` : ""}.`
+    );
+  }
+
+  const file = $("#typeImage").files[0];
+  if (file) {
+    colony.typeImageUri = await compressImageFile(file, {
+      maxWidth: 800,
+      maxHeight: 800,
+      quality: 0.72
+    });
+    addHistory(colony, "Added image", "Added colony image.");
+  }
+
+  state.colonies.push(colony);
+  refreshOrders();
+  await saveState();
+  renderColonies();
+}
 
   function renderSourcesList(colony, colonyIndex) {
     const sortedSources = (colony.sources || []).slice().sort((a, b) => {
