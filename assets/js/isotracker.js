@@ -1478,8 +1478,9 @@ sources
     c.lastBotanicalsCheck = $("#editBotanicals").value.trim();
     c.lastSubstrateCheck = $("#editSubstrate").value.trim();
     c.lastSupplementalFeeding = $("#editFeeding").value.trim();
-    c.customNote = newNote;
-    updateLastHusbandry(c);
+c.customNote = newNote;
+c.readyForSale = ($("#editReadyForSale")?.value || "no") === "yes";
+updateLastHusbandry(c);
 
     if (oldNote !== newNote) {
       if (!oldNote && newNote) {
