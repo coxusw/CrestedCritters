@@ -986,8 +986,9 @@ const days = daysSince(c.lastHusbandry);
     lastSubstrateCheck: $("#lastSubstrateCheck").value.trim(),
     lastSupplementalFeeding: $("#lastSupplementalFeeding").value.trim(),
     lastHusbandry: "",
-    customNote: $("#customNote").value.trim(),
-    sources
+customNote: $("#customNote").value.trim(),
+readyForSale: ($("#readyForSale")?.value || "no") === "yes",
+sources
   });
 
   updateLastHusbandry(colony);
