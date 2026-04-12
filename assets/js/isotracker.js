@@ -1093,6 +1093,139 @@ ${colony.history.slice(0, 40).map(item => `
 `;
 }
 
+function renderSourcesList(colony, colonyIndex) {
+  if (!colony.sources || !colony.sources.length) {
+    return `<div class="iso-empty" style="padding:14px 12px;">No sources added yet.</div>`;
+  }
+
+  return `
+    <div class="iso-history-list">
+      ${(colony.sources || []).map(source => `
+        <div class="iso-history-item">
+          <div class="iso-history-time">${esc(source.dateAdded || "-")}</div>
+          <div class="iso-history-text">
+            <strong>${esc(source.name || "-")}</strong>${source.quantity ? ` — ${esc(source.quantity)}` : ""}
+          </div>
+          <div class="iso-actions" style="margin-top:8px;">
+            <button class="iso-btn" data-edit-source="${esc(source.id)}" data-colony-index="${colonyIndex}">Edit</button>
+            <button class="iso-btn iso-btn-danger" data-delete-source="${esc(source.id)}" data-colony-index="${colonyIndex}">Delete</button>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+function openSourceModal(colonyIndex, sourceId = "") {
+  const colony = state.colonies[colonyIndex];
+  if (!colony) return;
+
+  const existing = sourceId
+    ? (colony.sources || []).find(s => s.id === sourceId)
+    : null;
+
+  openModal(
+    existing ? "Edit Source" : "Add Source",
+    `
+      <div class="iso-form-grid">
+        <div>
+          <label>Source Name</label>
+          <input id="sourceNameInput" value="${esc(existing?.name || "")}" placeholder="SnJ Terrariums">
+        </div>
+        <div>
+          <label>Quantity</label>
+          <input id="sourceQuantityInput" value="${esc(existing?.quantity || "")}" placeholder="200 count">
+        </div>
+        <div>
+          <label>Date Added</label>
+          <input id="sourceDateInput" value="${esc(existing?.dateAdded || todayString())}" placeholder="mm/dd/yyyy">
+        </div>
+      </div>
+
+      <div class="iso-actions">
+        <button class="iso-btn iso-btn-primary" id="saveSourceBtn">${existing ? "Save Changes" : "Add Source"}</button>
+        <button class="iso-btn" id="cancelSourceBtn">Cancel</button>
+      </div>
+    `,
+    () => {
+      $("#saveSourceBtn").onclick = () => saveSource(colonyIndex, sourceId);
+      $("#cancelSourceBtn").onclick = closeModal;
+    }
+  );
+}
+
+async function saveSource(colonyIndex, sourceId = "") {
+  const colony = state.colonies[colonyIndex];
+  if (!colony) return;
+
+  const name = ($("#sourceNameInput")?.value || "").trim();
+  const quantity = ($("#sourceQuantityInput")?.value || "").trim();
+  const dateAdded = ($("#sourceDateInput")?.value || "").trim() || todayString();
+
+  if (!name) return alert("Source name is required.");
+
+  if (!Array.isArray(colony.sources)) colony.sources = [];
+
+  if (sourceId) {
+    const source = colony.sources.find(s => s.id === sourceId);
+    if (!source) return;
+
+    const oldName = source.name || "";
+    const oldQuantity = source.quantity || "";
+    const oldDate = source.dateAdded || "";
+
+    source.name = name;
+    source.quantity = quantity;
+    source.dateAdded = dateAdded;
+
+    addHistory(
+      colony,
+      "Edited source",
+      `Changed source from "${oldName}${oldQuantity ? `, ${oldQuantity}` : ""}${oldDate ? `, ${oldDate}` : ""}" to "${name}${quantity ? `, ${quantity}` : ""}${dateAdded ? `, ${dateAdded}` : ""}".`
+    );
+  } else {
+    const newSource = {
+      id: uid(),
+      name,
+      quantity,
+      dateAdded
+    };
+
+    colony.sources.push(newSource);
+
+    addHistory(
+      colony,
+      "Added source",
+      `${name}${quantity ? `, ${quantity}` : ""}${dateAdded ? `, ${dateAdded}` : ""}.`
+    );
+  }
+
+  await saveState();
+  closeModal();
+  openColony(colonyIndex);
+}
+
+async function deleteSource(colonyIndex, sourceId) {
+  const colony = state.colonies[colonyIndex];
+  if (!colony || !Array.isArray(colony.sources)) return;
+
+  const source = colony.sources.find(s => s.id === sourceId);
+  if (!source) return;
+
+  if (!confirm(`Delete source "${source.name}"?`)) return;
+
+  colony.sources = colony.sources.filter(s => s.id !== sourceId);
+
+  addHistory(
+    colony,
+    "Deleted source",
+    `${source.name}${source.quantity ? `, ${source.quantity}` : ""}${source.dateAdded ? `, ${source.dateAdded}` : ""}.`
+  );
+
+  await saveState();
+  openColony(colonyIndex);
+}
+
 function openColony(index) {
 const c = state.colonies[index];
 const knownCats = ["Isopods", "Springtails", "Botanicals", ...uniqueCategories()].filter((v, i, a) => v && a.indexOf(v) === i);
@@ -1119,10 +1252,23 @@ ${(c.tags || []).length ? `<div class="iso-chip-row">${c.tags.map(tag => `<span 
 <div class="iso-divider"></div>
 
 <div class="iso-section-head">
-<h3 class="iso-card-title" style="margin:0;">Task Status</h3>
-${help("Each task uses your default or per-type thresholds. The colony card uses the most overdue task.")}
+  <h3 class="iso-card-title" style="margin:0;">Colony Sources</h3>
+  ${help("Track where this colony originally came from and any boosters added later. Sources are searchable from the colony list.")}
 </div>
-${renderTaskCards(c)}
+
+<div class="iso-actions" style="margin-bottom:12px;">
+  <button class="iso-btn iso-btn-primary" id="addSourceBtn">+ Add Source</button>
+</div>
+
+${renderSourcesList(c, index)}
+
+<div class="iso-divider"></div>
+
+<div class="iso-section-head">
+  <h3 class="iso-card-title" style="margin:0;">History</h3>
+  ${help("History logs creation, note edits, care actions, inventory changes, sale prep, splits, and source changes.")}
+</div>
+${renderHistory(c)}
 
 <div class="iso-actions" style="margin-bottom:12px;">
 <button class="iso-btn iso-btn-primary" data-quick="misting">Mark Misted Now</button>
@@ -1249,6 +1395,25 @@ $("#splitColonyBtn").onclick = () => openSplitModal(index);
 $("#backToColoniesBtn").onclick = renderColonies;
 $("#deleteColonyBtn").onclick = () => deleteColony(index);
 }
+
+const addSourceBtn = $("#addSourceBtn");
+if (addSourceBtn) {
+  addSourceBtn.onclick = () => openSourceModal(index);
+}
+
+$all("[data-edit-source]").forEach(btn => {
+  btn.onclick = () => openSourceModal(
+    Number(btn.dataset.colonyIndex),
+    btn.dataset.editSource
+  );
+});
+
+$all("[data-delete-source]").forEach(btn => {
+  btn.onclick = () => deleteSource(
+    Number(btn.dataset.colonyIndex),
+    btn.dataset.deleteSource
+  );
+});
 
 async function replaceColonyImage(index) {
 const file = $("#replaceTypeImage").files[0];
