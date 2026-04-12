@@ -13,14 +13,15 @@
     colonies: [],
     botanicals: [],
     settings: {
-      appLogoUri: "",
-      priceSheetLogoUri: "",
-      businessName: "IsoTracker",
-      tagline: "Colony Tracker & Price Sheets",
-      theme: "botanical",
-      promoText: "",
-      footerNote: ""
-    },
+  appLogoUri: "",
+  priceSheetLogoUri: "",
+  businessName: "IsoTracker",
+  tagline: "Colony Tracker & Price Sheets",
+  theme: "botanical",
+  promoText: "",
+  footerNote: "",
+  typeThresholds: {}
+},
     priceData: {},
     botanicalPriceData: {},
     priceSections: ["Isopods", "Springtails", "Botanicals", "Exotic", "Mid Tier", "Beginner"],
