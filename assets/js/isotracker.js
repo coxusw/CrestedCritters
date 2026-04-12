@@ -2322,6 +2322,78 @@ const days = daysSince(c.lastHusbandry);
   }
 }
 
+function renderSettingsForThresholdType(typeName) {
+  renderSettings();
+  const select = $("#thresholdTypeSelect");
+  if (select) {
+    select.value = typeName;
+  }
+
+  const thresholds = getTypeThresholds(typeName);
+
+  const mg = $("#thr_misting_green");
+  const my = $("#thr_misting_yellow");
+  const fg = $("#thr_feeding_green");
+  const fy = $("#thr_feeding_yellow");
+  const sg = $("#thr_substrate_green");
+  const sy = $("#thr_substrate_yellow");
+  const bg = $("#thr_botanicals_green");
+  const by = $("#thr_botanicals_yellow");
+
+  if (mg) mg.value = thresholds.misting.green;
+  if (my) my.value = thresholds.misting.yellow;
+  if (fg) fg.value = thresholds.feeding.green;
+  if (fy) fy.value = thresholds.feeding.yellow;
+  if (sg) sg.value = thresholds.substrate.green;
+  if (sy) sy.value = thresholds.substrate.yellow;
+  if (bg) bg.value = thresholds.botanicals.green;
+  if (by) by.value = thresholds.botanicals.yellow;
+}
+
+async function saveTypeThresholds() {
+  const typeName = $("#thresholdTypeSelect")?.value || "";
+  if (!typeName) return;
+
+  const payload = {
+    misting: {
+      green: Math.max(0, parseInt($("#thr_misting_green")?.value || "3", 10)),
+      yellow: Math.max(0, parseInt($("#thr_misting_yellow")?.value || "10", 10))
+    },
+    feeding: {
+      green: Math.max(0, parseInt($("#thr_feeding_green")?.value || "3", 10)),
+      yellow: Math.max(0, parseInt($("#thr_feeding_yellow")?.value || "10", 10))
+    },
+    substrate: {
+      green: Math.max(0, parseInt($("#thr_substrate_green")?.value || "3", 10)),
+      yellow: Math.max(0, parseInt($("#thr_substrate_yellow")?.value || "10", 10))
+    },
+    botanicals: {
+      green: Math.max(0, parseInt($("#thr_botanicals_green")?.value || "3", 10)),
+      yellow: Math.max(0, parseInt($("#thr_botanicals_yellow")?.value || "10", 10))
+    }
+  };
+
+  if (payload.misting.yellow < payload.misting.green) payload.misting.yellow = payload.misting.green;
+  if (payload.feeding.yellow < payload.feeding.green) payload.feeding.yellow = payload.feeding.green;
+  if (payload.substrate.yellow < payload.substrate.green) payload.substrate.yellow = payload.substrate.green;
+  if (payload.botanicals.yellow < payload.botanicals.green) payload.botanicals.yellow = payload.botanicals.green;
+
+  state.settings.typeThresholds[typeName] = payload;
+  await saveState();
+  alert("Thresholds saved.");
+  renderSettingsForThresholdType(typeName);
+}
+
+async function resetTypeThresholds() {
+  const typeName = $("#thresholdTypeSelect")?.value || "";
+  if (!typeName) return;
+
+  delete state.settings.typeThresholds[typeName];
+  await saveState();
+  alert("Thresholds reset to defaults.");
+  renderSettingsForThresholdType(typeName);
+}
+
   async function clearAllData() {
     if (!confirm("Clear all saved data?")) return;
 
