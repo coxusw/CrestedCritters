@@ -731,7 +731,7 @@ const days = daysSince(c.lastHusbandry);
                 <div class="iso-muted">${esc(c.typeName)}</div>
               </div>
             </div>
-            <span class="iso-badge iso-badge-${status}">${statusText(days)}</span>
+            <span class="iso-badge iso-badge-${status}">${statusText(status)}</span>
           </div>
           <div class="iso-meta">
             <div><strong>Category:</strong> ${esc(c.category || "-")}</div>
