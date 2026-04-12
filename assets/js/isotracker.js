@@ -2448,12 +2448,23 @@ async function prepColonyForSale(index) {
   const colony = state.colonies[index];
   if (!colony) return;
 
-  const packCount = Math.max(1, parseInt($(`#prepCount_${index}`)?.value || "0", 10));
-  const packs = Math.max(1, parseInt($(`#prepPacks_${index}`)?.value || "1", 10));
+  const packCountRaw = parseInt($(`#prepCount_${index}`)?.value || "0", 10);
+  const packsRaw = parseInt($(`#prepPacks_${index}`)?.value || "0", 10);
+
+  const packCount = Math.max(1, packCountRaw);
+  const packs = Math.max(1, packsRaw);
   const totalToRemove = packCount * packs;
 
-  if (!packCount || packCount <= 0) {
+  const materialId = $(`#prepMaterial_${index}`)?.value || "";
+  const materialQtyUsed = Math.max(1, parseInt($(`#prepMaterialQty_${index}`)?.value || "1", 10));
+
+  if (!packCountRaw || packCountRaw <= 0) {
     alert("Enter a valid pack count.");
+    return;
+  }
+
+  if (!packsRaw || packsRaw <= 0) {
+    alert("Enter a valid number of packs.");
     return;
   }
 
@@ -2462,18 +2473,43 @@ async function prepColonyForSale(index) {
     return;
   }
 
+  let materialName = "";
+  if (materialId) {
+    const material = (state.salePrep.materials || []).find(m => m.id === materialId);
+    if (!material) {
+      alert("Selected packaging material not found.");
+      return;
+    }
+
+    if (materialQtyUsed > material.qty) {
+      alert(`Not enough ${material.name} in stock.`);
+      return;
+    }
+
+    material.qty = Math.max(0, material.qty - materialQtyUsed);
+    materialName = material.name;
+  }
+
   colony.population = Math.max(0, Number(colony.population || 0) - totalToRemove);
 
   state.salePrep.packaged.push({
+    colonyIndex: index,
     colonyName: colony.colonyName,
     typeName: colony.typeName,
     packCount,
     packs,
     totalRemoved: totalToRemove,
-    datePacked: todayString()
+    datePacked: todayString(),
+    materialId,
+    materialName,
+    materialQtyUsed: materialId ? materialQtyUsed : 0
   });
 
-  addHistory(colony, "Prepared for sale", `Prepared ${packs} pack(s) of ${packCount}, removed ${totalToRemove} total.`);
+  addHistory(
+    colony,
+    "Prepared for sale",
+    `Prepared ${packs} pack(s) of ${packCount}, removed ${totalToRemove} total${materialName ? `, used ${materialName} x ${materialQtyUsed}` : ""}.`
+  );
 
   await saveState();
   renderSalePrep();
