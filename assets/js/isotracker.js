@@ -2217,6 +2217,32 @@ const eligibleColonies = state.colonies
     <h2 class="iso-section-title">For Sale Prep</h2>
     <p class="iso-subtext">Prep inventory by subtracting from colony counts and moving it into packaged stock.</p>
   `;
+  
+  const prepCategories = uniqueCategories();
+const prepTypes = uniqueTypes();
+
+html += `
+  <div class="iso-form-grid" style="margin-bottom:14px;">
+    <div>
+      <label>Search</label>
+      <input id="prepSearch" placeholder="Search colony or type" value="${esc(state.salePrep.search || "")}">
+    </div>
+    <div>
+      <label>Category</label>
+      <select id="prepCategoryFilter">
+        <option value="all"${(state.salePrep.category || "all") === "all" ? " selected" : ""}>All Categories</option>
+        ${prepCategories.map(cat => `<option value="${esc(cat)}"${state.salePrep.category === cat ? " selected" : ""}>${esc(cat)}</option>`).join("")}
+      </select>
+    </div>
+    <div>
+      <label>Type</label>
+      <select id="prepTypeFilter">
+        <option value="all"${(state.salePrep.type || "all") === "all" ? " selected" : ""}>All Types</option>
+        ${prepTypes.map(type => `<option value="${esc(type)}"${state.salePrep.type === type ? " selected" : ""}>${esc(type)}</option>`).join("")}
+      </select>
+    </div>
+  </div>
+`;
 
   if (!eligibleColonies.length) {
     html += `<div class="iso-empty">No colonies available for sale prep yet.</div>`;
@@ -2288,13 +2314,38 @@ const eligibleColonies = state.colonies
 
   app(html);
 
-  $all("[data-prep-index]").forEach(btn => {
-    btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
-  });
+  const prepSearchInput = $("#prepSearch");
+const prepCategoryFilter = $("#prepCategoryFilter");
+const prepTypeFilter = $("#prepTypeFilter");
 
-  $all("[data-delete-packaged]").forEach(btn => {
-    btn.onclick = () => deletePackagedEntry(Number(btn.dataset.deletePackaged));
+if (prepSearchInput) {
+  prepSearchInput.addEventListener("input", debounce(() => {
+    state.salePrep.search = prepSearchInput.value || "";
+    renderSalePrep();
+  }, 250));
+}
+
+if (prepCategoryFilter) {
+  prepCategoryFilter.addEventListener("change", () => {
+    state.salePrep.category = prepCategoryFilter.value;
+    renderSalePrep();
   });
+}
+
+if (prepTypeFilter) {
+  prepTypeFilter.addEventListener("change", () => {
+    state.salePrep.type = prepTypeFilter.value;
+    renderSalePrep();
+  });
+}
+
+$all("[data-prep-index]").forEach(btn => {
+  btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
+});
+
+$all("[data-delete-packaged]").forEach(btn => {
+  btn.onclick = () => deletePackagedEntry(Number(btn.dataset.deletePackaged));
+});
 }
 
 async function prepColonyForSale(index) {
@@ -2595,6 +2646,12 @@ async function resetTypeThresholds() {
     if (!confirm("Clear all saved data?")) return;
 
     state = structuredCloneSafe(DEFAULT_STATE);
+    state.salePrep = {
+  packaged: [],
+  search: "",
+  category: "all",
+  type: "all"
+};
     colonyFilters.search = "";
     colonyFilters.category = "all";
     colonyFilters.status = "all";
