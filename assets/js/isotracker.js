@@ -2204,49 +2204,123 @@ const days = daysSince(c.lastHusbandry);
   }
 
   function renderSettings() {
-    app(`
-      <h2 class="iso-section-title">Settings</h2>
-      <p class="iso-subtext">Manage your local data and backups here.</p>
+  const types = uniqueTypes();
+  const selectedType = types[0] || "";
+  const t = selectedType ? getTypeThresholds(selectedType) : defaultThresholds();
 
-      <div class="iso-grid">
-        <div class="iso-card">
-          <h3 class="iso-card-title" style="margin-bottom:8px;">Backup</h3>
-          <p class="iso-subtext">Export your full local profile so you can move it to another device later.</p>
-          <div class="iso-actions">
-            <button class="iso-btn iso-btn-primary" id="exportProfileBtn">Export Profile Backup</button>
-          </div>
-        </div>
+  app(`
+    <h2 class="iso-section-title">Settings</h2>
+    <p class="iso-subtext">Manage your local data, backups, and care thresholds here.</p>
 
-        <div class="iso-card">
-          <h3 class="iso-card-title" style="margin-bottom:8px;">Restore</h3>
-          <p class="iso-subtext">Import a previously exported backup file.</p>
-          <div class="iso-actions">
-            <label class="iso-btn iso-btn-ghost" style="display:inline-flex;align-items:center;justify-content:center;">
-              Import Profile Backup
-              <input id="settingsImportBackup" type="file" accept=".json,application/json" style="display:none">
-            </label>
-          </div>
-        </div>
-
-        <div class="iso-card">
-          <h3 class="iso-card-title" style="margin-bottom:8px;">Danger Zone</h3>
-          <p class="iso-subtext">Clear all locally stored IsoTracker data from this device.</p>
-          <div class="iso-actions">
-            <button class="iso-btn iso-btn-danger" id="clearAllDataBtn">Clear All Data</button>
-          </div>
+    <div class="iso-grid">
+      <div class="iso-card">
+        <h3 class="iso-card-title" style="margin-bottom:8px;">Backup</h3>
+        <p class="iso-subtext">Export your full local profile so you can move it to another device later.</p>
+        <div class="iso-actions">
+          <button class="iso-btn iso-btn-primary" id="exportProfileBtn">Export Profile Backup</button>
         </div>
       </div>
-    `);
 
-    $("#exportProfileBtn").onclick = exportProfile;
-    const importInput = $("#settingsImportBackup");
-    if (importInput) {
-      importInput.onchange = function () {
-        importProfileFromInput(this);
-      };
+      <div class="iso-card">
+        <h3 class="iso-card-title" style="margin-bottom:8px;">Restore</h3>
+        <p class="iso-subtext">Import a previously exported backup file.</p>
+        <div class="iso-actions">
+          <label class="iso-btn iso-btn-ghost" style="display:inline-flex;align-items:center;justify-content:center;">
+            Import Profile Backup
+            <input id="settingsImportBackup" type="file" accept=".json,application/json" style="display:none">
+          </label>
+        </div>
+      </div>
+
+      <div class="iso-card">
+        <h3 class="iso-card-title" style="margin-bottom:8px;">Danger Zone</h3>
+        <p class="iso-subtext">Clear all locally stored IsoTracker data from this device.</p>
+        <div class="iso-actions">
+          <button class="iso-btn iso-btn-danger" id="clearAllDataBtn">Clear All Data</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="iso-divider"></div>
+
+    <h3 class="iso-card-title" style="margin:0 0 10px 0;">Per-Type Husbandry Thresholds</h3>
+    <p class="iso-subtext">Set custom attention timing by type and by task. Green means checked recently, yellow means attention soon, red means needs checked.</p>
+
+    ${
+      types.length
+        ? `
+          <div class="iso-form-grid">
+            <div>
+              <label>Type</label>
+              <select id="thresholdTypeSelect">
+                ${types.map(type => `<option value="${esc(type)}">${esc(type)}</option>`).join("")}
+              </select>
+            </div>
+          </div>
+
+          <div id="thresholdEditor" class="iso-form-grid" style="margin-top:14px;">
+            <div>
+              <label>Misting Green / Yellow</label>
+              <input id="thr_misting_green" type="number" min="0" step="1" value="${t.misting.green}" placeholder="Green">
+              <input id="thr_misting_yellow" type="number" min="0" step="1" value="${t.misting.yellow}" placeholder="Yellow" style="margin-top:8px;">
+            </div>
+
+            <div>
+              <label>Feeding Green / Yellow</label>
+              <input id="thr_feeding_green" type="number" min="0" step="1" value="${t.feeding.green}" placeholder="Green">
+              <input id="thr_feeding_yellow" type="number" min="0" step="1" value="${t.feeding.yellow}" placeholder="Yellow" style="margin-top:8px;">
+            </div>
+
+            <div>
+              <label>Substrate Green / Yellow</label>
+              <input id="thr_substrate_green" type="number" min="0" step="1" value="${t.substrate.green}" placeholder="Green">
+              <input id="thr_substrate_yellow" type="number" min="0" step="1" value="${t.substrate.yellow}" placeholder="Yellow" style="margin-top:8px;">
+            </div>
+
+            <div>
+              <label>Botanicals Green / Yellow</label>
+              <input id="thr_botanicals_green" type="number" min="0" step="1" value="${t.botanicals.green}" placeholder="Green">
+              <input id="thr_botanicals_yellow" type="number" min="0" step="1" value="${t.botanicals.yellow}" placeholder="Yellow" style="margin-top:8px;">
+            </div>
+          </div>
+
+          <div class="iso-actions">
+            <button class="iso-btn iso-btn-primary" id="saveThresholdsBtn">Save Thresholds</button>
+            <button class="iso-btn" id="resetThresholdsBtn">Reset Type To Defaults</button>
+          </div>
+        `
+        : `<div class="iso-empty">Add at least one colony type to unlock custom thresholds.</div>`
     }
-    $("#clearAllDataBtn").onclick = clearAllData;
+  `);
+
+  $("#exportProfileBtn").onclick = exportProfile;
+
+  const importInput = $("#settingsImportBackup");
+  if (importInput) {
+    importInput.onchange = function () {
+      importProfileFromInput(this);
+    };
   }
+
+  $("#clearAllDataBtn").onclick = clearAllData;
+
+  const thresholdTypeSelect = $("#thresholdTypeSelect");
+  if (thresholdTypeSelect) {
+    thresholdTypeSelect.onchange = function () {
+      renderSettingsForThresholdType(this.value);
+    };
+  }
+
+  const saveThresholdsBtn = $("#saveThresholdsBtn");
+  if (saveThresholdsBtn) {
+    saveThresholdsBtn.onclick = saveTypeThresholds;
+  }
+
+  const resetThresholdsBtn = $("#resetThresholdsBtn");
+  if (resetThresholdsBtn) {
+    resetThresholdsBtn.onclick = resetTypeThresholds;
+  }
+}
 
   async function clearAllData() {
     if (!confirm("Clear all saved data?")) return;
