@@ -1,7 +1,7 @@
 {
   "name": "IsoTracker",
   "short_name": "IsoTracker",
-  "description": "Colony tracking, botanicals inventory, sale prep, and premium price sheets.",
+  "description": "Colony tracking, botanicals inventory, and sale prep.",
   "start_url": "/isotracker/",
   "scope": "/",
   "display": "standalone",
