@@ -2876,16 +2876,17 @@ async function resetTypeThresholds() {
     if (!confirm("Clear all saved data?")) return;
 
     state = structuredCloneSafe(DEFAULT_STATE);
-    state.salePrep = {
+state.salePrep = {
   packaged: [],
+  materials: [],
   search: "",
   category: "all",
   type: "all"
 };
-    colonyFilters.search = "";
-    colonyFilters.category = "all";
-    colonyFilters.status = "all";
-    colonyFilters.source = "all";
+colonyFilters.search = "";
+colonyFilters.category = "all";
+colonyFilters.status = "all";
+colonyFilters.source = "all";
 
     await saveState();
     applyHeaderBranding();
