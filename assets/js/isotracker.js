@@ -901,6 +901,20 @@ const days = daysSince(c.lastHusbandry);
         <input id="initialSourceDate" value="${todayString()}" placeholder="mm/dd/yyyy">
       </div>
     </div>
+    
+    <div class="iso-divider"></div>
+
+<h3 class="iso-card-title" style="margin:0 0 10px 0;">Sale Status</h3>
+
+<div class="iso-form-grid">
+  <div>
+    <label>Ready For Sale</label>
+    <select id="readyForSale">
+      <option value="no" selected>Not Ready For Sale</option>
+      <option value="yes">Ready For Sale</option>
+    </select>
+  </div>
+</div>
 
     <label>Type Picture</label>
     <input id="typeImage" type="file" accept="image/*">
