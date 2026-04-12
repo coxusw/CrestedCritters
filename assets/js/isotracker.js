@@ -2490,6 +2490,81 @@ async function deletePackagedEntry(index) {
   renderSalePrep();
 }
 
+function openMaterialModal(materialId = "") {
+  const existing = (state.salePrep.materials || []).find(m => m.id === materialId);
+
+  openModal(
+    existing ? "Edit Packaging Material" : "Add Packaging Material",
+    `
+      <div class="iso-form-grid">
+        <div>
+          <label>Name</label>
+          <input id="materialName" value="${esc(existing?.name || "")}" placeholder="10 count deli cups">
+        </div>
+        <div>
+          <label>Quantity In Stock</label>
+          <input id="materialQty" type="number" min="0" step="1" value="${existing ? existing.qty : 0}">
+        </div>
+        <div>
+          <label>Low Stock At</label>
+          <input id="materialLowStock" type="number" min="0" step="1" value="${existing ? existing.lowStockAt : 0}">
+        </div>
+      </div>
+
+      <div class="iso-actions">
+        <button class="iso-btn iso-btn-primary" id="saveMaterialBtn">${existing ? "Save Changes" : "Add Material"}</button>
+        <button class="iso-btn" id="cancelMaterialBtn">Cancel</button>
+      </div>
+    `,
+    () => {
+      $("#saveMaterialBtn").onclick = () => saveMaterial(materialId);
+      $("#cancelMaterialBtn").onclick = closeModal;
+    }
+  );
+}
+
+async function saveMaterial(materialId = "") {
+  const name = ($("#materialName")?.value || "").trim();
+  const qty = Math.max(0, parseInt($("#materialQty")?.value || "0", 10));
+  const lowStockAt = Math.max(0, parseInt($("#materialLowStock")?.value || "0", 10));
+
+  if (!name) {
+    alert("Material name is required.");
+    return;
+  }
+
+  if (!Array.isArray(state.salePrep.materials)) state.salePrep.materials = [];
+
+  if (materialId) {
+    const mat = state.salePrep.materials.find(m => m.id === materialId);
+    if (!mat) return;
+    mat.name = name;
+    mat.qty = qty;
+    mat.lowStockAt = lowStockAt;
+  } else {
+    state.salePrep.materials.push(normalizeMaterial({
+      name,
+      qty,
+      lowStockAt
+    }));
+  }
+
+  await saveState();
+  closeModal();
+  renderSalePrep();
+}
+
+async function deleteMaterial(materialId) {
+  const mat = (state.salePrep.materials || []).find(m => m.id === materialId);
+  if (!mat) return;
+
+  if (!confirm(`Delete packaging material "${mat.name}"?`)) return;
+
+  state.salePrep.materials = (state.salePrep.materials || []).filter(m => m.id !== materialId);
+  await saveState();
+  renderSalePrep();
+}
+
   function renderGuide() {
     app(`
       <h2 class="iso-section-title">Guide</h2>
