@@ -641,9 +641,9 @@ function getOverallColonyStatus(colony) {
         if (category !== "all" && (c.category || "") !== category) return false;
 
         if (status !== "all") {
-          const s = getStatus(daysSince(c.lastHusbandry));
-          if (s !== status) return false;
-        }
+  const s = getOverallColonyStatus(c);
+  if (s !== status) return false;
+}
 
         if (source !== "all") {
           const hasSource = (c.sources || []).some(s => (s.name || "") === source);
