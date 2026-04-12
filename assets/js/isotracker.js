@@ -172,7 +172,8 @@
     }
 
     state.colonies = Array.isArray(state.colonies) ? state.colonies.map(normalizeColony) : [];
-    state.botanicals = Array.isArray(state.botanicals) ? state.botanicals : [];
+state.botanicals = Array.isArray(state.botanicals) ? state.botanicals : [];
+state.settings.typeThresholds = state.settings.typeThresholds || {};
   }
 
   function formatDate(input) {
