@@ -227,11 +227,15 @@ state.settings.typeThresholds = state.settings.typeThresholds || {};
     return "red";
   }
 
-  function statusText(days) {
-    if (days <= 3) return "Checked Recently";
-    if (days <= 10) return "Needs Attention Soon";
-    return "Needs Checked";
-  }
+  function statusText(statusOrDays) {
+  if (statusOrDays === "green") return "Checked Recently";
+  if (statusOrDays === "yellow") return "Needs Attention Soon";
+  if (statusOrDays === "red") return "Needs Checked";
+
+  if (statusOrDays <= 3) return "Checked Recently";
+  if (statusOrDays <= 10) return "Needs Attention Soon";
+  return "Needs Checked";
+}
   
   function defaultThresholds() {
   return {
