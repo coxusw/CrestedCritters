@@ -176,6 +176,8 @@
 
     state.colonies = Array.isArray(state.colonies) ? state.colonies.map(normalizeColony) : [];
 state.botanicals = Array.isArray(state.botanicals) ? state.botanicals : [];
+state.salePrep = state.salePrep || { packaged: [] };
+state.salePrep.packaged = Array.isArray(state.salePrep.packaged) ? state.salePrep.packaged : [];
 state.settings.typeThresholds = state.settings.typeThresholds || {};
   }
 
