@@ -227,6 +227,86 @@ state.settings.typeThresholds = state.settings.typeThresholds || {};
     if (days <= 10) return "Needs Attention Soon";
     return "Needs Checked";
   }
+  
+  function defaultThresholds() {
+  return {
+    misting: { green: 3, yellow: 10 },
+    feeding: { green: 3, yellow: 10 },
+    substrate: { green: 3, yellow: 10 },
+    botanicals: { green: 3, yellow: 10 }
+  };
+}
+
+function getTypeThresholds(typeName) {
+  const defaults = defaultThresholds();
+  const saved = state.settings.typeThresholds?.[typeName] || {};
+
+  return {
+    misting: {
+      green: Number(saved.misting?.green ?? defaults.misting.green),
+      yellow: Number(saved.misting?.yellow ?? defaults.misting.yellow)
+    },
+    feeding: {
+      green: Number(saved.feeding?.green ?? defaults.feeding.green),
+      yellow: Number(saved.feeding?.yellow ?? defaults.feeding.yellow)
+    },
+    substrate: {
+      green: Number(saved.substrate?.green ?? defaults.substrate.green),
+      yellow: Number(saved.substrate?.yellow ?? defaults.substrate.yellow)
+    },
+    botanicals: {
+      green: Number(saved.botanicals?.green ?? defaults.botanicals.green),
+      yellow: Number(saved.botanicals?.yellow ?? defaults.botanicals.yellow)
+    }
+  };
+}
+
+function getTaskStatus(days, threshold) {
+  if (days <= threshold.green) return "green";
+  if (days <= threshold.yellow) return "yellow";
+  return "red";
+}
+
+function getColonyTaskStatuses(colony) {
+  const thresholds = getTypeThresholds(colony.typeName);
+
+  const mistingDays = daysSince(colony.lastMisting);
+  const feedingDays = daysSince(colony.lastSupplementalFeeding);
+  const substrateDays = daysSince(colony.lastSubstrateCheck);
+  const botanicalsDays = daysSince(colony.lastBotanicalsCheck);
+
+  return {
+    misting: {
+      days: mistingDays,
+      status: getTaskStatus(mistingDays, thresholds.misting),
+      threshold: thresholds.misting
+    },
+    feeding: {
+      days: feedingDays,
+      status: getTaskStatus(feedingDays, thresholds.feeding),
+      threshold: thresholds.feeding
+    },
+    substrate: {
+      days: substrateDays,
+      status: getTaskStatus(substrateDays, thresholds.substrate),
+      threshold: thresholds.substrate
+    },
+    botanicals: {
+      days: botanicalsDays,
+      status: getTaskStatus(botanicalsDays, thresholds.botanicals),
+      threshold: thresholds.botanicals
+    }
+  };
+}
+
+function getOverallColonyStatus(colony) {
+  const tasks = getColonyTaskStatuses(colony);
+  const statuses = Object.values(tasks).map(t => t.status);
+
+  if (statuses.includes("red")) return "red";
+  if (statuses.includes("yellow")) return "yellow";
+  return "green";
+}
 
   function slug(str) {
     return (str || "").toLowerCase().replace(/[^a-z0-9]+/g, "_");
