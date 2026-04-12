@@ -149,8 +149,9 @@
       lastSupplementalFeeding: colony?.lastSupplementalFeeding || "",
       lastHusbandry: colony?.lastHusbandry || "",
       customNote: colony?.customNote || "",
-      history: Array.isArray(colony?.history) ? colony.history : [],
-      sources: Array.isArray(colony?.sources) ? colony.sources.map(normalizeSource) : []
+readyForSale: colony?.readyForSale === true,
+history: Array.isArray(colony?.history) ? colony.history : [],
+sources: Array.isArray(colony?.sources) ? colony.sources.map(normalizeSource) : []
     };
   }
 
