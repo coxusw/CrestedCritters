@@ -187,12 +187,12 @@
     };
   }
 
-  function restoreInputState(input, stateObj) {
-    if (!input || !stateObj) return;
-    input.value = stateObj.value;
-    if (typeof stateObj.selectionStart === "number" && typeof stateObj.selectionEnd === "number") {
-      input.setSelectionRange(stateObj.selectionStart, stateObj.selectionEnd);
-    }
+  function restoreInputState(input, saved) {
+    if (!input || !saved) return;
+    input.value = saved.value;
+    try {
+      input.setSelectionRange(saved.selectionStart, saved.selectionEnd);
+    } catch (_) {}
   }
 
   function debounce(fn, delay = 250) {
@@ -418,7 +418,6 @@
   function syncAllPresetOrders() {
     const types = uniqueTypes();
     const botanicalNames = state.botanicals.map(b => b.itemName);
-
     PRICE_PRESETS.forEach(name => {
       const preset = getPreset(name);
       preset.itemOrders.colonyTypes = syncOrderedList(types, preset.itemOrders.colonyTypes);
@@ -859,15 +858,14 @@
     if (search) {
       const debouncedSearch = debounce(() => {
         const input = $("#colonySearch");
-        const stateObj = saveInputState(input);
+        const saved = saveInputState(input);
 
-        colonyFilters.search = stateObj ? stateObj.value : "";
-
+        colonyFilters.search = saved ? saved.value : "";
         renderColonies();
 
         setTimeout(() => {
           const newInput = $("#colonySearch");
-          restoreInputState(newInput, stateObj);
+          restoreInputState(newInput, saved);
           if (newInput) newInput.focus();
         }, 0);
       }, 250);
@@ -1828,8 +1826,14 @@
       <p class="iso-subtext">Save supply items and keep notes with each one.</p>
 
       <div class="iso-form-grid">
-        <div><label>Item Name</label><input id="botItemName" placeholder="Lotus Pods"></div>
-        <div><label>Quantity</label><input id="botQuantity" placeholder="20 packs, 3 bins, 10 lb"></div>
+        <div>
+          <label>Item Name</label>
+          <input id="botItemName" placeholder="Lotus Pods">
+        </div>
+        <div>
+          <label>Quantity</label>
+          <input id="botQuantity" placeholder="20 packs, 3 bins, 10 lb">
+        </div>
       </div>
 
       <label>Item Note</label>
@@ -2670,7 +2674,7 @@
       link.download = `isotracker-${state.activePricePreset}-price-sheet.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
-    } catch (err) {
+    } catch (_) {
       alert("Image export failed.");
     }
   }
@@ -2927,7 +2931,7 @@
       applyHeaderBranding();
       alert("Profile imported successfully.");
       renderSettings();
-    } catch (err) {
+    } catch (_) {
       alert("Could not import backup file.");
     }
   }
@@ -2942,4 +2946,9 @@
     const blob = new Blob([JSON.stringify(profile, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link
+    link.href = url;
+    link.download = "isotracker-profile-backup.json";
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+})();
