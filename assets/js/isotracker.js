@@ -639,7 +639,18 @@ if (tab === "settings") renderSettings();
 
     return state.colonies
       .slice()
-      .sort((a, b) => daysSince(b.lastHusbandry) - daysSince(a.lastHusbandry))
+      .sort((a, b) => {
+  const order = { red: 3, yellow: 2, green: 1 };
+
+  const statusA = getOverallColonyStatus(a);
+  const statusB = getOverallColonyStatus(b);
+
+  if (order[statusB] !== order[statusA]) {
+    return order[statusB] - order[statusA];
+  }
+
+  return daysSince(b.lastHusbandry) - daysSince(a.lastHusbandry);
+})
       .filter(c => {
         const sourceText = (c.sources || [])
           .map(s => `${s.name || ""} ${s.quantity || ""} ${s.dateAdded || ""}`)
