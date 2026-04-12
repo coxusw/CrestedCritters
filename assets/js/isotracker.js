@@ -163,10 +163,10 @@
     if (!dateStr) return 999999;
     const dt = parseDateString(dateStr);
     if (!dt) return 999999;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const a = new Date();
+    a.setHours(0, 0, 0, 0);
     dt.setHours(0, 0, 0, 0);
-    return Math.floor((today - dt) / 86400000);
+    return Math.floor((a - dt) / 86400000);
   }
 
   function slug(str) {
@@ -187,12 +187,12 @@
     };
   }
 
-  function restoreInputState(input, saved) {
-    if (!input || !saved) return;
-    input.value = saved.value;
-    try {
-      input.setSelectionRange(saved.selectionStart, saved.selectionEnd);
-    } catch (_) {}
+  function restoreInputState(input, stateObj) {
+    if (!input || !stateObj) return;
+    input.value = stateObj.value;
+    if (typeof stateObj.selectionStart === "number" && typeof stateObj.selectionEnd === "number") {
+      input.setSelectionRange(stateObj.selectionStart, stateObj.selectionEnd);
+    }
   }
 
   function debounce(fn, delay = 250) {
@@ -418,6 +418,7 @@
   function syncAllPresetOrders() {
     const types = uniqueTypes();
     const botanicalNames = state.botanicals.map(b => b.itemName);
+
     PRICE_PRESETS.forEach(name => {
       const preset = getPreset(name);
       preset.itemOrders.colonyTypes = syncOrderedList(types, preset.itemOrders.colonyTypes);
@@ -858,14 +859,15 @@
     if (search) {
       const debouncedSearch = debounce(() => {
         const input = $("#colonySearch");
-        const saved = saveInputState(input);
+        const stateObj = saveInputState(input);
 
-        colonyFilters.search = saved ? saved.value : "";
+        colonyFilters.search = stateObj ? stateObj.value : "";
+
         renderColonies();
 
         setTimeout(() => {
           const newInput = $("#colonySearch");
-          restoreInputState(newInput, saved);
+          restoreInputState(newInput, stateObj);
           if (newInput) newInput.focus();
         }, 0);
       }, 250);
@@ -1053,8 +1055,7 @@
       inventoryMode: $("#inventoryMode").value,
       saleUnitLabel: $("#saleUnitLabel").value.trim() || ($("#inventoryMode").value === "unit" ? "1 unit" : "10 count"),
       saleUnitSize: Math.max(1, toInt($("#saleUnitSize").value, 10)),
-      containerSupplyId: $("#containerSupplyId").value.trim(),
-      sources: []
+      containerSupplyId: $("#containerSupplyId").value.trim()
     });
 
     updateLastHusbandry(colony);
@@ -1102,6 +1103,7 @@
     if (!colony.history.length) {
       return `<div class="iso-empty" style="padding:18px 12px;">No history yet.</div>`;
     }
+
     return `
       <div class="iso-history-list">
         ${colony.history.slice(0, 50).map(item => `
@@ -1261,7 +1263,7 @@
     app(`
       <div class="iso-section-head">
         <h2 class="iso-section-title">${esc(c.colonyName)}</h2>
-        ${help("Colony details let you update care tasks, sale prep settings, tags, notes, and view history.")}
+        ${help("Colony details let you update care tasks, sale prep settings, tags, notes, sources, and view history.")}
       </div>
       <p class="iso-subtext">${esc(c.typeName)}</p>
 
@@ -1386,7 +1388,7 @@
 
       <div class="iso-section-head">
         <h3 class="iso-card-title" style="margin:0;">Colony Sources</h3>
-        ${help("Track where this colony originally came from and any boosters added later. Sources are searchable from the colony list.")}
+        ${help("Track where this colony originally came from and any boosters added later. Sources are searchable and filterable from the colony list.")}
       </div>
 
       <div class="iso-actions" style="margin-bottom:12px;">
@@ -1826,14 +1828,8 @@
       <p class="iso-subtext">Save supply items and keep notes with each one.</p>
 
       <div class="iso-form-grid">
-        <div>
-          <label>Item Name</label>
-          <input id="botItemName" placeholder="Lotus Pods">
-        </div>
-        <div>
-          <label>Quantity</label>
-          <input id="botQuantity" placeholder="20 packs, 3 bins, 10 lb">
-        </div>
+        <div><label>Item Name</label><input id="botItemName" placeholder="Lotus Pods"></div>
+        <div><label>Quantity</label><input id="botQuantity" placeholder="20 packs, 3 bins, 10 lb"></div>
       </div>
 
       <label>Item Note</label>
@@ -2674,7 +2670,7 @@
       link.download = `isotracker-${state.activePricePreset}-price-sheet.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
-    } catch (_) {
+    } catch (err) {
       alert("Image export failed.");
     }
   }
@@ -2931,7 +2927,7 @@
       applyHeaderBranding();
       alert("Profile imported successfully.");
       renderSettings();
-    } catch (_) {
+    } catch (err) {
       alert("Could not import backup file.");
     }
   }
@@ -2946,9 +2942,4 @@
     const blob = new Blob([JSON.stringify(profile, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.href = url;
-    link.download = "isotracker-profile-backup.json";
-    link.click();
-    URL.revokeObjectURL(url);
-  }
-})();
+    link
