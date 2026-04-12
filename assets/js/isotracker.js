@@ -12,6 +12,9 @@
   const DEFAULT_STATE = {
     colonies: [],
     botanicals: [],
+    salePrep: {
+  packaged: []
+},
     settings: {
   appLogoUri: "",
   priceSheetLogoUri: "",
