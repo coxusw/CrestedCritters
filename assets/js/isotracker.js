@@ -1561,9 +1561,10 @@ updateLastHusbandry(c);
     state.colonies.splice(index, 1);
     const typeStillExists = state.colonies.some(c => c.typeName === typeName);
     if (!typeStillExists) {
-      delete state.priceData[typeName];
-      state.itemOrders.colonyTypes = (state.itemOrders.colonyTypes || []).filter(x => x !== typeName);
-    }
+  delete state.priceData[typeName];
+  delete state.settings.typeThresholds[typeName];
+  state.itemOrders.colonyTypes = (state.itemOrders.colonyTypes || []).filter(x => x !== typeName);
+}
 
     refreshOrders();
     await saveState();
