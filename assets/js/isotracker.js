@@ -757,7 +757,6 @@ state.settings.typeThresholds = state.settings.typeThresholds || {};
     sorted.forEach(c => {
       const index = state.colonies.findIndex(x => x.colonyName === c.colonyName);
       const status = getOverallColonyStatus(c);
-const days = daysSince(c.lastHusbandry);
 
       html += `
         <div class="iso-card iso-card-clickable iso-status-${status}" data-open-colony="${index}">
