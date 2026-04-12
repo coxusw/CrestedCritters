@@ -567,11 +567,12 @@ function getOverallColonyStatus(colony) {
     });
 
     if (tab === "colonies") renderColonies();
-    if (tab === "population") renderPopulation();
-    if (tab === "botanicals") renderBotanicals();
-    if (tab === "price") renderPriceSheet();
-    if (tab === "guide") renderGuide();
-    if (tab === "settings") renderSettings();
+if (tab === "population") renderPopulation();
+if (tab === "botanicals") renderBotanicals();
+if (tab === "prep") renderSalePrep();
+if (tab === "price") renderPriceSheet();
+if (tab === "guide") renderGuide();
+if (tab === "settings") renderSettings();
   }
 
   async function exportProfile() {
@@ -2150,6 +2151,141 @@ const days = daysSince(c.lastHusbandry);
       alert("Image export failed.");
     }
   }
+
+function renderSalePrep() {
+  const eligibleColonies = state.colonies
+    .slice()
+    .sort((a, b) => a.colonyName.localeCompare(b.colonyName));
+
+  let html = `
+    <h2 class="iso-section-title">For Sale Prep</h2>
+    <p class="iso-subtext">Prep inventory by subtracting from colony counts and moving it into packaged stock.</p>
+  `;
+
+  if (!eligibleColonies.length) {
+    html += `<div class="iso-empty">No colonies available for sale prep yet.</div>`;
+    app(html);
+    return;
+  }
+
+  html += `<div class="iso-grid">`;
+
+  eligibleColonies.forEach((colony, index) => {
+    html += `
+      <div class="iso-card">
+        <div class="iso-card-head">
+          <div>
+            <h3 class="iso-card-title">${esc(colony.colonyName)}</h3>
+            <div class="iso-muted">${esc(colony.typeName)}</div>
+          </div>
+        </div>
+
+        <div class="iso-meta">
+          <div><strong>Available Population:</strong> ${Number(colony.population) || 0}</div>
+        </div>
+
+        <div class="iso-form-grid" style="margin-top:12px;">
+          <div>
+            <label>Pack Count</label>
+            <input id="prepCount_${index}" type="number" min="1" step="1" placeholder="10">
+          </div>
+          <div>
+            <label>How Many Packs</label>
+            <input id="prepPacks_${index}" type="number" min="1" step="1" value="1">
+          </div>
+        </div>
+
+        <div class="iso-actions">
+          <button class="iso-btn iso-btn-primary" data-prep-index="${index}">Prep For Sale</button>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+
+  const packaged = state.salePrep.packaged || [];
+  html += `
+    <div class="iso-divider"></div>
+    <h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaged Inventory</h3>
+  `;
+
+  if (!packaged.length) {
+    html += `<div class="iso-empty">No packaged inventory yet.</div>`;
+  } else {
+    html += `<div class="iso-history-list">`;
+    packaged.forEach((item, i) => {
+      html += `
+        <div class="iso-history-item">
+          <div class="iso-history-time">${esc(item.datePacked || "-")}</div>
+          <div class="iso-history-text">
+            <strong>${esc(item.colonyName)}</strong> — ${esc(item.typeName)} — ${item.packs} pack(s) of ${item.packCount}
+          </div>
+          <div class="iso-actions" style="margin-top:8px;">
+            <button class="iso-btn iso-btn-danger" data-delete-packaged="${i}">Delete Packaged Entry</button>
+          </div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+  }
+
+  app(html);
+
+  $all("[data-prep-index]").forEach(btn => {
+    btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
+  });
+
+  $all("[data-delete-packaged]").forEach(btn => {
+    btn.onclick = () => deletePackagedEntry(Number(btn.dataset.deletePackaged));
+  });
+}
+
+async function prepColonyForSale(index) {
+  const colony = state.colonies[index];
+  if (!colony) return;
+
+  const packCount = Math.max(1, parseInt($(`#prepCount_${index}`)?.value || "0", 10));
+  const packs = Math.max(1, parseInt($(`#prepPacks_${index}`)?.value || "1", 10));
+  const totalToRemove = packCount * packs;
+
+  if (!packCount || packCount <= 0) {
+    alert("Enter a valid pack count.");
+    return;
+  }
+
+  if (totalToRemove > Number(colony.population || 0)) {
+    alert("Not enough population in this colony.");
+    return;
+  }
+
+  colony.population = Math.max(0, Number(colony.population || 0) - totalToRemove);
+
+  state.salePrep.packaged.push({
+    colonyName: colony.colonyName,
+    typeName: colony.typeName,
+    packCount,
+    packs,
+    totalRemoved: totalToRemove,
+    datePacked: todayString()
+  });
+
+  addHistory(colony, "Prepared for sale", `Prepared ${packs} pack(s) of ${packCount}, removed ${totalToRemove} total.`);
+
+  await saveState();
+  renderSalePrep();
+}
+
+async function deletePackagedEntry(index) {
+  const item = state.salePrep.packaged[index];
+  if (!item) return;
+
+  if (!confirm("Delete this packaged entry? This will not restore colony counts automatically.")) return;
+
+  state.salePrep.packaged.splice(index, 1);
+  await saveState();
+  renderSalePrep();
+}
 
   function renderGuide() {
     app(`
