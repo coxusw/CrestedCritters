@@ -2519,7 +2519,29 @@ async function deletePackagedEntry(index) {
   const item = state.salePrep.packaged[index];
   if (!item) return;
 
-  if (!confirm("Delete this packaged entry? This will not restore colony counts automatically.")) return;
+  if (!confirm("Delete this packaged entry and restore the colony/material stock?")) return;
+
+  const colony =
+    typeof item.colonyIndex === "number" && state.colonies[item.colonyIndex]
+      ? state.colonies[item.colonyIndex]
+      : state.colonies.find(c => c.colonyName === item.colonyName);
+
+  if (colony) {
+    colony.population = Math.max(0, Number(colony.population || 0) + Number(item.totalRemoved || 0));
+
+    addHistory(
+      colony,
+      "Packaged entry deleted",
+      `Restored ${item.totalRemoved} back to colony from deleted packaged entry.`
+    );
+  }
+
+  if (item.materialId) {
+    const material = (state.salePrep.materials || []).find(m => m.id === item.materialId);
+    if (material) {
+      material.qty = Math.max(0, material.qty + Number(item.materialQtyUsed || 0));
+    }
+  }
 
   state.salePrep.packaged.splice(index, 1);
   await saveState();
