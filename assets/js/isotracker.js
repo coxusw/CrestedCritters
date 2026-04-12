@@ -808,10 +808,19 @@ ${c.typeImageUri ? `<img class="iso-colony-avatar" src="${c.typeImageUri}" alt="
 <span class="iso-badge iso-badge-${status}">${statusLabel(status)}</span>
 </div>
 <div class="iso-meta">
-<div><strong>Category:</strong> ${esc(c.category || "-")}</div>
-<div><strong>Population / Units:</strong> ${Number(c.population) || 0}</div>
-<div><strong>Date Added:</strong> ${c.dateAdded || "-"}</div>
-<div><strong>Last Updated:</strong> ${c.lastHusbandry || "Never"}</div>
+  <div><strong>Category:</strong> ${esc(c.category || "-")}</div>
+  <div><strong>Population / Units:</strong> ${Number(c.population) || 0}</div>
+  <div><strong>Date Added:</strong> ${c.dateAdded || "-"}</div>
+  <div><strong>Last Updated:</strong> ${c.lastHusbandry || "Never"}</div>
+  <div><strong>Source${(c.sources || []).length === 1 ? "" : "s"}:</strong> ${
+    (c.sources && c.sources.length)
+      ? esc(
+          c.sources.length === 1
+            ? c.sources[0].name
+            : `${c.sources[0].name} +${c.sources.length - 1}`
+        )
+      : "-"
+  }</div>
 </div>
 ${(c.tags || []).length ? `<div class="iso-chip-row">${c.tags.map(tag => `<span class="iso-tag">${esc(tag)}</span>`).join("")}</div>` : ``}
 </div>
