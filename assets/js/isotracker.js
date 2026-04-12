@@ -2195,9 +2195,23 @@ updateLastHusbandry(c);
   }
 
 function renderSalePrep() {
-  const eligibleColonies = state.colonies
-    .slice()
-    .sort((a, b) => a.colonyName.localeCompare(b.colonyName));
+  const prepSearch = (state.salePrep.search || "").trim().toLowerCase();
+const prepCategory = state.salePrep.category || "all";
+const prepType = state.salePrep.type || "all";
+
+const eligibleColonies = state.colonies
+  .filter(colony => colony.readyForSale === true)
+  .filter(colony => {
+    const hay = `${colony.colonyName || ""} ${colony.typeName || ""}`.toLowerCase();
+
+    if (prepSearch && !hay.includes(prepSearch)) return false;
+    if (prepCategory !== "all" && (colony.category || "") !== prepCategory) return false;
+    if (prepType !== "all" && (colony.typeName || "") !== prepType) return false;
+
+    return true;
+  })
+  .slice()
+  .sort((a, b) => a.colonyName.localeCompare(b.colonyName));
 
   let html = `
     <h2 class="iso-section-title">For Sale Prep</h2>
