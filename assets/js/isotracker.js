@@ -13,22 +13,22 @@
     colonies: [],
     botanicals: [],
     salePrep: {
-  packaged: [],
-  materials: [],
-  search: "",
-  category: "all",
-  type: "all"
-},
+      packaged: [],
+      materials: [],
+      search: "",
+      category: "all",
+      type: "all"
+    },
     settings: {
-  appLogoUri: "",
-  priceSheetLogoUri: "",
-  businessName: "IsoTracker",
-  tagline: "Colony Tracker & Price Sheets",
-  theme: "botanical",
-  promoText: "",
-  footerNote: "",
-  typeThresholds: {}
-},
+      appLogoUri: "",
+      priceSheetLogoUri: "",
+      businessName: "IsoTracker",
+      tagline: "Colony Tracker & Price Sheets",
+      theme: "botanical",
+      promoText: "",
+      footerNote: "",
+      typeThresholds: {}
+    },
     priceData: {},
     botanicalPriceData: {},
     priceSections: ["Isopods", "Springtails", "Botanicals", "Exotic", "Mid Tier", "Beginner"],
@@ -130,77 +130,6 @@
     await idbSet(STATE_KEY, state);
   }
 
-  function normalizeSource(source) {
-    return {
-      id: source?.id || uid(),
-      name: source?.name || "",
-      quantity: source?.quantity || "",
-      dateAdded: source?.dateAdded || todayString()
-    };
-  }
-  
-  function normalizeMaterial(material) {
-  return {
-    id: material?.id || uid(),
-    name: material?.name || "",
-    qty: Math.max(0, parseInt(material?.qty || "0", 10)),
-    lowStockAt: Math.max(0, parseInt(material?.lowStockAt || "0", 10))
-  };
-}
-
-  function normalizeColony(colony) {
-    return {
-      colonyName: colony?.colonyName || "",
-      typeName: colony?.typeName || "",
-      category: colony?.category || "",
-      typeImageUri: colony?.typeImageUri || "",
-      dateAdded: colony?.dateAdded || todayString(),
-      population: Math.max(0, parseInt(colony?.population || "0", 10)),
-      lastMisting: colony?.lastMisting || "",
-      lastBotanicalsCheck: colony?.lastBotanicalsCheck || "",
-      lastSubstrateCheck: colony?.lastSubstrateCheck || "",
-      lastSupplementalFeeding: colony?.lastSupplementalFeeding || "",
-      lastHusbandry: colony?.lastHusbandry || "",
-      customNote: colony?.customNote || "",
-readyForSale: colony?.readyForSale === true,
-history: Array.isArray(colony?.history) ? colony.history : [],
-sources: Array.isArray(colony?.sources) ? colony.sources.map(normalizeSource) : []
-    };
-  }
-
-  async function loadState() {
-    const saved = await idbGet(STATE_KEY);
-    if (saved && typeof saved === "object") {
-      state = {
-        ...structuredCloneSafe(DEFAULT_STATE),
-        ...saved,
-        settings: {
-          ...DEFAULT_STATE.settings,
-          ...(saved.settings || {})
-        },
-        itemOrders: {
-          ...DEFAULT_STATE.itemOrders,
-          ...(saved.itemOrders || {})
-        }
-      };
-    } else {
-      state = structuredCloneSafe(DEFAULT_STATE);
-      await saveState();
-    }
-
-    state.colonies = Array.isArray(state.colonies) ? state.colonies.map(normalizeColony) : [];
-state.botanicals = Array.isArray(state.botanicals) ? state.botanicals : [];
-state.salePrep = state.salePrep || { packaged: [], materials: [], search: "", category: "all", type: "all" };
-state.salePrep.packaged = Array.isArray(state.salePrep.packaged) ? state.salePrep.packaged : [];
-state.salePrep.materials = Array.isArray(state.salePrep.materials)
-  ? state.salePrep.materials.map(normalizeMaterial)
-  : [];
-state.salePrep.search = state.salePrep.search || "";
-state.salePrep.category = state.salePrep.category || "all";
-state.salePrep.type = state.salePrep.type || "all";
-state.settings.typeThresholds = state.settings.typeThresholds || {};
-  }
-
   function formatDate(input) {
     if (!input) return "";
     const d = new Date(input);
@@ -241,6 +170,77 @@ state.settings.typeThresholds = state.settings.typeThresholds || {};
     return Math.floor((a - dt) / 86400000);
   }
 
+  function normalizeSource(source) {
+    return {
+      id: source?.id || uid(),
+      name: source?.name || "",
+      quantity: source?.quantity || "",
+      dateAdded: source?.dateAdded || todayString()
+    };
+  }
+
+  function normalizeMaterial(material) {
+    return {
+      id: material?.id || uid(),
+      name: material?.name || "",
+      qty: Math.max(0, parseInt(material?.qty || "0", 10)),
+      lowStockAt: Math.max(0, parseInt(material?.lowStockAt || "0", 10))
+    };
+  }
+
+  function normalizeColony(colony) {
+    return {
+      colonyName: colony?.colonyName || "",
+      typeName: colony?.typeName || "",
+      category: colony?.category || "",
+      typeImageUri: colony?.typeImageUri || "",
+      dateAdded: colony?.dateAdded || todayString(),
+      population: Math.max(0, parseInt(colony?.population || "0", 10)),
+      lastMisting: colony?.lastMisting || "",
+      lastBotanicalsCheck: colony?.lastBotanicalsCheck || "",
+      lastSubstrateCheck: colony?.lastSubstrateCheck || "",
+      lastSupplementalFeeding: colony?.lastSupplementalFeeding || "",
+      lastHusbandry: colony?.lastHusbandry || "",
+      customNote: colony?.customNote || "",
+      readyForSale: colony?.readyForSale === true,
+      history: Array.isArray(colony?.history) ? colony.history : [],
+      sources: Array.isArray(colony?.sources) ? colony.sources.map(normalizeSource) : []
+    };
+  }
+
+  async function loadState() {
+    const saved = await idbGet(STATE_KEY);
+    if (saved && typeof saved === "object") {
+      state = {
+        ...structuredCloneSafe(DEFAULT_STATE),
+        ...saved,
+        settings: {
+          ...DEFAULT_STATE.settings,
+          ...(saved.settings || {})
+        },
+        itemOrders: {
+          ...DEFAULT_STATE.itemOrders,
+          ...(saved.itemOrders || {})
+        }
+      };
+    } else {
+      state = structuredCloneSafe(DEFAULT_STATE);
+      await saveState();
+    }
+
+    state.colonies = Array.isArray(state.colonies) ? state.colonies.map(normalizeColony) : [];
+    state.botanicals = Array.isArray(state.botanicals) ? state.botanicals : [];
+    state.salePrep = state.salePrep || { packaged: [], materials: [], search: "", category: "all", type: "all" };
+    state.salePrep.packaged = Array.isArray(state.salePrep.packaged) ? state.salePrep.packaged : [];
+    state.salePrep.materials = Array.isArray(state.salePrep.materials)
+      ? state.salePrep.materials.map(normalizeMaterial)
+      : [];
+    state.salePrep.search = state.salePrep.search || "";
+    state.salePrep.category = state.salePrep.category || "all";
+    state.salePrep.type = state.salePrep.type || "all";
+    state.settings.typeThresholds = state.settings.typeThresholds || {};
+  }
+
   function getStatus(days) {
     if (days <= 3) return "green";
     if (days <= 10) return "yellow";
@@ -248,94 +248,94 @@ state.settings.typeThresholds = state.settings.typeThresholds || {};
   }
 
   function statusText(statusOrDays) {
-  if (statusOrDays === "green") return "Checked Recently";
-  if (statusOrDays === "yellow") return "Needs Attention Soon";
-  if (statusOrDays === "red") return "Needs Checked";
+    if (statusOrDays === "green") return "Checked Recently";
+    if (statusOrDays === "yellow") return "Needs Attention Soon";
+    if (statusOrDays === "red") return "Needs Checked";
 
-  if (statusOrDays <= 3) return "Checked Recently";
-  if (statusOrDays <= 10) return "Needs Attention Soon";
-  return "Needs Checked";
-}
-  
+    if (statusOrDays <= 3) return "Checked Recently";
+    if (statusOrDays <= 10) return "Needs Attention Soon";
+    return "Needs Checked";
+  }
+
   function defaultThresholds() {
-  return {
-    misting: { green: 3, yellow: 10 },
-    feeding: { green: 3, yellow: 10 },
-    substrate: { green: 3, yellow: 10 },
-    botanicals: { green: 3, yellow: 10 }
-  };
-}
+    return {
+      misting: { green: 3, yellow: 10 },
+      feeding: { green: 3, yellow: 10 },
+      substrate: { green: 3, yellow: 10 },
+      botanicals: { green: 3, yellow: 10 }
+    };
+  }
 
-function getTypeThresholds(typeName) {
-  const defaults = defaultThresholds();
-  const saved = state.settings.typeThresholds?.[typeName] || {};
+  function getTypeThresholds(typeName) {
+    const defaults = defaultThresholds();
+    const saved = state.settings.typeThresholds?.[typeName] || {};
 
-  return {
-    misting: {
-      green: Number(saved.misting?.green ?? defaults.misting.green),
-      yellow: Number(saved.misting?.yellow ?? defaults.misting.yellow)
-    },
-    feeding: {
-      green: Number(saved.feeding?.green ?? defaults.feeding.green),
-      yellow: Number(saved.feeding?.yellow ?? defaults.feeding.yellow)
-    },
-    substrate: {
-      green: Number(saved.substrate?.green ?? defaults.substrate.green),
-      yellow: Number(saved.substrate?.yellow ?? defaults.substrate.yellow)
-    },
-    botanicals: {
-      green: Number(saved.botanicals?.green ?? defaults.botanicals.green),
-      yellow: Number(saved.botanicals?.yellow ?? defaults.botanicals.yellow)
-    }
-  };
-}
+    return {
+      misting: {
+        green: Number(saved.misting?.green ?? defaults.misting.green),
+        yellow: Number(saved.misting?.yellow ?? defaults.misting.yellow)
+      },
+      feeding: {
+        green: Number(saved.feeding?.green ?? defaults.feeding.green),
+        yellow: Number(saved.feeding?.yellow ?? defaults.feeding.yellow)
+      },
+      substrate: {
+        green: Number(saved.substrate?.green ?? defaults.substrate.green),
+        yellow: Number(saved.substrate?.yellow ?? defaults.substrate.yellow)
+      },
+      botanicals: {
+        green: Number(saved.botanicals?.green ?? defaults.botanicals.green),
+        yellow: Number(saved.botanicals?.yellow ?? defaults.botanicals.yellow)
+      }
+    };
+  }
 
-function getTaskStatus(days, threshold) {
-  if (days <= threshold.green) return "green";
-  if (days <= threshold.yellow) return "yellow";
-  return "red";
-}
+  function getTaskStatus(days, threshold) {
+    if (days <= threshold.green) return "green";
+    if (days <= threshold.yellow) return "yellow";
+    return "red";
+  }
 
-function getColonyTaskStatuses(colony) {
-  const thresholds = getTypeThresholds(colony.typeName);
+  function getColonyTaskStatuses(colony) {
+    const thresholds = getTypeThresholds(colony.typeName);
 
-  const mistingDays = daysSince(colony.lastMisting);
-  const feedingDays = daysSince(colony.lastSupplementalFeeding);
-  const substrateDays = daysSince(colony.lastSubstrateCheck);
-  const botanicalsDays = daysSince(colony.lastBotanicalsCheck);
+    const mistingDays = daysSince(colony.lastMisting);
+    const feedingDays = daysSince(colony.lastSupplementalFeeding);
+    const substrateDays = daysSince(colony.lastSubstrateCheck);
+    const botanicalsDays = daysSince(colony.lastBotanicalsCheck);
 
-  return {
-    misting: {
-      days: mistingDays,
-      status: getTaskStatus(mistingDays, thresholds.misting),
-      threshold: thresholds.misting
-    },
-    feeding: {
-      days: feedingDays,
-      status: getTaskStatus(feedingDays, thresholds.feeding),
-      threshold: thresholds.feeding
-    },
-    substrate: {
-      days: substrateDays,
-      status: getTaskStatus(substrateDays, thresholds.substrate),
-      threshold: thresholds.substrate
-    },
-    botanicals: {
-      days: botanicalsDays,
-      status: getTaskStatus(botanicalsDays, thresholds.botanicals),
-      threshold: thresholds.botanicals
-    }
-  };
-}
+    return {
+      misting: {
+        days: mistingDays,
+        status: getTaskStatus(mistingDays, thresholds.misting),
+        threshold: thresholds.misting
+      },
+      feeding: {
+        days: feedingDays,
+        status: getTaskStatus(feedingDays, thresholds.feeding),
+        threshold: thresholds.feeding
+      },
+      substrate: {
+        days: substrateDays,
+        status: getTaskStatus(substrateDays, thresholds.substrate),
+        threshold: thresholds.substrate
+      },
+      botanicals: {
+        days: botanicalsDays,
+        status: getTaskStatus(botanicalsDays, thresholds.botanicals),
+        threshold: thresholds.botanicals
+      }
+    };
+  }
 
-function getOverallColonyStatus(colony) {
-  const tasks = getColonyTaskStatuses(colony);
-  const statuses = Object.values(tasks).map(t => t.status);
+  function getOverallColonyStatus(colony) {
+    const tasks = getColonyTaskStatuses(colony);
+    const statuses = Object.values(tasks).map(t => t.status);
 
-  if (statuses.includes("red")) return "red";
-  if (statuses.includes("yellow")) return "yellow";
-  return "green";
-}
+    if (statuses.includes("red")) return "red";
+    if (statuses.includes("yellow")) return "yellow";
+    return "green";
+  }
 
   function slug(str) {
     return (str || "").toLowerCase().replace(/[^a-z0-9]+/g, "_");
@@ -591,12 +591,12 @@ function getOverallColonyStatus(colony) {
     });
 
     if (tab === "colonies") renderColonies();
-if (tab === "population") renderPopulation();
-if (tab === "botanicals") renderBotanicals();
-if (tab === "prep") renderSalePrep();
-if (tab === "price") renderPriceSheet();
-if (tab === "guide") renderGuide();
-if (tab === "settings") renderSettings();
+    if (tab === "population") renderPopulation();
+    if (tab === "botanicals") renderBotanicals();
+    if (tab === "prep") renderSalePrep();
+    if (tab === "price") renderPriceSheet();
+    if (tab === "guide") renderGuide();
+    if (tab === "settings") renderSettings();
   }
 
   async function exportProfile() {
@@ -642,12 +642,13 @@ if (tab === "settings") renderSettings();
 
       state.colonies = Array.isArray(state.colonies) ? state.colonies.map(normalizeColony) : [];
       state.salePrep = state.salePrep || { packaged: [], materials: [], search: "", category: "all", type: "all" };
-state.salePrep.packaged = Array.isArray(state.salePrep.packaged) ? state.salePrep.packaged : [];
-state.salePrep.materials = Array.isArray(state.salePrep.materials) ? state.salePrep.materials.map(normalizeMaterial) : [];
-state.salePrep.search = state.salePrep.search || "";
-state.salePrep.category = state.salePrep.category || "all";
-state.salePrep.type = state.salePrep.type || "all";
-state.settings.typeThresholds = state.settings.typeThresholds || {};
+      state.salePrep.packaged = Array.isArray(state.salePrep.packaged) ? state.salePrep.packaged : [];
+      state.salePrep.materials = Array.isArray(state.salePrep.materials) ? state.salePrep.materials.map(normalizeMaterial) : [];
+      state.salePrep.search = state.salePrep.search || "";
+      state.salePrep.category = state.salePrep.category || "all";
+      state.salePrep.type = state.salePrep.type || "all";
+      state.settings.typeThresholds = state.settings.typeThresholds || {};
+
       refreshOrders();
       await saveState();
       applyHeaderBranding();
@@ -667,17 +668,17 @@ state.settings.typeThresholds = state.settings.typeThresholds || {};
     return state.colonies
       .slice()
       .sort((a, b) => {
-  const order = { red: 3, yellow: 2, green: 1 };
+        const order = { red: 3, yellow: 2, green: 1 };
 
-  const statusA = getOverallColonyStatus(a);
-  const statusB = getOverallColonyStatus(b);
+        const statusA = getOverallColonyStatus(a);
+        const statusB = getOverallColonyStatus(b);
 
-  if (order[statusB] !== order[statusA]) {
-    return order[statusB] - order[statusA];
-  }
+        if (order[statusB] !== order[statusA]) {
+          return order[statusB] - order[statusA];
+        }
 
-  return daysSince(b.lastHusbandry) - daysSince(a.lastHusbandry);
-})
+        return daysSince(b.lastHusbandry) - daysSince(a.lastHusbandry);
+      })
       .filter(c => {
         const sourceText = (c.sources || [])
           .map(s => `${s.name || ""} ${s.quantity || ""} ${s.dateAdded || ""}`)
@@ -689,9 +690,9 @@ state.settings.typeThresholds = state.settings.typeThresholds || {};
         if (category !== "all" && (c.category || "") !== category) return false;
 
         if (status !== "all") {
-  const s = getOverallColonyStatus(c);
-  if (s !== status) return false;
-}
+          const s = getOverallColonyStatus(c);
+          if (s !== status) return false;
+        }
 
         if (source !== "all") {
           const hasSource = (c.sources || []).some(s => (s.name || "") === source);
@@ -848,120 +849,120 @@ state.settings.typeThresholds = state.settings.typeThresholds || {};
   }
 
   function showAddColonyForm() {
-  const knownCats = ["Isopods", "Springtails", "Botanicals", ...uniqueCategories()]
-    .filter((v, i, a) => v && a.indexOf(v) === i);
+    const knownCats = ["Isopods", "Springtails", "Botanicals", ...uniqueCategories()]
+      .filter((v, i, a) => v && a.indexOf(v) === i);
 
-  app(`
-    <h2 class="iso-section-title">Add Colony</h2>
-    <p class="iso-subtext">Colony names must be unique. Type names can repeat.</p>
+    app(`
+      <h2 class="iso-section-title">Add Colony</h2>
+      <p class="iso-subtext">Colony names must be unique. Type names can repeat.</p>
 
-    <div class="iso-form-grid">
-      <div>
-        <label>Colony Name</label>
-        <input id="colonyName" placeholder="Red Panda Bin 1">
+      <div class="iso-form-grid">
+        <div>
+          <label>Colony Name</label>
+          <input id="colonyName" placeholder="Red Panda Bin 1">
+        </div>
+        <div>
+          <label>Type Name</label>
+          <input id="typeName" placeholder="Red Panda">
+        </div>
+        <div>
+          <label>Date Added</label>
+          <input id="dateAdded" value="${todayString()}" placeholder="mm/dd/yyyy">
+        </div>
+        <div>
+          <label>Population</label>
+          <input id="population" type="number" min="0" step="1" placeholder="0">
+        </div>
       </div>
-      <div>
-        <label>Type Name</label>
-        <input id="typeName" placeholder="Red Panda">
-      </div>
-      <div>
-        <label>Date Added</label>
-        <input id="dateAdded" value="${todayString()}" placeholder="mm/dd/yyyy">
-      </div>
-      <div>
-        <label>Population</label>
-        <input id="population" type="number" min="0" step="1" placeholder="0">
-      </div>
-    </div>
 
-    <div class="iso-form-grid">
-      <div>
-        <label>Category</label>
-        <select id="categorySelect">
-          ${knownCats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("")}
-          <option value="__custom__">Custom</option>
-        </select>
+      <div class="iso-form-grid">
+        <div>
+          <label>Category</label>
+          <select id="categorySelect">
+            ${knownCats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("")}
+            <option value="__custom__">Custom</option>
+          </select>
+        </div>
+        <div id="customCategoryWrap" style="display:none;">
+          <label>Custom Category</label>
+          <input id="customCategory" placeholder="Example: Millipedes">
+        </div>
       </div>
-      <div id="customCategoryWrap" style="display:none;">
-        <label>Custom Category</label>
-        <input id="customCategory" placeholder="Example: Millipedes">
+
+      <div class="iso-form-grid">
+        <div>
+          <label>Last Misting</label>
+          <input id="lastMisting" placeholder="mm/dd/yyyy">
+        </div>
+        <div>
+          <label>Last Botanicals Check</label>
+          <input id="lastBotanicalsCheck" placeholder="mm/dd/yyyy">
+        </div>
+        <div>
+          <label>Last Substrate Check</label>
+          <input id="lastSubstrateCheck" placeholder="mm/dd/yyyy">
+        </div>
+        <div>
+          <label>Last Supplemental Feeding</label>
+          <input id="lastSupplementalFeeding" placeholder="mm/dd/yyyy">
+        </div>
       </div>
-    </div>
 
-    <div class="iso-form-grid">
-      <div>
-        <label>Last Misting</label>
-        <input id="lastMisting" placeholder="mm/dd/yyyy">
+      <div class="iso-divider"></div>
+
+      <h3 class="iso-card-title" style="margin:0 0 10px 0;">Initial Source</h3>
+      <p class="iso-subtext" style="margin-top:0;">Optional now, and you can still add boosters later inside the colony.</p>
+
+      <div class="iso-form-grid">
+        <div>
+          <label>Source Name</label>
+          <input id="initialSourceName" placeholder="Resort To Bio">
+        </div>
+        <div>
+          <label>Quantity</label>
+          <input id="initialSourceQuantity" placeholder="200 count">
+        </div>
+        <div>
+          <label>Date Added</label>
+          <input id="initialSourceDate" value="${todayString()}" placeholder="mm/dd/yyyy">
+        </div>
       </div>
-      <div>
-        <label>Last Botanicals Check</label>
-        <input id="lastBotanicalsCheck" placeholder="mm/dd/yyyy">
+      
+      <div class="iso-divider"></div>
+
+      <h3 class="iso-card-title" style="margin:0 0 10px 0;">Sale Status</h3>
+
+      <div class="iso-form-grid">
+        <div>
+          <label>Ready For Sale</label>
+          <select id="readyForSale">
+            <option value="no" selected>Not Ready For Sale</option>
+            <option value="yes">Ready For Sale</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <label>Last Substrate Check</label>
-        <input id="lastSubstrateCheck" placeholder="mm/dd/yyyy">
+
+      <label>Type Picture</label>
+      <input id="typeImage" type="file" accept="image/*">
+
+      <label>Custom Note</label>
+      <textarea id="customNote" placeholder="Any notes for this colony..."></textarea>
+
+      <div class="iso-actions">
+        <button class="iso-btn iso-btn-primary" id="saveNewColonyBtn">Save Colony</button>
+        <button class="iso-btn" id="cancelAddColonyBtn">Cancel</button>
       </div>
-      <div>
-        <label>Last Supplemental Feeding</label>
-        <input id="lastSupplementalFeeding" placeholder="mm/dd/yyyy">
-      </div>
-    </div>
+    `);
 
-    <div class="iso-divider"></div>
+    const categorySelect = $("#categorySelect");
+    const customWrap = $("#customCategoryWrap");
+    categorySelect.addEventListener("change", () => {
+      customWrap.style.display = categorySelect.value === "__custom__" ? "block" : "none";
+    });
 
-    <h3 class="iso-card-title" style="margin:0 0 10px 0;">Initial Source</h3>
-    <p class="iso-subtext" style="margin-top:0;">Optional now, and you can still add boosters later inside the colony.</p>
-
-    <div class="iso-form-grid">
-      <div>
-        <label>Source Name</label>
-        <input id="initialSourceName" placeholder="Resort To Bio">
-      </div>
-      <div>
-        <label>Quantity</label>
-        <input id="initialSourceQuantity" placeholder="200 count">
-      </div>
-      <div>
-        <label>Date Added</label>
-        <input id="initialSourceDate" value="${todayString()}" placeholder="mm/dd/yyyy">
-      </div>
-    </div>
-    
-    <div class="iso-divider"></div>
-
-<h3 class="iso-card-title" style="margin:0 0 10px 0;">Sale Status</h3>
-
-<div class="iso-form-grid">
-  <div>
-    <label>Ready For Sale</label>
-    <select id="readyForSale">
-      <option value="no" selected>Not Ready For Sale</option>
-      <option value="yes">Ready For Sale</option>
-    </select>
-  </div>
-</div>
-
-    <label>Type Picture</label>
-    <input id="typeImage" type="file" accept="image/*">
-
-    <label>Custom Note</label>
-    <textarea id="customNote" placeholder="Any notes for this colony..."></textarea>
-
-    <div class="iso-actions">
-      <button class="iso-btn iso-btn-primary" id="saveNewColonyBtn">Save Colony</button>
-      <button class="iso-btn" id="cancelAddColonyBtn">Cancel</button>
-    </div>
-  `);
-
-  const categorySelect = $("#categorySelect");
-  const customWrap = $("#customCategoryWrap");
-  categorySelect.addEventListener("change", () => {
-    customWrap.style.display = categorySelect.value === "__custom__" ? "block" : "none";
-  });
-
-  $("#saveNewColonyBtn").onclick = saveNewColony;
-  $("#cancelAddColonyBtn").onclick = renderColonies;
-}
+    $("#saveNewColonyBtn").onclick = saveNewColony;
+    $("#cancelAddColonyBtn").onclick = renderColonies;
+  }
 
   function getChosenCategory(prefix = "") {
     const select = document.getElementById(prefix + "categorySelect");
@@ -973,75 +974,75 @@ state.settings.typeThresholds = state.settings.typeThresholds || {};
   }
 
   async function saveNewColony() {
-  const colonyName = $("#colonyName").value.trim();
-  const typeName = $("#typeName").value.trim();
-  const category = getChosenCategory("");
+    const colonyName = $("#colonyName").value.trim();
+    const typeName = $("#typeName").value.trim();
+    const category = getChosenCategory("");
 
-  if (!colonyName) return alert("Colony name is required.");
-  if (!typeName) return alert("Type name is required.");
-  if (!category) return alert("Category is required.");
+    if (!colonyName) return alert("Colony name is required.");
+    if (!typeName) return alert("Type name is required.");
+    if (!category) return alert("Category is required.");
 
-  if (state.colonies.some(c => c.colonyName.toLowerCase() === colonyName.toLowerCase())) {
-    return alert("Colony name already in use. Please choose a different colony name.");
-  }
+    if (state.colonies.some(c => c.colonyName.toLowerCase() === colonyName.toLowerCase())) {
+      return alert("Colony name already in use. Please choose a different colony name.");
+    }
 
-  const initialSourceName = ($("#initialSourceName")?.value || "").trim();
-  const initialSourceQuantity = ($("#initialSourceQuantity")?.value || "").trim();
-  const initialSourceDate = ($("#initialSourceDate")?.value || "").trim() || todayString();
+    const initialSourceName = ($("#initialSourceName")?.value || "").trim();
+    const initialSourceQuantity = ($("#initialSourceQuantity")?.value || "").trim();
+    const initialSourceDate = ($("#initialSourceDate")?.value || "").trim() || todayString();
 
-  const sources = [];
-  if (initialSourceName) {
-    sources.push({
-      id: uid(),
-      name: initialSourceName,
-      quantity: initialSourceQuantity,
-      dateAdded: initialSourceDate
+    const sources = [];
+    if (initialSourceName) {
+      sources.push({
+        id: uid(),
+        name: initialSourceName,
+        quantity: initialSourceQuantity,
+        dateAdded: initialSourceDate
+      });
+    }
+
+    const colony = normalizeColony({
+      colonyName,
+      typeName,
+      category,
+      typeImageUri: "",
+      dateAdded: $("#dateAdded").value.trim() || todayString(),
+      population: Math.max(0, parseInt($("#population").value || "0", 10)),
+      lastMisting: $("#lastMisting").value.trim(),
+      lastBotanicalsCheck: $("#lastBotanicalsCheck").value.trim(),
+      lastSubstrateCheck: $("#lastSubstrateCheck").value.trim(),
+      lastSupplementalFeeding: $("#lastSupplementalFeeding").value.trim(),
+      lastHusbandry: "",
+      customNote: $("#customNote").value.trim(),
+      readyForSale: ($("#readyForSale")?.value || "no") === "yes",
+      sources
     });
+
+    updateLastHusbandry(colony);
+    addHistory(colony, "Created colony", `Created colony ${colonyName}.`);
+
+    if (initialSourceName) {
+      addHistory(
+        colony,
+        "Added source",
+        `${initialSourceName}${initialSourceQuantity ? `, ${initialSourceQuantity}` : ""}${initialSourceDate ? `, ${initialSourceDate}` : ""}.`
+      );
+    }
+
+    const file = $("#typeImage").files[0];
+    if (file) {
+      colony.typeImageUri = await compressImageFile(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.72
+      });
+      addHistory(colony, "Added image", "Added colony image.");
+    }
+
+    state.colonies.push(colony);
+    refreshOrders();
+    await saveState();
+    renderColonies();
   }
-
-  const colony = normalizeColony({
-    colonyName,
-    typeName,
-    category,
-    typeImageUri: "",
-    dateAdded: $("#dateAdded").value.trim() || todayString(),
-    population: Math.max(0, parseInt($("#population").value || "0", 10)),
-    lastMisting: $("#lastMisting").value.trim(),
-    lastBotanicalsCheck: $("#lastBotanicalsCheck").value.trim(),
-    lastSubstrateCheck: $("#lastSubstrateCheck").value.trim(),
-    lastSupplementalFeeding: $("#lastSupplementalFeeding").value.trim(),
-    lastHusbandry: "",
-customNote: $("#customNote").value.trim(),
-readyForSale: ($("#readyForSale")?.value || "no") === "yes",
-sources
-  });
-
-  updateLastHusbandry(colony);
-  addHistory(colony, "Created colony", `Created colony ${colonyName}.`);
-
-  if (initialSourceName) {
-    addHistory(
-      colony,
-      "Added source",
-      `${initialSourceName}${initialSourceQuantity ? `, ${initialSourceQuantity}` : ""}${initialSourceDate ? `, ${initialSourceDate}` : ""}.`
-    );
-  }
-
-  const file = $("#typeImage").files[0];
-  if (file) {
-    colony.typeImageUri = await compressImageFile(file, {
-      maxWidth: 800,
-      maxHeight: 800,
-      quality: 0.72
-    });
-    addHistory(colony, "Added image", "Added colony image.");
-  }
-
-  state.colonies.push(colony);
-  refreshOrders();
-  await saveState();
-  renderColonies();
-}
 
   function renderSourcesList(colony, colonyIndex) {
     const sortedSources = (colony.sources || []).slice().sort((a, b) => {
@@ -1278,6 +1279,7 @@ sources
       lastSupplementalFeeding: original.lastSupplementalFeeding,
       lastHusbandry: original.lastHusbandry,
       customNote: original.customNote,
+      readyForSale: original.readyForSale,
       history: [],
       sources: structuredCloneSafe(original.sources || [])
     });
@@ -1368,14 +1370,14 @@ sources
       </div>
       
       <div class="iso-form-grid">
-  <div>
-    <label>Sale Status</label>
-    <select id="editReadyForSale">
-      <option value="no" ${!c.readyForSale ? "selected" : ""}>Not Ready For Sale</option>
-      <option value="yes" ${c.readyForSale ? "selected" : ""}>Ready For Sale</option>
-    </select>
-  </div>
-</div>
+        <div>
+          <label>Sale Status</label>
+          <select id="editReadyForSale">
+            <option value="no" ${!c.readyForSale ? "selected" : ""}>Not Ready For Sale</option>
+            <option value="yes" ${c.readyForSale ? "selected" : ""}>Ready For Sale</option>
+          </select>
+        </div>
+      </div>
 
       <label>Replace Type Picture</label>
       <input id="replaceTypeImage" type="file" accept="image/*">
@@ -1503,9 +1505,9 @@ sources
     c.lastBotanicalsCheck = $("#editBotanicals").value.trim();
     c.lastSubstrateCheck = $("#editSubstrate").value.trim();
     c.lastSupplementalFeeding = $("#editFeeding").value.trim();
-c.customNote = newNote;
-c.readyForSale = ($("#editReadyForSale")?.value || "no") === "yes";
-updateLastHusbandry(c);
+    c.customNote = newNote;
+    c.readyForSale = ($("#editReadyForSale")?.value || "no") === "yes";
+    updateLastHusbandry(c);
 
     if (oldNote !== newNote) {
       if (!oldNote && newNote) {
@@ -1556,10 +1558,10 @@ updateLastHusbandry(c);
     state.colonies.splice(index, 1);
     const typeStillExists = state.colonies.some(c => c.typeName === typeName);
     if (!typeStillExists) {
-  delete state.priceData[typeName];
-  delete state.settings.typeThresholds[typeName];
-  state.itemOrders.colonyTypes = (state.itemOrders.colonyTypes || []).filter(x => x !== typeName);
-}
+      delete state.priceData[typeName];
+      delete state.settings.typeThresholds[typeName];
+      state.itemOrders.colonyTypes = (state.itemOrders.colonyTypes || []).filter(x => x !== typeName);
+    }
 
     refreshOrders();
     await saveState();
@@ -1970,7 +1972,7 @@ updateLastHusbandry(c);
               <div>
                 <label>Section</label>
                 <select id="botsection_${slug(name)}">
-                  ${allSectionOptions.map(s => `<option value="${esc(s)}" ${((row.section || "Botanicals") === s) ? "selected" : ""}>${esc(s)}</option>`).join("")}
+                  ${allSectionOptions.map(s => `<option value="${esc(s)}" ${((row.section || "Botanicals") === s) ? "selected" : ""${esc(s)}</option>`).join("")}
                 </select>
               </div>
               <div>
@@ -2220,404 +2222,404 @@ updateLastHusbandry(c);
     }
   }
 
-function renderSalePrep() {
-  const prepSearch = (state.salePrep.search || "").trim().toLowerCase();
-  const prepCategory = state.salePrep.category || "all";
-  const prepType = state.salePrep.type || "all";
+  function renderSalePrep() {
+    const prepSearch = (state.salePrep.search || "").trim().toLowerCase();
+    const prepCategory = state.salePrep.category || "all";
+    const prepType = state.salePrep.type || "all";
 
-  const prepCategories = uniqueCategories();
-  const prepTypes = uniqueTypes();
+    const prepCategories = uniqueCategories();
+    const prepTypes = uniqueTypes();
 
-  const eligibleColonies = state.colonies
-    .map((colony, originalIndex) => ({ colony, originalIndex }))
-    .filter(row => row.colony.readyForSale === true)
-    .filter(row => {
-      const colony = row.colony;
-      const hay = `${colony.colonyName || ""} ${colony.typeName || ""}`.toLowerCase();
+    const eligibleColonies = state.colonies
+      .map((colony, originalIndex) => ({ colony, originalIndex }))
+      .filter(row => row.colony.readyForSale === true)
+      .filter(row => {
+        const colony = row.colony;
+        const hay = `${colony.colonyName || ""} ${colony.typeName || ""}`.toLowerCase();
 
-      if (prepSearch && !hay.includes(prepSearch)) return false;
-      if (prepCategory !== "all" && (colony.category || "") !== prepCategory) return false;
-      if (prepType !== "all" && (colony.typeName || "") !== prepType) return false;
-      return true;
-    })
-    .sort((a, b) => a.colony.colonyName.localeCompare(b.colony.colonyName));
+        if (prepSearch && !hay.includes(prepSearch)) return false;
+        if (prepCategory !== "all" && (colony.category || "") !== prepCategory) return false;
+        if (prepType !== "all" && (colony.typeName || "") !== prepType) return false;
+        return true;
+      })
+      .sort((a, b) => a.colony.colonyName.localeCompare(b.colony.colonyName));
 
-  const packaged = state.salePrep.packaged || [];
-  const materials = state.salePrep.materials || [];
+    const packaged = state.salePrep.packaged || [];
+    const materials = state.salePrep.materials || [];
 
-  let html = `
-    <h2 class="iso-section-title">For Sale Prep</h2>
-    <p class="iso-subtext">Prep inventory by subtracting from colony counts and moving it into packaged stock.</p>
+    let html = `
+      <h2 class="iso-section-title">For Sale Prep</h2>
+      <p class="iso-subtext">Prep inventory by subtracting from colony counts and moving it into packaged stock.</p>
 
-    <div class="iso-form-grid" style="margin-bottom:14px;">
-      <div>
-        <label>Search</label>
-        <input id="prepSearch" placeholder="Search colony or type" value="${esc(state.salePrep.search || "")}">
-      </div>
-      <div>
-        <label>Category</label>
-        <select id="prepCategoryFilter">
-          <option value="all"${prepCategory === "all" ? " selected" : ""}>All Categories</option>
-          ${prepCategories.map(cat => `<option value="${esc(cat)}"${prepCategory === cat ? " selected" : ""}>${esc(cat)}</option>`).join("")}
-        </select>
-      </div>
-      <div>
-        <label>Type</label>
-        <select id="prepTypeFilter">
-          <option value="all"${prepType === "all" ? " selected" : ""}>All Types</option>
-          ${prepTypes.map(type => `<option value="${esc(type)}"${prepType === type ? " selected" : ""}>${esc(type)}</option>`).join("")}
-        </select>
-      </div>
-    </div>
-  `;
-
-  html += `
-    <div class="iso-divider"></div>
-    <h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaging Materials</h3>
-    <div class="iso-actions" style="margin-bottom:12px;">
-      <button class="iso-btn iso-btn-primary" id="addMaterialBtn">+ Add Packaging Material</button>
-    </div>
-  `;
-
-  if (!materials.length) {
-    html += `<div class="iso-empty" style="margin-bottom:18px;">No packaging materials added yet.</div>`;
-  } else {
-    html += `<div class="iso-grid" style="margin-bottom:18px;">`;
-    materials.forEach(mat => {
-      const low = mat.lowStockAt > 0 && mat.qty <= mat.lowStockAt;
-      html += `
-        <div class="iso-card ${low ? "iso-status-red" : ""}">
-          <div class="iso-card-head">
-            <div>
-              <h3 class="iso-card-title">${esc(mat.name)}</h3>
-              <div class="iso-muted">Packaging Material</div>
-            </div>
-            <span class="iso-badge ${low ? "iso-badge-red" : ""}">${mat.qty}</span>
-          </div>
-          <div class="iso-meta">
-            <div><strong>Low Stock At:</strong> ${mat.lowStockAt}</div>
-          </div>
-          <div class="iso-actions">
-            <button class="iso-btn" data-edit-material="${mat.id}">Edit</button>
-            <button class="iso-btn iso-btn-danger" data-delete-material="${mat.id}">Delete</button>
-          </div>
+      <div class="iso-form-grid" style="margin-bottom:14px;">
+        <div>
+          <label>Search</label>
+          <input id="prepSearch" placeholder="Search colony or type" value="${esc(state.salePrep.search || "")}">
         </div>
-      `;
-    });
-    html += `</div>`;
-  }
-
-  html += `
-    <div class="iso-divider"></div>
-    <h3 class="iso-card-title" style="margin:0 0 10px 0;">Ready For Sale Colonies</h3>
-  `;
-
-  if (!eligibleColonies.length) {
-    html += `<div class="iso-empty">No ready-for-sale colonies match your filters.</div>`;
-  } else {
-    html += `<div class="iso-grid">`;
-
-    eligibleColonies.forEach(row => {
-      const colony = row.colony;
-      const originalIndex = row.originalIndex;
-
-      html += `
-        <div class="iso-card">
-          <div class="iso-card-head">
-            <div>
-              <h3 class="iso-card-title">${esc(colony.colonyName)}</h3>
-              <div class="iso-muted">${esc(colony.typeName)}</div>
-            </div>
-          </div>
-
-          <div class="iso-meta">
-            <div><strong>Available Population:</strong> ${Number(colony.population) || 0}</div>
-            <div><strong>Category:</strong> ${esc(colony.category || "-")}</div>
-          </div>
-
-          <div class="iso-form-grid" style="margin-top:12px;">
-            <div>
-              <label>Pack Count</label>
-              <input id="prepCount_${originalIndex}" type="number" min="1" step="1" value="10">
-            </div>
-            <div>
-              <label>How Many Packs</label>
-              <input id="prepPacks_${originalIndex}" type="number" min="1" step="1" value="1">
-            </div>
-            <div>
-              <label>Packaging Material</label>
-              <select id="prepMaterial_${originalIndex}">
-                <option value="">None</option>
-                ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-              </select>
-            </div>
-            <div>
-              <label>Material Qty Used</label>
-              <input id="prepMaterialQty_${originalIndex}" type="number" min="1" step="1" value="1">
-            </div>
-          </div>
-
-          <div class="iso-actions">
-            <button class="iso-btn iso-btn-primary" data-prep-index="${originalIndex}">Prep For Sale</button>
-          </div>
+        <div>
+          <label>Category</label>
+          <select id="prepCategoryFilter">
+            <option value="all"${prepCategory === "all" ? " selected" : ""}>All Categories</option>
+            ${prepCategories.map(cat => `<option value="${esc(cat)}"${prepCategory === cat ? " selected" : ""}>${esc(cat)}</option>`).join("")}
+          </select>
         </div>
-      `;
-    });
-
-    html += `</div>`;
-  }
-
-  html += `
-    <div class="iso-divider"></div>
-    <h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaged Inventory</h3>
-  `;
-
-  if (!packaged.length) {
-    html += `<div class="iso-empty">No packaged inventory yet.</div>`;
-  } else {
-    html += `<div class="iso-history-list">`;
-    packaged.forEach((item, i) => {
-      html += `
-        <div class="iso-history-item">
-          <div class="iso-history-time">${esc(item.datePacked || "-")}</div>
-          <div class="iso-history-text">
-            <strong>${esc(item.colonyName)}</strong> — ${esc(item.typeName)} — ${item.packs} pack(s) of ${item.packCount}
-            ${item.materialName ? `<br><span class="iso-muted">Material: ${esc(item.materialName)} x ${item.materialQtyUsed}</span>` : ""}
-          </div>
-          <div class="iso-actions" style="margin-top:8px;">
-            <button class="iso-btn iso-btn-danger" data-delete-packaged="${i}">Delete Packaged Entry</button>
-          </div>
+        <div>
+          <label>Type</label>
+          <select id="prepTypeFilter">
+            <option value="all"${prepType === "all" ? " selected" : ""}>All Types</option>
+            ${prepTypes.map(type => `<option value="${esc(type)}"${prepType === type ? " selected" : ""}>${esc(type)}</option>`).join("")}
+          </select>
         </div>
-      `;
+      </div>
+    `;
+
+    html += `
+      <div class="iso-divider"></div>
+      <h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaging Materials</h3>
+      <div class="iso-actions" style="margin-bottom:12px;">
+        <button class="iso-btn iso-btn-primary" id="addMaterialBtn">+ Add Packaging Material</button>
+      </div>
+    `;
+
+    if (!materials.length) {
+      html += `<div class="iso-empty" style="margin-bottom:18px;">No packaging materials added yet.</div>`;
+    } else {
+      html += `<div class="iso-grid" style="margin-bottom:18px;">`;
+      materials.forEach(mat => {
+        const low = mat.lowStockAt > 0 && mat.qty <= mat.lowStockAt;
+        html += `
+          <div class="iso-card ${low ? "iso-status-red" : ""}">
+            <div class="iso-card-head">
+              <div>
+                <h3 class="iso-card-title">${esc(mat.name)}</h3>
+                <div class="iso-muted">Packaging Material</div>
+              </div>
+              <span class="iso-badge ${low ? "iso-badge-red" : ""}">${mat.qty}</span>
+            </div>
+            <div class="iso-meta">
+              <div><strong>Low Stock At:</strong> ${mat.lowStockAt}</div>
+            </div>
+            <div class="iso-actions">
+              <button class="iso-btn" data-edit-material="${mat.id}">Edit</button>
+              <button class="iso-btn iso-btn-danger" data-delete-material="${mat.id}">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+
+    html += `
+      <div class="iso-divider"></div>
+      <h3 class="iso-card-title" style="margin:0 0 10px 0;">Ready For Sale Colonies</h3>
+    `;
+
+    if (!eligibleColonies.length) {
+      html += `<div class="iso-empty">No ready-for-sale colonies match your filters.</div>`;
+    } else {
+      html += `<div class="iso-grid">`;
+
+      eligibleColonies.forEach(row => {
+        const colony = row.colony;
+        const originalIndex = row.originalIndex;
+
+        html += `
+          <div class="iso-card">
+            <div class="iso-card-head">
+              <div>
+                <h3 class="iso-card-title">${esc(colony.colonyName)}</h3>
+                <div class="iso-muted">${esc(colony.typeName)}</div>
+              </div>
+            </div>
+
+            <div class="iso-meta">
+              <div><strong>Available Population:</strong> ${Number(colony.population) || 0}</div>
+              <div><strong>Category:</strong> ${esc(colony.category || "-")}</div>
+            </div>
+
+            <div class="iso-form-grid" style="margin-top:12px;">
+              <div>
+                <label>Pack Count</label>
+                <input id="prepCount_${originalIndex}" type="number" min="1" step="1" value="10">
+              </div>
+              <div>
+                <label>How Many Packs</label>
+                <input id="prepPacks_${originalIndex}" type="number" min="1" step="1" value="1">
+              </div>
+              <div>
+                <label>Packaging Material</label>
+                <select id="prepMaterial_${originalIndex}">
+                  <option value="">None</option>
+                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label>Material Qty Used</label>
+                <input id="prepMaterialQty_${originalIndex}" type="number" min="1" step="1" value="1">
+              </div>
+            </div>
+
+            <div class="iso-actions">
+              <button class="iso-btn iso-btn-primary" data-prep-index="${originalIndex}">Prep For Sale</button>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div>`;
+    }
+
+    html += `
+      <div class="iso-divider"></div>
+      <h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaged Inventory</h3>
+    `;
+
+    if (!packaged.length) {
+      html += `<div class="iso-empty">No packaged inventory yet.</div>`;
+    } else {
+      html += `<div class="iso-history-list">`;
+      packaged.forEach((item, i) => {
+        html += `
+          <div class="iso-history-item">
+            <div class="iso-history-time">${esc(item.datePacked || "-")}</div>
+            <div class="iso-history-text">
+              <strong>${esc(item.colonyName)}</strong> — ${esc(item.typeName)} — ${item.packs} pack(s) of ${item.packCount}
+              ${item.materialName ? `<br><span class="iso-muted">Material: ${esc(item.materialName)} x ${item.materialQtyUsed}</span>` : ""}
+            </div>
+            <div class="iso-actions" style="margin-top:8px;">
+              <button class="iso-btn iso-btn-danger" data-delete-packaged="${i}">Delete Packaged Entry</button>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+
+    app(html);
+
+    const prepSearchInput = $("#prepSearch");
+    const prepCategoryFilter = $("#prepCategoryFilter");
+    const prepTypeFilter = $("#prepTypeFilter");
+
+    if (prepSearchInput) {
+      prepSearchInput.addEventListener("input", debounce(() => {
+        state.salePrep.search = prepSearchInput.value || "";
+        renderSalePrep();
+      }, 250));
+    }
+
+    if (prepCategoryFilter) {
+      prepCategoryFilter.addEventListener("change", () => {
+        state.salePrep.category = prepCategoryFilter.value;
+        renderSalePrep();
+      });
+    }
+
+    if (prepTypeFilter) {
+      prepTypeFilter.addEventListener("change", () => {
+        state.salePrep.type = prepTypeFilter.value;
+        renderSalePrep();
+      });
+    }
+
+    const addMaterialBtn = $("#addMaterialBtn");
+    if (addMaterialBtn) addMaterialBtn.onclick = () => openMaterialModal();
+
+    $all("[data-edit-material]").forEach(btn => {
+      btn.onclick = () => openMaterialModal(btn.dataset.editMaterial);
     });
-    html += `</div>`;
-  }
 
-  app(html);
+    $all("[data-delete-material]").forEach(btn => {
+      btn.onclick = () => deleteMaterial(btn.dataset.deleteMaterial);
+    });
 
-  const prepSearchInput = $("#prepSearch");
-  const prepCategoryFilter = $("#prepCategoryFilter");
-  const prepTypeFilter = $("#prepTypeFilter");
+    $all("[data-prep-index]").forEach(btn => {
+      btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
+    });
 
-  if (prepSearchInput) {
-    prepSearchInput.addEventListener("input", debounce(() => {
-      state.salePrep.search = prepSearchInput.value || "";
-      renderSalePrep();
-    }, 250));
-  }
-
-  if (prepCategoryFilter) {
-    prepCategoryFilter.addEventListener("change", () => {
-      state.salePrep.category = prepCategoryFilter.value;
-      renderSalePrep();
+    $all("[data-delete-packaged]").forEach(btn => {
+      btn.onclick = () => deletePackagedEntry(Number(btn.dataset.deletePackaged));
     });
   }
 
-  if (prepTypeFilter) {
-    prepTypeFilter.addEventListener("change", () => {
-      state.salePrep.type = prepTypeFilter.value;
-      renderSalePrep();
-    });
-  }
+  async function prepColonyForSale(index) {
+    const colony = state.colonies[index];
+    if (!colony) return;
 
-  const addMaterialBtn = $("#addMaterialBtn");
-  if (addMaterialBtn) addMaterialBtn.onclick = () => openMaterialModal();
+    const packCountRaw = parseInt($(`#prepCount_${index}`)?.value || "0", 10);
+    const packsRaw = parseInt($(`#prepPacks_${index}`)?.value || "0", 10);
 
-  $all("[data-edit-material]").forEach(btn => {
-    btn.onclick = () => openMaterialModal(btn.dataset.editMaterial);
-  });
+    const packCount = Math.max(1, packCountRaw);
+    const packs = Math.max(1, packsRaw);
+    const totalToRemove = packCount * packs;
 
-  $all("[data-delete-material]").forEach(btn => {
-    btn.onclick = () => deleteMaterial(btn.dataset.deleteMaterial);
-  });
+    const materialId = $(`#prepMaterial_${index}`)?.value || "";
+    const materialQtyUsed = Math.max(1, parseInt($(`#prepMaterialQty_${index}`)?.value || "1", 10));
 
-  $all("[data-prep-index]").forEach(btn => {
-    btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
-  });
-
-  $all("[data-delete-packaged]").forEach(btn => {
-    btn.onclick = () => deletePackagedEntry(Number(btn.dataset.deletePackaged));
-  });
-}
-
-async function prepColonyForSale(index) {
-  const colony = state.colonies[index];
-  if (!colony) return;
-
-  const packCountRaw = parseInt($(`#prepCount_${index}`)?.value || "0", 10);
-  const packsRaw = parseInt($(`#prepPacks_${index}`)?.value || "0", 10);
-
-  const packCount = Math.max(1, packCountRaw);
-  const packs = Math.max(1, packsRaw);
-  const totalToRemove = packCount * packs;
-
-  const materialId = $(`#prepMaterial_${index}`)?.value || "";
-  const materialQtyUsed = Math.max(1, parseInt($(`#prepMaterialQty_${index}`)?.value || "1", 10));
-
-  if (!packCountRaw || packCountRaw <= 0) {
-    alert("Enter a valid pack count.");
-    return;
-  }
-
-  if (!packsRaw || packsRaw <= 0) {
-    alert("Enter a valid number of packs.");
-    return;
-  }
-
-  if (totalToRemove > Number(colony.population || 0)) {
-    alert("Not enough population in this colony.");
-    return;
-  }
-
-  let materialName = "";
-  if (materialId) {
-    const material = (state.salePrep.materials || []).find(m => m.id === materialId);
-    if (!material) {
-      alert("Selected packaging material not found.");
+    if (!packCountRaw || packCountRaw <= 0) {
+      alert("Enter a valid pack count.");
       return;
     }
 
-    if (materialQtyUsed > material.qty) {
-      alert(`Not enough ${material.name} in stock.`);
+    if (!packsRaw || packsRaw <= 0) {
+      alert("Enter a valid number of packs.");
       return;
     }
 
-    material.qty = Math.max(0, material.qty - materialQtyUsed);
-    materialName = material.name;
-  }
+    if (totalToRemove > Number(colony.population || 0)) {
+      alert("Not enough population in this colony.");
+      return;
+    }
 
-  colony.population = Math.max(0, Number(colony.population || 0) - totalToRemove);
+    let materialName = "";
+    if (materialId) {
+      const material = (state.salePrep.materials || []).find(m => m.id === materialId);
+      if (!material) {
+        alert("Selected packaging material not found.");
+        return;
+      }
 
-  state.salePrep.packaged.push({
-    colonyIndex: index,
-    colonyName: colony.colonyName,
-    typeName: colony.typeName,
-    packCount,
-    packs,
-    totalRemoved: totalToRemove,
-    datePacked: todayString(),
-    materialId,
-    materialName,
-    materialQtyUsed: materialId ? materialQtyUsed : 0
-  });
+      if (materialQtyUsed > material.qty) {
+        alert(`Not enough ${material.name} in stock.`);
+        return;
+      }
 
-  addHistory(
-    colony,
-    "Prepared for sale",
-    `Prepared ${packs} pack(s) of ${packCount}, removed ${totalToRemove} total${materialName ? `, used ${materialName} x ${materialQtyUsed}` : ""}.`
-  );
+      material.qty = Math.max(0, material.qty - materialQtyUsed);
+      materialName = material.name;
+    }
 
-  await saveState();
-  renderSalePrep();
-}
+    colony.population = Math.max(0, Number(colony.population || 0) - totalToRemove);
 
-async function deletePackagedEntry(index) {
-  const item = state.salePrep.packaged[index];
-  if (!item) return;
-
-  if (!confirm("Delete this packaged entry and restore the colony/material stock?")) return;
-
-  const colony =
-    typeof item.colonyIndex === "number" && state.colonies[item.colonyIndex]
-      ? state.colonies[item.colonyIndex]
-      : state.colonies.find(c => c.colonyName === item.colonyName);
-
-  if (colony) {
-    colony.population = Math.max(0, Number(colony.population || 0) + Number(item.totalRemoved || 0));
+    state.salePrep.packaged.push({
+      colonyIndex: index,
+      colonyName: colony.colonyName,
+      typeName: colony.typeName,
+      packCount,
+      packs,
+      totalRemoved: totalToRemove,
+      datePacked: todayString(),
+      materialId,
+      materialName,
+      materialQtyUsed: materialId ? materialQtyUsed : 0
+    });
 
     addHistory(
       colony,
-      "Packaged entry deleted",
-      `Restored ${item.totalRemoved} back to colony from deleted packaged entry.`
+      "Prepared for sale",
+      `Prepared ${packs} pack(s) of ${packCount}, removed ${totalToRemove} total${materialName ? `, used ${materialName} x ${materialQtyUsed}` : ""}.`
+    );
+
+    await saveState();
+    renderSalePrep();
+  }
+
+  async function deletePackagedEntry(index) {
+    const item = state.salePrep.packaged[index];
+    if (!item) return;
+
+    if (!confirm("Delete this packaged entry and restore the colony/material stock?")) return;
+
+    const colony =
+      typeof item.colonyIndex === "number" && state.colonies[item.colonyIndex]
+        ? state.colonies[item.colonyIndex]
+        : state.colonies.find(c => c.colonyName === item.colonyName);
+
+    if (colony) {
+      colony.population = Math.max(0, Number(colony.population || 0) + Number(item.totalRemoved || 0));
+
+      addHistory(
+        colony,
+        "Packaged entry deleted",
+        `Restored ${item.totalRemoved} back to colony from deleted packaged entry.`
+      );
+    }
+
+    if (item.materialId) {
+      const material = (state.salePrep.materials || []).find(m => m.id === item.materialId);
+      if (material) {
+        material.qty = Math.max(0, material.qty + Number(item.materialQtyUsed || 0));
+      }
+    }
+
+    state.salePrep.packaged.splice(index, 1);
+    await saveState();
+    renderSalePrep();
+  }
+
+  function openMaterialModal(materialId = "") {
+    const existing = (state.salePrep.materials || []).find(m => m.id === materialId);
+
+    openModal(
+      existing ? "Edit Packaging Material" : "Add Packaging Material",
+      `
+        <div class="iso-form-grid">
+          <div>
+            <label>Name</label>
+            <input id="materialName" value="${esc(existing?.name || "")}" placeholder="10 count deli cups">
+          </div>
+          <div>
+            <label>Quantity In Stock</label>
+            <input id="materialQty" type="number" min="0" step="1" value="${existing ? existing.qty : 0}">
+          </div>
+          <div>
+            <label>Low Stock At</label>
+            <input id="materialLowStock" type="number" min="0" step="1" value="${existing ? existing.lowStockAt : 0}">
+          </div>
+        </div>
+
+        <div class="iso-actions">
+          <button class="iso-btn iso-btn-primary" id="saveMaterialBtn">${existing ? "Save Changes" : "Add Material"}</button>
+          <button class="iso-btn" id="cancelMaterialBtn">Cancel</button>
+        </div>
+      `,
+      () => {
+        $("#saveMaterialBtn").onclick = () => saveMaterial(materialId);
+        $("#cancelMaterialBtn").onclick = closeModal;
+      }
     );
   }
 
-  if (item.materialId) {
-    const material = (state.salePrep.materials || []).find(m => m.id === item.materialId);
-    if (material) {
-      material.qty = Math.max(0, material.qty + Number(item.materialQtyUsed || 0));
+  async function saveMaterial(materialId = "") {
+    const name = ($("#materialName")?.value || "").trim();
+    const qty = Math.max(0, parseInt($("#materialQty")?.value || "0", 10));
+    const lowStockAt = Math.max(0, parseInt($("#materialLowStock")?.value || "0", 10));
+
+    if (!name) {
+      alert("Material name is required.");
+      return;
     }
+
+    if (!Array.isArray(state.salePrep.materials)) state.salePrep.materials = [];
+
+    if (materialId) {
+      const mat = state.salePrep.materials.find(m => m.id === materialId);
+      if (!mat) return;
+      mat.name = name;
+      mat.qty = qty;
+      mat.lowStockAt = lowStockAt;
+    } else {
+      state.salePrep.materials.push(normalizeMaterial({
+        name,
+        qty,
+        lowStockAt
+      }));
+    }
+
+    await saveState();
+    closeModal();
+    renderSalePrep();
   }
 
-  state.salePrep.packaged.splice(index, 1);
-  await saveState();
-  renderSalePrep();
-}
-
-function openMaterialModal(materialId = "") {
-  const existing = (state.salePrep.materials || []).find(m => m.id === materialId);
-
-  openModal(
-    existing ? "Edit Packaging Material" : "Add Packaging Material",
-    `
-      <div class="iso-form-grid">
-        <div>
-          <label>Name</label>
-          <input id="materialName" value="${esc(existing?.name || "")}" placeholder="10 count deli cups">
-        </div>
-        <div>
-          <label>Quantity In Stock</label>
-          <input id="materialQty" type="number" min="0" step="1" value="${existing ? existing.qty : 0}">
-        </div>
-        <div>
-          <label>Low Stock At</label>
-          <input id="materialLowStock" type="number" min="0" step="1" value="${existing ? existing.lowStockAt : 0}">
-        </div>
-      </div>
-
-      <div class="iso-actions">
-        <button class="iso-btn iso-btn-primary" id="saveMaterialBtn">${existing ? "Save Changes" : "Add Material"}</button>
-        <button class="iso-btn" id="cancelMaterialBtn">Cancel</button>
-      </div>
-    `,
-    () => {
-      $("#saveMaterialBtn").onclick = () => saveMaterial(materialId);
-      $("#cancelMaterialBtn").onclick = closeModal;
-    }
-  );
-}
-
-async function saveMaterial(materialId = "") {
-  const name = ($("#materialName")?.value || "").trim();
-  const qty = Math.max(0, parseInt($("#materialQty")?.value || "0", 10));
-  const lowStockAt = Math.max(0, parseInt($("#materialLowStock")?.value || "0", 10));
-
-  if (!name) {
-    alert("Material name is required.");
-    return;
-  }
-
-  if (!Array.isArray(state.salePrep.materials)) state.salePrep.materials = [];
-
-  if (materialId) {
-    const mat = state.salePrep.materials.find(m => m.id === materialId);
+  async function deleteMaterial(materialId) {
+    const mat = (state.salePrep.materials || []).find(m => m.id === materialId);
     if (!mat) return;
-    mat.name = name;
-    mat.qty = qty;
-    mat.lowStockAt = lowStockAt;
-  } else {
-    state.salePrep.materials.push(normalizeMaterial({
-      name,
-      qty,
-      lowStockAt
-    }));
+
+    if (!confirm(`Delete packaging material "${mat.name}"?`)) return;
+
+    state.salePrep.materials = (state.salePrep.materials || []).filter(m => m.id !== materialId);
+    await saveState();
+    renderSalePrep();
   }
-
-  await saveState();
-  closeModal();
-  renderSalePrep();
-}
-
-async function deleteMaterial(materialId) {
-  const mat = (state.salePrep.materials || []).find(m => m.id === materialId);
-  if (!mat) return;
-
-  if (!confirm(`Delete packaging material "${mat.name}"?`)) return;
-
-  state.salePrep.materials = (state.salePrep.materials || []).filter(m => m.id !== materialId);
-  await saveState();
-  renderSalePrep();
-}
 
   function renderGuide() {
     app(`
@@ -2677,211 +2679,211 @@ async function deleteMaterial(materialId) {
   }
 
   function renderSettings() {
-  const types = uniqueTypes();
-  const selectedType = types[0] || "";
-  const t = selectedType ? getTypeThresholds(selectedType) : defaultThresholds();
+    const types = uniqueTypes();
+    const selectedType = types[0] || "";
+    const t = selectedType ? getTypeThresholds(selectedType) : defaultThresholds();
 
-  app(`
-    <h2 class="iso-section-title">Settings</h2>
-    <p class="iso-subtext">Manage your local data, backups, and care thresholds here.</p>
+    app(`
+      <h2 class="iso-section-title">Settings</h2>
+      <p class="iso-subtext">Manage your local data, backups, and care thresholds here.</p>
 
-    <div class="iso-grid">
-      <div class="iso-card">
-        <h3 class="iso-card-title" style="margin-bottom:8px;">Backup</h3>
-        <p class="iso-subtext">Export your full local profile so you can move it to another device later.</p>
-        <div class="iso-actions">
-          <button class="iso-btn iso-btn-primary" id="exportProfileBtn">Export Profile Backup</button>
-        </div>
-      </div>
-
-      <div class="iso-card">
-        <h3 class="iso-card-title" style="margin-bottom:8px;">Restore</h3>
-        <p class="iso-subtext">Import a previously exported backup file.</p>
-        <div class="iso-actions">
-          <label class="iso-btn iso-btn-ghost" style="display:inline-flex;align-items:center;justify-content:center;">
-            Import Profile Backup
-            <input id="settingsImportBackup" type="file" accept=".json,application/json" style="display:none">
-          </label>
-        </div>
-      </div>
-
-      <div class="iso-card">
-        <h3 class="iso-card-title" style="margin-bottom:8px;">Danger Zone</h3>
-        <p class="iso-subtext">Clear all locally stored IsoTracker data from this device.</p>
-        <div class="iso-actions">
-          <button class="iso-btn iso-btn-danger" id="clearAllDataBtn">Clear All Data</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="iso-divider"></div>
-
-    <h3 class="iso-card-title" style="margin:0 0 10px 0;">Per-Type Husbandry Thresholds</h3>
-    <p class="iso-subtext">Set custom attention timing by type and by task. Green means checked recently, yellow means attention soon, red means needs checked.</p>
-
-    ${
-      types.length
-        ? `
-          <div class="iso-form-grid">
-            <div>
-              <label>Type</label>
-              <select id="thresholdTypeSelect">
-                ${types.map(type => `<option value="${esc(type)}">${esc(type)}</option>`).join("")}
-              </select>
-            </div>
-          </div>
-
-          <div id="thresholdEditor" class="iso-form-grid" style="margin-top:14px;">
-            <div>
-              <label>Misting Green / Yellow</label>
-              <input id="thr_misting_green" type="number" min="0" step="1" value="${t.misting.green}" placeholder="Green">
-              <input id="thr_misting_yellow" type="number" min="0" step="1" value="${t.misting.yellow}" placeholder="Yellow" style="margin-top:8px;">
-            </div>
-
-            <div>
-              <label>Feeding Green / Yellow</label>
-              <input id="thr_feeding_green" type="number" min="0" step="1" value="${t.feeding.green}" placeholder="Green">
-              <input id="thr_feeding_yellow" type="number" min="0" step="1" value="${t.feeding.yellow}" placeholder="Yellow" style="margin-top:8px;">
-            </div>
-
-            <div>
-              <label>Substrate Green / Yellow</label>
-              <input id="thr_substrate_green" type="number" min="0" step="1" value="${t.substrate.green}" placeholder="Green">
-              <input id="thr_substrate_yellow" type="number" min="0" step="1" value="${t.substrate.yellow}" placeholder="Yellow" style="margin-top:8px;">
-            </div>
-
-            <div>
-              <label>Botanicals Green / Yellow</label>
-              <input id="thr_botanicals_green" type="number" min="0" step="1" value="${t.botanicals.green}" placeholder="Green">
-              <input id="thr_botanicals_yellow" type="number" min="0" step="1" value="${t.botanicals.yellow}" placeholder="Yellow" style="margin-top:8px;">
-            </div>
-          </div>
-
+      <div class="iso-grid">
+        <div class="iso-card">
+          <h3 class="iso-card-title" style="margin-bottom:8px;">Backup</h3>
+          <p class="iso-subtext">Export your full local profile so you can move it to another device later.</p>
           <div class="iso-actions">
-            <button class="iso-btn iso-btn-primary" id="saveThresholdsBtn">Save Thresholds</button>
-            <button class="iso-btn" id="resetThresholdsBtn">Reset Type To Defaults</button>
+            <button class="iso-btn iso-btn-primary" id="exportProfileBtn">Export Profile Backup</button>
           </div>
-        `
-        : `<div class="iso-empty">Add at least one colony type to unlock custom thresholds.</div>`
+        </div>
+
+        <div class="iso-card">
+          <h3 class="iso-card-title" style="margin-bottom:8px;">Restore</h3>
+          <p class="iso-subtext">Import a previously exported backup file.</p>
+          <div class="iso-actions">
+            <label class="iso-btn iso-btn-ghost" style="display:inline-flex;align-items:center;justify-content:center;">
+              Import Profile Backup
+              <input id="settingsImportBackup" type="file" accept=".json,application/json" style="display:none">
+            </label>
+          </div>
+        </div>
+
+        <div class="iso-card">
+          <h3 class="iso-card-title" style="margin-bottom:8px;">Danger Zone</h3>
+          <p class="iso-subtext">Clear all locally stored IsoTracker data from this device.</p>
+          <div class="iso-actions">
+            <button class="iso-btn iso-btn-danger" id="clearAllDataBtn">Clear All Data</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="iso-divider"></div>
+
+      <h3 class="iso-card-title" style="margin:0 0 10px 0;">Per-Type Husbandry Thresholds</h3>
+      <p class="iso-subtext">Set custom attention timing by type and by task. Green means checked recently, yellow means attention soon, red means needs checked.</p>
+
+      ${
+        types.length
+          ? `
+            <div class="iso-form-grid">
+              <div>
+                <label>Type</label>
+                <select id="thresholdTypeSelect">
+                  ${types.map(type => `<option value="${esc(type)}">${esc(type)}</option>`).join("")}
+                </select>
+              </div>
+            </div>
+
+            <div id="thresholdEditor" class="iso-form-grid" style="margin-top:14px;">
+              <div>
+                <label>Misting Green / Yellow</label>
+                <input id="thr_misting_green" type="number" min="0" step="1" value="${t.misting.green}" placeholder="Green">
+                <input id="thr_misting_yellow" type="number" min="0" step="1" value="${t.misting.yellow}" placeholder="Yellow" style="margin-top:8px;">
+              </div>
+
+              <div>
+                <label>Feeding Green / Yellow</label>
+                <input id="thr_feeding_green" type="number" min="0" step="1" value="${t.feeding.green}" placeholder="Green">
+                <input id="thr_feeding_yellow" type="number" min="0" step="1" value="${t.feeding.yellow}" placeholder="Yellow" style="margin-top:8px;">
+              </div>
+
+              <div>
+                <label>Substrate Green / Yellow</label>
+                <input id="thr_substrate_green" type="number" min="0" step="1" value="${t.substrate.green}" placeholder="Green">
+                <input id="thr_substrate_yellow" type="number" min="0" step="1" value="${t.substrate.yellow}" placeholder="Yellow" style="margin-top:8px;">
+              </div>
+
+              <div>
+                <label>Botanicals Green / Yellow</label>
+                <input id="thr_botanicals_green" type="number" min="0" step="1" value="${t.botanicals.green}" placeholder="Green">
+                <input id="thr_botanicals_yellow" type="number" min="0" step="1" value="${t.botanicals.yellow}" placeholder="Yellow" style="margin-top:8px;">
+              </div>
+            </div>
+
+            <div class="iso-actions">
+              <button class="iso-btn iso-btn-primary" id="saveThresholdsBtn">Save Thresholds</button>
+              <button class="iso-btn" id="resetThresholdsBtn">Reset Type To Defaults</button>
+            </div>
+          `
+          : `<div class="iso-empty">Add at least one colony type to unlock custom thresholds.</div>`
+      }
+    `);
+
+    $("#exportProfileBtn").onclick = exportProfile;
+
+    const importInput = $("#settingsImportBackup");
+    if (importInput) {
+      importInput.onchange = function () {
+        importProfileFromInput(this);
+      };
     }
-  `);
 
-  $("#exportProfileBtn").onclick = exportProfile;
+    $("#clearAllDataBtn").onclick = clearAllData;
 
-  const importInput = $("#settingsImportBackup");
-  if (importInput) {
-    importInput.onchange = function () {
-      importProfileFromInput(this);
-    };
-  }
-
-  $("#clearAllDataBtn").onclick = clearAllData;
-
-  const thresholdTypeSelect = $("#thresholdTypeSelect");
-  if (thresholdTypeSelect) {
-    thresholdTypeSelect.onchange = function () {
-      renderSettingsForThresholdType(this.value);
-    };
-  }
-
-  const saveThresholdsBtn = $("#saveThresholdsBtn");
-  if (saveThresholdsBtn) {
-    saveThresholdsBtn.onclick = saveTypeThresholds;
-  }
-
-  const resetThresholdsBtn = $("#resetThresholdsBtn");
-  if (resetThresholdsBtn) {
-    resetThresholdsBtn.onclick = resetTypeThresholds;
-  }
-}
-
-function renderSettingsForThresholdType(typeName) {
-  renderSettings();
-  const select = $("#thresholdTypeSelect");
-  if (select) {
-    select.value = typeName;
-  }
-
-  const thresholds = getTypeThresholds(typeName);
-
-  const mg = $("#thr_misting_green");
-  const my = $("#thr_misting_yellow");
-  const fg = $("#thr_feeding_green");
-  const fy = $("#thr_feeding_yellow");
-  const sg = $("#thr_substrate_green");
-  const sy = $("#thr_substrate_yellow");
-  const bg = $("#thr_botanicals_green");
-  const by = $("#thr_botanicals_yellow");
-
-  if (mg) mg.value = thresholds.misting.green;
-  if (my) my.value = thresholds.misting.yellow;
-  if (fg) fg.value = thresholds.feeding.green;
-  if (fy) fy.value = thresholds.feeding.yellow;
-  if (sg) sg.value = thresholds.substrate.green;
-  if (sy) sy.value = thresholds.substrate.yellow;
-  if (bg) bg.value = thresholds.botanicals.green;
-  if (by) by.value = thresholds.botanicals.yellow;
-}
-
-async function saveTypeThresholds() {
-  const typeName = $("#thresholdTypeSelect")?.value || "";
-  if (!typeName) return;
-
-  const payload = {
-    misting: {
-      green: Math.max(0, parseInt($("#thr_misting_green")?.value || "3", 10)),
-      yellow: Math.max(0, parseInt($("#thr_misting_yellow")?.value || "10", 10))
-    },
-    feeding: {
-      green: Math.max(0, parseInt($("#thr_feeding_green")?.value || "3", 10)),
-      yellow: Math.max(0, parseInt($("#thr_feeding_yellow")?.value || "10", 10))
-    },
-    substrate: {
-      green: Math.max(0, parseInt($("#thr_substrate_green")?.value || "3", 10)),
-      yellow: Math.max(0, parseInt($("#thr_substrate_yellow")?.value || "10", 10))
-    },
-    botanicals: {
-      green: Math.max(0, parseInt($("#thr_botanicals_green")?.value || "3", 10)),
-      yellow: Math.max(0, parseInt($("#thr_botanicals_yellow")?.value || "10", 10))
+    const thresholdTypeSelect = $("#thresholdTypeSelect");
+    if (thresholdTypeSelect) {
+      thresholdTypeSelect.onchange = function () {
+        renderSettingsForThresholdType(this.value);
+      };
     }
-  };
 
-  if (payload.misting.yellow < payload.misting.green) payload.misting.yellow = payload.misting.green;
-  if (payload.feeding.yellow < payload.feeding.green) payload.feeding.yellow = payload.feeding.green;
-  if (payload.substrate.yellow < payload.substrate.green) payload.substrate.yellow = payload.substrate.green;
-  if (payload.botanicals.yellow < payload.botanicals.green) payload.botanicals.yellow = payload.botanicals.green;
+    const saveThresholdsBtn = $("#saveThresholdsBtn");
+    if (saveThresholdsBtn) {
+      saveThresholdsBtn.onclick = saveTypeThresholds;
+    }
 
-  state.settings.typeThresholds[typeName] = payload;
-  await saveState();
-  alert("Thresholds saved.");
-  renderSettingsForThresholdType(typeName);
-}
+    const resetThresholdsBtn = $("#resetThresholdsBtn");
+    if (resetThresholdsBtn) {
+      resetThresholdsBtn.onclick = resetTypeThresholds;
+    }
+  }
 
-async function resetTypeThresholds() {
-  const typeName = $("#thresholdTypeSelect")?.value || "";
-  if (!typeName) return;
+  function renderSettingsForThresholdType(typeName) {
+    renderSettings();
+    const select = $("#thresholdTypeSelect");
+    if (select) {
+      select.value = typeName;
+    }
 
-  delete state.settings.typeThresholds[typeName];
-  await saveState();
-  alert("Thresholds reset to defaults.");
-  renderSettingsForThresholdType(typeName);
-}
+    const thresholds = getTypeThresholds(typeName);
+
+    const mg = $("#thr_misting_green");
+    const my = $("#thr_misting_yellow");
+    const fg = $("#thr_feeding_green");
+    const fy = $("#thr_feeding_yellow");
+    const sg = $("#thr_substrate_green");
+    const sy = $("#thr_substrate_yellow");
+    const bg = $("#thr_botanicals_green");
+    const by = $("#thr_botanicals_yellow");
+
+    if (mg) mg.value = thresholds.misting.green;
+    if (my) my.value = thresholds.misting.yellow;
+    if (fg) fg.value = thresholds.feeding.green;
+    if (fy) fy.value = thresholds.feeding.yellow;
+    if (sg) sg.value = thresholds.substrate.green;
+    if (sy) sy.value = thresholds.substrate.yellow;
+    if (bg) bg.value = thresholds.botanicals.green;
+    if (by) by.value = thresholds.botanicals.yellow;
+  }
+
+  async function saveTypeThresholds() {
+    const typeName = $("#thresholdTypeSelect")?.value || "";
+    if (!typeName) return;
+
+    const payload = {
+      misting: {
+        green: Math.max(0, parseInt($("#thr_misting_green")?.value || "3", 10)),
+        yellow: Math.max(0, parseInt($("#thr_misting_yellow")?.value || "10", 10))
+      },
+      feeding: {
+        green: Math.max(0, parseInt($("#thr_feeding_green")?.value || "3", 10)),
+        yellow: Math.max(0, parseInt($("#thr_feeding_yellow")?.value || "10", 10))
+      },
+      substrate: {
+        green: Math.max(0, parseInt($("#thr_substrate_green")?.value || "3", 10)),
+        yellow: Math.max(0, parseInt($("#thr_substrate_yellow")?.value || "10", 10))
+      },
+      botanicals: {
+        green: Math.max(0, parseInt($("#thr_botanicals_green")?.value || "3", 10)),
+        yellow: Math.max(0, parseInt($("#thr_botanicals_yellow")?.value || "10", 10))
+      }
+    };
+
+    if (payload.misting.yellow < payload.misting.green) payload.misting.yellow = payload.misting.green;
+    if (payload.feeding.yellow < payload.feeding.green) payload.feeding.yellow = payload.feeding.green;
+    if (payload.substrate.yellow < payload.substrate.green) payload.substrate.yellow = payload.substrate.green;
+    if (payload.botanicals.yellow < payload.botanicals.green) payload.botanicals.yellow = payload.botanicals.green;
+
+    state.settings.typeThresholds[typeName] = payload;
+    await saveState();
+    alert("Thresholds saved.");
+    renderSettingsForThresholdType(typeName);
+  }
+
+  async function resetTypeThresholds() {
+    const typeName = $("#thresholdTypeSelect")?.value || "";
+    if (!typeName) return;
+
+    delete state.settings.typeThresholds[typeName];
+    await saveState();
+    alert("Thresholds reset to defaults.");
+    renderSettingsForThresholdType(typeName);
+  }
 
   async function clearAllData() {
     if (!confirm("Clear all saved data?")) return;
 
     state = structuredCloneSafe(DEFAULT_STATE);
-state.salePrep = {
-  packaged: [],
-  materials: [],
-  search: "",
-  category: "all",
-  type: "all"
-};
-colonyFilters.search = "";
-colonyFilters.category = "all";
-colonyFilters.status = "all";
-colonyFilters.source = "all";
+    state.salePrep = {
+      packaged: [],
+      materials: [],
+      search: "",
+      category: "all",
+      type: "all"
+    };
+    colonyFilters.search = "";
+    colonyFilters.category = "all";
+    colonyFilters.status = "all";
+    colonyFilters.source = "all";
 
     await saveState();
     applyHeaderBranding();
