@@ -1972,7 +1972,7 @@
               <div>
                 <label>Section</label>
                 <select id="botsection_${slug(name)}">
-                  ${allSectionOptions.map(s => `<option value="${esc(s)}" ${((row.section || "Botanicals") === s) ? "selected" : ""${esc(s)}</option>`).join("")}
+                  ${allSectionOptions.map(s => `<option value="${esc(s)}" ${((row.section || "Botanicals") === s) ? "selected" : ""}>${esc(s)}</option>`).join("")}
                 </select>
               </div>
               <div>
