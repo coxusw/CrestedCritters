@@ -641,13 +641,14 @@
       };
 
       state.colonies = Array.isArray(state.colonies) ? state.colonies.map(normalizeColony) : [];
-      state.salePrep = state.salePrep || { packaged: [], materials: [], search: "", category: "all", type: "all" };
-      state.salePrep.packaged = Array.isArray(state.salePrep.packaged) ? state.salePrep.packaged : [];
-      state.salePrep.materials = Array.isArray(state.salePrep.materials) ? state.salePrep.materials.map(normalizeMaterial) : [];
-      state.salePrep.search = state.salePrep.search || "";
-      state.salePrep.category = state.salePrep.category || "all";
-      state.salePrep.type = state.salePrep.type || "all";
-      state.settings.typeThresholds = state.settings.typeThresholds || {};
+state.botanicals = Array.isArray(state.botanicals) ? state.botanicals : [];
+state.salePrep = state.salePrep || { packaged: [], materials: [], search: "", category: "all", type: "all" };
+state.salePrep.packaged = Array.isArray(state.salePrep.packaged) ? state.salePrep.packaged : [];
+state.salePrep.materials = Array.isArray(state.salePrep.materials) ? state.salePrep.materials.map(normalizeMaterial) : [];
+state.salePrep.search = state.salePrep.search || "";
+state.salePrep.category = state.salePrep.category || "all";
+state.salePrep.type = state.salePrep.type || "all";
+state.settings.typeThresholds = state.settings.typeThresholds || {};
 
       refreshOrders();
       await saveState();
