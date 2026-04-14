@@ -3028,6 +3028,47 @@ link.click();
 alert("Image export failed.");
 }
 }
+
+function getPrepMaterialSlots(colonyIndex) {
+  return $all(`[data-prep-colony="${colonyIndex}"]`);
+}
+
+function getVisiblePrepMaterialSlots(colonyIndex) {
+  return getPrepMaterialSlots(colonyIndex).filter(slot => slot.style.display !== "none");
+}
+
+function syncPrepMaterialButtons(colonyIndex) {
+  const visibleCount = getVisiblePrepMaterialSlots(colonyIndex).length;
+  const addBtn = document.querySelector(`[data-add-prep-material="${colonyIndex}"]`);
+  const removeBtn = document.querySelector(`[data-remove-prep-material="${colonyIndex}"]`);
+
+  if (addBtn) addBtn.style.display = visibleCount >= 5 ? "none" : "";
+  if (removeBtn) removeBtn.style.display = visibleCount <= 1 ? "none" : "";
+}
+
+function addPrepMaterialSlot(colonyIndex) {
+  const hiddenSlot = getPrepMaterialSlots(colonyIndex).find(slot => slot.style.display === "none");
+  if (!hiddenSlot) return;
+
+  hiddenSlot.style.display = "grid";
+  syncPrepMaterialButtons(colonyIndex);
+}
+
+function removePrepMaterialSlot(colonyIndex) {
+  const visibleSlots = getVisiblePrepMaterialSlots(colonyIndex);
+  if (visibleSlots.length <= 1) return;
+
+  const lastSlot = visibleSlots[visibleSlots.length - 1];
+  const select = lastSlot.querySelector("select");
+  const qtyInput = lastSlot.querySelector("input");
+
+  if (select) select.value = "";
+  if (qtyInput) qtyInput.value = "1";
+
+  lastSlot.style.display = "none";
+  syncPrepMaterialButtons(colonyIndex);
+}
+
 function renderSalePrep() {
   const prepSearch = (state.salePrep.search || "").trim().toLowerCase();
   const prepCategory = state.salePrep.category || "all";
@@ -3095,7 +3136,7 @@ function renderSalePrep() {
     if (!eligibleColonies.length) {
       html += `<div class="iso-empty">No ready-for-sale colonies match your filters.</div>`;
     } else {
-      html += `<div class="iso-grid">`;
+      html += `<div class="iso-grid iso-prep-queue-grid">`;
 
       eligibleColonies.forEach(row => {
         const colony = row.colony;
@@ -3104,7 +3145,7 @@ function renderSalePrep() {
         const packLabel = colony.inventoryMode === "custom" ? `Per Pack (${esc(inventoryLabel)})` : "Pack Count";
 
         html += `
-          <div class="iso-card">
+          <div class="iso-card iso-prep-card">
             <div class="iso-card-head">
               <div>
                 <h3 class="iso-card-title">${esc(colony.colonyName)}</h3>
@@ -3118,78 +3159,33 @@ function renderSalePrep() {
               <div><strong>Inventory Mode:</strong> ${colony.inventoryMode === "custom" ? `Custom (${esc(colony.unitName || "units")})` : "Population"}</div>
             </div>
 
-            <div class="iso-form-grid" style="margin-top:12px;">
-              <div>
-                <label>${packLabel}</label>
-                <input id="prepCount_${originalIndex}" type="number" min="0.01" step="0.01" value="${colony.inventoryMode === "custom" ? "1" : "10"}">
-              </div>
-              <div>
-                <label>How Many Packs</label>
-                <input id="prepPacks_${originalIndex}" type="number" min="1" step="1" value="1">
-              </div>
-            </div>
+            <div class="iso-prep-material-list" style="margin-top:12px;">
+  ${Array.from({ length: 5 }).map((_, i) => `
+    <div
+      class="iso-prep-material-slot"
+      data-prep-colony="${originalIndex}"
+      data-prep-slot="${i}"
+      style="${i === 0 ? "display:grid;" : "display:none;"}"
+    >
+      <div>
+        <label>${i === 0 ? "Packaging Material" : `Additional Material ${i + 1}`}</label>
+        <select id="prepMaterial_${originalIndex}_${i}">
+          <option value="">None</option>
+          ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
+        </select>
+      </div>
+      <div>
+        <label>Qty Used</label>
+        <input id="prepMaterialQty_${originalIndex}_${i}" type="number" min="1" step="1" value="1">
+      </div>
+    </div>
+  `).join("")}
+</div>
 
-            <div class="iso-form-grid" style="margin-top:12px;">
-              <div>
-                <label>Material 1</label>
-                <select id="prepMaterial_${originalIndex}_0">
-                  <option value="">None</option>
-                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-                </select>
-              </div>
-              <div>
-                <label>Qty Used</label>
-                <input id="prepMaterialQty_${originalIndex}_0" type="number" min="1" step="1" value="1">
-              </div>
-
-              <div>
-                <label>Material 2</label>
-                <select id="prepMaterial_${originalIndex}_1">
-                  <option value="">None</option>
-                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-                </select>
-              </div>
-              <div>
-                <label>Qty Used</label>
-                <input id="prepMaterialQty_${originalIndex}_1" type="number" min="1" step="1" value="1">
-              </div>
-
-              <div>
-                <label>Material 3</label>
-                <select id="prepMaterial_${originalIndex}_2">
-                  <option value="">None</option>
-                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-                </select>
-              </div>
-              <div>
-                <label>Qty Used</label>
-                <input id="prepMaterialQty_${originalIndex}_2" type="number" min="1" step="1" value="1">
-              </div>
-
-              <div>
-                <label>Material 4</label>
-                <select id="prepMaterial_${originalIndex}_3">
-                  <option value="">None</option>
-                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-                </select>
-              </div>
-              <div>
-                <label>Qty Used</label>
-                <input id="prepMaterialQty_${originalIndex}_3" type="number" min="1" step="1" value="1">
-              </div>
-
-              <div>
-                <label>Material 5</label>
-                <select id="prepMaterial_${originalIndex}_4">
-                  <option value="">None</option>
-                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-                </select>
-              </div>
-              <div>
-                <label>Qty Used</label>
-                <input id="prepMaterialQty_${originalIndex}_4" type="number" min="1" step="1" value="1">
-              </div>
-            </div>
+<div class="iso-actions iso-prep-material-actions">
+  <button class="iso-btn" type="button" data-add-prep-material="${originalIndex}">+ Add Material</button>
+  <button class="iso-btn" type="button" data-remove-prep-material="${originalIndex}" style="display:none;">Remove Last</button>
+</div>
 
             <div class="iso-actions">
               <button class="iso-btn iso-btn-primary" data-prep-index="${originalIndex}">Prep For Sale</button>
@@ -3309,8 +3305,20 @@ function renderSalePrep() {
     }
 
     $all("[data-prep-index]").forEach(btn => {
-      btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
-    });
+  btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
+});
+
+$all("[data-add-prep-material]").forEach(btn => {
+  btn.onclick = () => addPrepMaterialSlot(Number(btn.dataset.addPrepMaterial));
+});
+
+$all("[data-remove-prep-material]").forEach(btn => {
+  btn.onclick = () => removePrepMaterialSlot(Number(btn.dataset.removePrepMaterial));
+});
+
+eligibleColonies.forEach(row => {
+  syncPrepMaterialButtons(row.originalIndex);
+});
   }
 
   if (prepView === "packaged") {
@@ -3431,6 +3439,19 @@ colony,
 );
 
 await saveState();
+
+getPrepMaterialSlots(index).forEach((slot, slotIndex) => {
+  if (slotIndex === 0) {
+    slot.style.display = "grid";
+  } else {
+    const select = slot.querySelector("select");
+    const qtyInput = slot.querySelector("input");
+    if (select) select.value = "";
+    if (qtyInput) qtyInput.value = "1";
+    slot.style.display = "none";
+  }
+});
+
 renderSalePrep();
 }
 
