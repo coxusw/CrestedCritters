@@ -985,3 +985,47 @@ textarea{
 .iso-panel .iso-tabs .iso-tab[data-price-view].active{
   background:rgba(111,161,122,0.15);
 }
+
+.iso-prep-queue-grid{
+  gap:14px;
+}
+
+.iso-prep-card{
+  padding:14px;
+}
+
+.iso-prep-material-list{
+  display:grid;
+  gap:10px;
+}
+
+.iso-prep-material-slot{
+  display:grid;
+  grid-template-columns:1.6fr .9fr;
+  gap:10px;
+  align-items:end;
+}
+
+.iso-prep-material-actions{
+  margin-top:10px;
+}
+
+@media (max-width: 700px){
+  .iso-prep-card{
+    padding:12px;
+  }
+
+  .iso-prep-material-slot{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+
+  .iso-prep-material-actions{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .iso-prep-material-actions .iso-btn{
+    width:100%;
+  }
+}
