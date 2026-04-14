@@ -40,11 +40,12 @@ priceSections: ["Isopods", "Springtails", "Botanicals", "Exotic", "Mid Tier", "B
 // new cleaner builder model
 priceSheetItems: [],
 priceSheetBuilder: {
-sourceKind: "colony",
-selectedColonyType: "",
-selectedBotanical: "",
-selectedCategory: "Isopods",
-selectedPosition: "end"
+  sourceKind: "colony",
+  selectedColonyType: "",
+  selectedBotanical: "",
+  selectedCategory: "Isopods",
+  selectedPosition: "end",
+  view: "builder"
 },
 
 itemOrders: {
@@ -421,9 +422,11 @@ state.priceSheetItems = migrateLegacyPriceSheetItems(state);
 }
 
 state.priceSheetBuilder = {
-...DEFAULT_STATE.priceSheetBuilder,
-...(state.priceSheetBuilder || {})
+  ...DEFAULT_STATE.priceSheetBuilder,
+  ...(state.priceSheetBuilder || {})
 };
+
+state.priceSheetBuilder.view = state.priceSheetBuilder.view || "builder";
 
 if (!state.priceSheetBuilder.selectedCategory) {
 state.priceSheetBuilder.selectedCategory = state.priceSections[0] || "Isopods";
@@ -876,8 +879,10 @@ state.priceSheetItems = migrateLegacyPriceSheetItems(state);
 }
 
 if (!state.priceSheetBuilder.selectedCategory) {
-state.priceSheetBuilder.selectedCategory = state.priceSections[0] || "Isopods";
+  state.priceSheetBuilder.selectedCategory = state.priceSections[0] || "Isopods";
 }
+
+state.priceSheetBuilder.view = state.priceSheetBuilder.view || "builder";
 
 refreshOrders();
 await saveState();
@@ -2494,339 +2499,384 @@ sourceName: item.sourceName
 return sections;
 }
 function renderPriceSheet() {
-refreshOrders();
+  refreshOrders();
 
-const sourceOptions = getPriceSheetSourceOptions();
-const allSectionOptions = getPriceSheetCategoryOptions();
-const groupedItems = getSheetItemsByCategory();
+  const sourceOptions = getPriceSheetSourceOptions();
+  const allSectionOptions = getPriceSheetCategoryOptions();
+  const groupedItems = getSheetItemsByCategory();
+  const priceView = state.priceSheetBuilder.view || "builder";
 
-if (!state.priceSheetBuilder.selectedCategory) {
-state.priceSheetBuilder.selectedCategory = allSectionOptions[0] || "Isopods";
-}
+  if (!state.priceSheetBuilder.selectedCategory) {
+    state.priceSheetBuilder.selectedCategory = allSectionOptions[0] || "Isopods";
+  }
 
-if (!state.priceSheetBuilder.selectedColonyType && sourceOptions.colonyTypes.length) {
-state.priceSheetBuilder.selectedColonyType = sourceOptions.colonyTypes[0].sourceName;
-}
+  if (!state.priceSheetBuilder.selectedColonyType && sourceOptions.colonyTypes.length) {
+    state.priceSheetBuilder.selectedColonyType = sourceOptions.colonyTypes[0].sourceName;
+  }
 
-if (!state.priceSheetBuilder.selectedBotanical && sourceOptions.botanicals.length) {
-state.priceSheetBuilder.selectedBotanical = sourceOptions.botanicals[0].sourceName;
-}
+  if (!state.priceSheetBuilder.selectedBotanical && sourceOptions.botanicals.length) {
+    state.priceSheetBuilder.selectedBotanical = sourceOptions.botanicals[0].sourceName;
+  }
 
-let html = `
-<h2 class="iso-section-title">Price Sheet</h2>
-<p class="iso-subtext">Add only the items you want on the sheet, choose the category, choose the position, then drag within each category if you want to fine tune the order.</p>
-<p class="iso-info-note">Blank price automatically shows as Not Available.</p>
+  let html = `
+    <h2 class="iso-section-title">Price Sheet</h2>
+    <p class="iso-subtext">Build a clean sales sheet by adding only the items you want, organizing categories, previewing the result, and managing branding separately.</p>
 
-<div class="iso-section-manager">
-<h3 style="margin:0 0 10px;">Price Sheet Sections</h3>
-<div style="margin-bottom:10px;">
-${allSectionOptions.map(s => `
-<span class="iso-section-chip">
-${esc(s)}
-${s !== "Botanicals" ? `<button class="iso-mini-btn" data-delete-section="${esc(s)}">✕</button>` : ""}
-</span>
-`).join("")}
-</div>
-<div class="iso-actions">
-<input id="newSectionName" placeholder="Add new section like Exotic or Mid Tier" style="max-width:320px;">
-<button class="iso-btn iso-btn-primary" id="addSectionBtn">Add Section</button>
-</div>
-</div>
+    <div class="iso-tabs" style="margin-bottom:18px;">
+      <button class="iso-tab ${priceView === "builder" ? "active" : ""}" data-price-view="builder">Builder</button>
+      <button class="iso-tab ${priceView === "preview" ? "active" : ""}" data-price-view="preview">Preview</button>
+      <button class="iso-tab ${priceView === "branding" ? "active" : ""}" data-price-view="branding">Branding</button>
+    </div>
+  `;
 
-<div class="iso-split">
-<div>
-<label>Sheet Title</label>
-<input id="businessName" value="${esc(state.settings.businessName || "")}" placeholder="IsoTracker">
+  if (priceView === "builder") {
+    html += `
+      <p class="iso-info-note">Blank price automatically shows as Not Available.</p>
 
-<label>Tagline</label>
-<input id="tagline" value="${esc(state.settings.tagline || "")}" placeholder="Colony Tracker & Price Sheets">
+      <div class="iso-section-manager">
+        <h3 style="margin:0 0 10px;">Price Sheet Sections</h3>
+        <div style="margin-bottom:10px;">
+          ${allSectionOptions.map(s => `
+            <span class="iso-section-chip">
+              ${esc(s)}
+              ${s !== "Botanicals" ? `<button class="iso-mini-btn" data-delete-section="${esc(s)}">✕</button>` : ""}
+            </span>
+          `).join("")}
+        </div>
+        <div class="iso-actions">
+          <input id="newSectionName" placeholder="Add new section like Exotic or Mid Tier" style="max-width:320px;">
+          <button class="iso-btn iso-btn-primary" id="addSectionBtn">Add Section</button>
+        </div>
+      </div>
 
-<label>Theme</label>
-<select id="themeSelect">
-<option value="botanical" ${state.settings.theme === "botanical" ? "selected" : ""}>Botanical Premium</option>
-<option value="parchment" ${state.settings.theme === "parchment" ? "selected" : ""}>Parchment Expo</option>
-<option value="luxe" ${state.settings.theme === "luxe" ? "selected" : ""}>Dark Luxe</option>
-</select>
+      <h3 class="iso-card-title" style="margin:0 0 10px 0;">Add Item To Price Sheet</h3>
+      <div class="iso-form-grid">
+        <div>
+          <label>Item Type</label>
+          <select id="sheetSourceKind">
+            <option value="colony" ${state.priceSheetBuilder.sourceKind !== "botanical" ? "selected" : ""}>Colony Type</option>
+            <option value="botanical" ${state.priceSheetBuilder.sourceKind === "botanical" ? "selected" : ""}>Botanical</option>
+          </select>
+        </div>
 
-<label>App / Header Logo</label>
-<input id="appLogoUpload" type="file" accept="image/*">
+        <div id="sheetColonyWrap" style="${state.priceSheetBuilder.sourceKind === "botanical" ? "display:none;" : ""}">
+          <label>Colony Type</label>
+          <select id="sheetColonyTypeSelect">
+            ${sourceOptions.colonyTypes.length
+              ? sourceOptions.colonyTypes.map(item => `
+                  <option value="${esc(item.sourceName)}" ${state.priceSheetBuilder.selectedColonyType === item.sourceName ? "selected" : ""}>${esc(item.display)}</option>
+                `).join("")
+              : `<option value="">No colony types</option>`
+            }
+          </select>
+        </div>
 
-<label>Price Sheet Logo</label>
-<input id="sheetLogoUpload" type="file" accept="image/*">
-</div>
+        <div id="sheetBotanicalWrap" style="${state.priceSheetBuilder.sourceKind === "botanical" ? "" : "display:none;"}">
+          <label>Botanical</label>
+          <select id="sheetBotanicalSelect">
+            ${sourceOptions.botanicals.length
+              ? sourceOptions.botanicals.map(item => `
+                  <option value="${esc(item.sourceName)}" ${state.priceSheetBuilder.selectedBotanical === item.sourceName ? "selected" : ""}>${esc(item.display)}</option>
+                `).join("")
+              : `<option value="">No botanicals</option>`
+            }
+          </select>
+        </div>
 
-<div>
-<label>Banner Text</label>
-<input id="promoText" value="${esc(state.settings.promoText || "")}" placeholder="Optional banner text">
+        <div>
+          <label>Category</label>
+          <select id="sheetCategorySelect">
+            ${allSectionOptions.map(cat => `
+              <option value="${esc(cat)}" ${state.priceSheetBuilder.selectedCategory === cat ? "selected" : ""}>${esc(cat)}</option>
+            `).join("")}
+          </select>
+        </div>
 
-<label>Footer Note</label>
-<input id="footerNote" value="${esc(state.settings.footerNote || "")}" placeholder="Optional footer note">
-</div>
-</div>
+        <div>
+          <label>Position</label>
+          <select id="sheetPositionSelect"></select>
+        </div>
+      </div>
 
-<div class="iso-divider"></div>
+      <div class="iso-actions" style="margin-bottom:16px;">
+        <button class="iso-btn iso-btn-primary" id="addSheetItemBtn">Add To Price Sheet</button>
+      </div>
+    `;
 
-<h3 class="iso-card-title" style="margin:0 0 10px 0;">Add Item To Price Sheet</h3>
-<div class="iso-form-grid">
-<div>
-<label>Item Type</label>
-<select id="sheetSourceKind">
-<option value="colony" ${state.priceSheetBuilder.sourceKind !== "botanical" ? "selected" : ""}>Colony Type</option>
-<option value="botanical" ${state.priceSheetBuilder.sourceKind === "botanical" ? "selected" : ""}>Botanical</option>
-</select>
-</div>
+    html += `<div class="iso-divider"></div>`;
+    html += `<h3 class="iso-card-title" style="margin:0 0 10px 0;">Current Price Sheet Items</h3>`;
 
-<div id="sheetColonyWrap" style="${state.priceSheetBuilder.sourceKind === "botanical" ? "display:none;" : ""}">
-<label>Colony Type</label>
-<select id="sheetColonyTypeSelect">
-${sourceOptions.colonyTypes.length
-? sourceOptions.colonyTypes.map(item => `
-<option value="${esc(item.sourceName)}" ${state.priceSheetBuilder.selectedColonyType === item.sourceName ? "selected" : ""}>${esc(item.display)}</option>
-`).join("")
-: `<option value="">No colony types</option>`
-}
-</select>
-</div>
+    if (!(state.priceSheetItems || []).length) {
+      html += `<div class="iso-empty">No items added to the price sheet yet.</div>`;
+    } else {
+      const orderedCategories = [...new Set([...allSectionOptions, ...Object.keys(groupedItems)])]
+        .filter(category => groupedItems[category] && groupedItems[category].length);
 
-<div id="sheetBotanicalWrap" style="${state.priceSheetBuilder.sourceKind === "botanical" ? "" : "display:none;"}">
-<label>Botanical</label>
-<select id="sheetBotanicalSelect">
-${sourceOptions.botanicals.length
-? sourceOptions.botanicals.map(item => `
-<option value="${esc(item.sourceName)}" ${state.priceSheetBuilder.selectedBotanical === item.sourceName ? "selected" : ""}>${esc(item.display)}</option>
-`).join("")
-: `<option value="">No botanicals</option>`
-}
-</select>
-</div>
+      html += `<div id="priceSheetBuilderGroups">`;
 
-<div>
-<label>Category</label>
-<select id="sheetCategorySelect">
-${allSectionOptions.map(cat => `
-<option value="${esc(cat)}" ${state.priceSheetBuilder.selectedCategory === cat ? "selected" : ""}>${esc(cat)}</option>
-`).join("")}
-</select>
-</div>
+      orderedCategories.forEach(category => {
+        const items = groupedItems[category] || [];
 
-<div>
-<label>Position</label>
-<select id="sheetPositionSelect"></select>
-</div>
-</div>
+        html += `
+          <div class="iso-sheet-builder-group">
+            <div class="iso-card" style="margin-bottom:14px;">
+              <div class="iso-card-head">
+                <div>
+                  <h3 class="iso-card-title">${esc(category)}</h3>
+                  <div class="iso-muted">${items.length} item${items.length === 1 ? "" : "s"}</div>
+                </div>
+              </div>
 
-<div class="iso-actions" style="margin-bottom:16px;">
-<button class="iso-btn iso-btn-primary" id="addSheetItemBtn">Add To Price Sheet</button>
-</div>
-`;
+              <div class="iso-history-list iso-sheet-builder-list" data-sheet-category="${esc(category)}">
+        `;
 
-html += `<div class="iso-divider"></div>`;
-html += `<h3 class="iso-card-title" style="margin:0 0 10px 0;">Current Price Sheet Items</h3>`;
+        items.forEach((item, idx) => {
+          html += `
+            <div class="iso-history-item iso-sheet-builder-item" draggable="true" data-sheet-item-id="${esc(item.id)}" data-sheet-item-category="${esc(category)}">
+              <div class="iso-builder-topline" style="margin-bottom:10px;">
+                <div class="iso-builder-left" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                  <span class="iso-drag-handle">☰</span>
+                  <strong>${esc(item.displayName || item.sourceName)}</strong>
+                  <span class="iso-muted">${item.sourceKind === "botanical" ? "Botanical" : "Colony Type"}</span>
+                  <span class="iso-muted">Position ${idx + 1}</span>
+                </div>
+                <div class="iso-actions" style="margin:0;">
+                  <button class="iso-btn" data-move-sheet-item="${esc(item.id)}" data-direction="up">↑</button>
+                  <button class="iso-btn" data-move-sheet-item="${esc(item.id)}" data-direction="down">↓</button>
+                  <button class="iso-btn iso-btn-danger" data-remove-sheet-item="${esc(item.id)}">Remove</button>
+                </div>
+              </div>
 
-if (!(state.priceSheetItems || []).length) {
-html += `<div class="iso-empty">No items added to the price sheet yet.</div>`;
-} else {
-const orderedCategories = [...new Set([...allSectionOptions, ...Object.keys(groupedItems)])]
-.filter(category => groupedItems[category] && groupedItems[category].length);
+              <div class="iso-form-grid">
+                <div>
+                  <label>Display Name</label>
+                  <input
+                    value="${esc(item.displayName || "")}"
+                    data-sheet-field="displayName"
+                    data-sheet-item="${esc(item.id)}"
+                    placeholder="Display name"
+                  >
+                </div>
+                <div>
+                  <label>Category</label>
+                  <select data-sheet-field="category" data-sheet-item="${esc(item.id)}">
+                    ${allSectionOptions.map(cat => `
+                      <option value="${esc(cat)}" ${(item.category || "") === cat ? "selected" : ""}>${esc(cat)}</option>
+                    `).join("")}
+                  </select>
+                </div>
+                <div>
+                  <label>Price</label>
+                  <input
+                    value="${esc(item.price || "")}"
+                    data-sheet-field="price"
+                    data-sheet-item="${esc(item.id)}"
+                    placeholder="$25"
+                  >
+                </div>
+                <div>
+                  <label>${item.sourceKind === "botanical" ? "Note" : "Count / Note"}</label>
+                  <input
+                    value="${esc(item.note || "")}"
+                    data-sheet-field="note"
+                    data-sheet-item="${esc(item.id)}"
+                    placeholder="${item.sourceKind === "botanical" ? "1 gallon, 5 pods" : "10ct"}"
+                  >
+                </div>
+              </div>
+            </div>
+          `;
+        });
 
-html += `<div id="priceSheetBuilderGroups">`;
+        html += `
+              </div>
+            </div>
+          </div>
+        `;
+      });
 
-orderedCategories.forEach(category => {
-const items = groupedItems[category] || [];
+      html += `</div>`;
+    }
+  }
 
-html += `
-<div class="iso-sheet-builder-group">
-<div class="iso-card" style="margin-bottom:14px;">
-<div class="iso-card-head">
-<div>
-<h3 class="iso-card-title">${esc(category)}</h3>
-<div class="iso-muted">${items.length} item${items.length === 1 ? "" : "s"}</div>
-</div>
-</div>
+  if (priceView === "preview") {
+    html += `
+      <p class="iso-info-note">This is the live preview of your current price sheet.</p>
 
-<div class="iso-history-list iso-sheet-builder-list" data-sheet-category="${esc(category)}">
-`;
+      <div class="iso-actions" style="margin-bottom:16px;">
+        <button class="iso-btn iso-btn-primary" id="exportPriceSheetBtn">Export Price Sheet Image</button>
+      </div>
 
-items.forEach((item, idx) => {
-html += `
-<div class="iso-history-item iso-sheet-builder-item" draggable="true" data-sheet-item-id="${esc(item.id)}" data-sheet-item-category="${esc(category)}">
-<div class="iso-builder-topline" style="margin-bottom:10px;">
-<div class="iso-builder-left" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-<span class="iso-drag-handle">☰</span>
-<strong>${esc(item.displayName || item.sourceName)}</strong>
-<span class="iso-muted">${item.sourceKind === "botanical" ? "Botanical" : "Colony Type"}</span>
-<span class="iso-muted">Position ${idx + 1}</span>
-</div>
-<div class="iso-actions" style="margin:0;">
-<button class="iso-btn" data-move-sheet-item="${esc(item.id)}" data-direction="up">↑</button>
-<button class="iso-btn" data-move-sheet-item="${esc(item.id)}" data-direction="down">↓</button>
-<button class="iso-btn iso-btn-danger" data-remove-sheet-item="${esc(item.id)}">Remove</button>
-</div>
-</div>
+      <div class="iso-sheet-wrap">
+        <div id="priceSheetPreviewMount"></div>
+      </div>
+    `;
+  }
 
-<div class="iso-form-grid">
-<div>
-<label>Display Name</label>
-<input
-value="${esc(item.displayName || "")}"
-data-sheet-field="displayName"
-data-sheet-item="${esc(item.id)}"
-placeholder="Display name"
->
-</div>
-<div>
-<label>Category</label>
-<select data-sheet-field="category" data-sheet-item="${esc(item.id)}">
-${allSectionOptions.map(cat => `
-<option value="${esc(cat)}" ${(item.category || "") === cat ? "selected" : ""}>${esc(cat)}</option>
-`).join("")}
-</select>
-</div>
-<div>
-<label>Price</label>
-<input
-value="${esc(item.price || "")}"
-data-sheet-field="price"
-data-sheet-item="${esc(item.id)}"
-placeholder="$25"
->
-</div>
-<div>
-<label>${item.sourceKind === "botanical" ? "Note" : "Count / Note"}</label>
-<input
-value="${esc(item.note || "")}"
-data-sheet-field="note"
-data-sheet-item="${esc(item.id)}"
-placeholder="${item.sourceKind === "botanical" ? "1 gallon, 5 pods" : "10ct"}"
->
-</div>
-</div>
-</div>
-`;
-});
+  if (priceView === "branding") {
+    html += `
+      <p class="iso-info-note">Manage title, logo, theme, banner text, and footer here.</p>
 
-html += `
-</div>
-</div>
-</div>
-`;
-});
+      <div class="iso-split">
+        <div>
+          <label>Sheet Title</label>
+          <input id="businessName" value="${esc(state.settings.businessName || "")}" placeholder="IsoTracker">
 
-html += `</div>`;
-}
+          <label>Tagline</label>
+          <input id="tagline" value="${esc(state.settings.tagline || "")}" placeholder="Colony Tracker & Price Sheets">
 
-html += `
-<div class="iso-actions">
-<button class="iso-btn iso-btn-primary" id="savePriceSheetBtn">Save Price Sheet</button>
-<button class="iso-btn iso-btn-primary" id="exportPriceSheetBtn">Export Price Sheet Image</button>
-</div>
+          <label>Theme</label>
+          <select id="themeSelect">
+            <option value="botanical" ${state.settings.theme === "botanical" ? "selected" : ""}>Botanical Premium</option>
+            <option value="parchment" ${state.settings.theme === "parchment" ? "selected" : ""}>Parchment Expo</option>
+            <option value="luxe" ${state.settings.theme === "luxe" ? "selected" : ""}>Dark Luxe</option>
+          </select>
 
-<div class="iso-sheet-wrap">
-<div id="priceSheetPreviewMount"></div>
-</div>
-`;
+          <label>App / Header Logo</label>
+          <input id="appLogoUpload" type="file" accept="image/*">
 
-app(html);
+          <label>Price Sheet Logo</label>
+          <input id="sheetLogoUpload" type="file" accept="image/*">
+        </div>
 
-$("#addSectionBtn").onclick = addSection;
-$all("[data-delete-section]").forEach(btn => {
-btn.onclick = () => deleteSection(btn.dataset.deleteSection);
-});
+        <div>
+          <label>Banner Text</label>
+          <input id="promoText" value="${esc(state.settings.promoText || "")}" placeholder="Optional banner text">
 
-const sourceKind = $("#sheetSourceKind");
-const categorySelect = $("#sheetCategorySelect");
-const colonySelect = $("#sheetColonyTypeSelect");
-const botanicalSelect = $("#sheetBotanicalSelect");
+          <label>Footer Note</label>
+          <input id="footerNote" value="${esc(state.settings.footerNote || "")}" placeholder="Optional footer note">
+        </div>
+      </div>
 
-if (sourceKind) {
-sourceKind.addEventListener("change", () => {
-updateBuilderSelectionsFromUi();
-syncBuilderFormVisibility();
+      <div class="iso-actions">
+        <button class="iso-btn iso-btn-primary" id="savePriceSheetBtn">Save Price Sheet</button>
+      </div>
+    `;
+  }
 
-const selected = getSelectedBuilderSource();
-const defaultCategory = getDefaultCategoryForSheetSource(selected.sourceKind, selected.sourceName);
-if ($("#sheetCategorySelect") && defaultCategory) {
-$("#sheetCategorySelect").value = defaultCategory;
-state.priceSheetBuilder.selectedCategory = defaultCategory;
-}
+  app(html);
 
-renderBuilderPositionOptions(state.priceSheetBuilder.selectedCategory || defaultCategory || "Isopods");
-});
-}
+  $all("[data-price-view]").forEach(btn => {
+    btn.onclick = () => {
+      state.priceSheetBuilder.view = btn.dataset.priceView || "builder";
+      renderPriceSheet();
+    };
+  });
 
-if (categorySelect) {
-categorySelect.addEventListener("change", () => {
-updateBuilderSelectionsFromUi();
-renderBuilderPositionOptions(categorySelect.value || "Isopods");
-});
-}
+  if (priceView === "builder") {
+    $("#addSectionBtn").onclick = addSection;
 
-if (colonySelect) {
-colonySelect.addEventListener("change", () => {
-updateBuilderSelectionsFromUi();
-if ($("#sheetSourceKind")?.value === "colony") {
-const defaultCategory = getDefaultCategoryForSheetSource("colony", colonySelect.value || "");
-if ($("#sheetCategorySelect") && defaultCategory) {
-$("#sheetCategorySelect").value = defaultCategory;
-state.priceSheetBuilder.selectedCategory = defaultCategory;
-renderBuilderPositionOptions(defaultCategory);
-}
-}
-});
-}
+    $all("[data-delete-section]").forEach(btn => {
+      btn.onclick = () => deleteSection(btn.dataset.deleteSection);
+    });
 
-if (botanicalSelect) {
-botanicalSelect.addEventListener("change", () => {
-updateBuilderSelectionsFromUi();
-if ($("#sheetSourceKind")?.value === "botanical") {
-const defaultCategory = getDefaultCategoryForSheetSource("botanical", botanicalSelect.value || "");
-if ($("#sheetCategorySelect") && defaultCategory) {
-$("#sheetCategorySelect").value = defaultCategory;
-state.priceSheetBuilder.selectedCategory = defaultCategory;
-renderBuilderPositionOptions(defaultCategory);
-}
-}
-});
-}
+    const sourceKind = $("#sheetSourceKind");
+    const categorySelect = $("#sheetCategorySelect");
+    const colonySelect = $("#sheetColonyTypeSelect");
+    const botanicalSelect = $("#sheetBotanicalSelect");
 
-const addSheetItemBtn = $("#addSheetItemBtn");
-if (addSheetItemBtn) {
-addSheetItemBtn.onclick = addSelectedItemToPriceSheet;
-}
+    if (sourceKind) {
+      sourceKind.addEventListener("change", () => {
+        updateBuilderSelectionsFromUi();
+        syncBuilderFormVisibility();
 
-$all("[data-remove-sheet-item]").forEach(btn => {
-btn.onclick = () => removePriceSheetItem(btn.dataset.removeSheetItem);
-});
+        const selected = getSelectedBuilderSource();
+        const defaultCategory = getDefaultCategoryForSheetSource(selected.sourceKind, selected.sourceName);
+        if ($("#sheetCategorySelect") && defaultCategory) {
+          $("#sheetCategorySelect").value = defaultCategory;
+          state.priceSheetBuilder.selectedCategory = defaultCategory;
+        }
 
-$all("[data-move-sheet-item]").forEach(btn => {
-btn.onclick = () => movePriceSheetItem(btn.dataset.moveSheetItem, btn.dataset.direction);
-});
+        renderBuilderPositionOptions(state.priceSheetBuilder.selectedCategory || defaultCategory || "Isopods");
+      });
+    }
 
-$all("[data-sheet-field]").forEach(el => {
-const field = el.dataset.sheetField;
-const itemId = el.dataset.sheetItem;
+    if (categorySelect) {
+      categorySelect.addEventListener("change", () => {
+        updateBuilderSelectionsFromUi();
+        renderBuilderPositionOptions(categorySelect.value || "Isopods");
+      });
+    }
 
-const handler = debounce(async () => {
-await updatePriceSheetItemField(itemId, field, el.value || "");
-}, 180);
+    if (colonySelect) {
+      colonySelect.addEventListener("change", () => {
+        updateBuilderSelectionsFromUi();
+        if ($("#sheetSourceKind")?.value === "colony") {
+          const defaultCategory = getDefaultCategoryForSheetSource("colony", colonySelect.value || "");
+          if ($("#sheetCategorySelect") && defaultCategory) {
+            $("#sheetCategorySelect").value = defaultCategory;
+            state.priceSheetBuilder.selectedCategory = defaultCategory;
+            renderBuilderPositionOptions(defaultCategory);
+          }
+        }
+      });
+    }
 
-el.addEventListener("input", handler);
+    if (botanicalSelect) {
+      botanicalSelect.addEventListener("change", () => {
+        updateBuilderSelectionsFromUi();
+        if ($("#sheetSourceKind")?.value === "botanical") {
+          const defaultCategory = getDefaultCategoryForSheetSource("botanical", botanicalSelect.value || "");
+          if ($("#sheetCategorySelect") && defaultCategory) {
+            $("#sheetCategorySelect").value = defaultCategory;
+            state.priceSheetBuilder.selectedCategory = defaultCategory;
+            renderBuilderPositionOptions(defaultCategory);
+          }
+        }
+      });
+    }
 
-if (el.tagName === "SELECT") {
-el.addEventListener("change", async () => {
-await updatePriceSheetItemField(itemId, field, el.value || "");
-renderPriceSheet();
-});
-}
-});
+    const addSheetItemBtn = $("#addSheetItemBtn");
+    if (addSheetItemBtn) {
+      addSheetItemBtn.onclick = addSelectedItemToPriceSheet;
+    }
 
-wirePriceSheetDragAndDrop();
-renderBuilderPositionOptions(state.priceSheetBuilder.selectedCategory || allSectionOptions[0] || "Isopods");
-syncBuilderFormVisibility();
-renderPriceSheetPreview();
+    $all("[data-remove-sheet-item]").forEach(btn => {
+      btn.onclick = () => removePriceSheetItem(btn.dataset.removeSheetItem);
+    });
 
-$("#savePriceSheetBtn").onclick = savePriceSheetBrandingSettings;
-$("#exportPriceSheetBtn").onclick = exportPriceSheetImage;
+    $all("[data-move-sheet-item]").forEach(btn => {
+      btn.onclick = () => movePriceSheetItem(btn.dataset.moveSheetItem, btn.dataset.direction);
+    });
+
+    $all("[data-sheet-field]").forEach(el => {
+      const field = el.dataset.sheetField;
+      const itemId = el.dataset.sheetItem;
+
+      const handler = debounce(async () => {
+        await updatePriceSheetItemField(itemId, field, el.value || "");
+      }, 180);
+
+      el.addEventListener("input", handler);
+
+      if (el.tagName === "SELECT") {
+        el.addEventListener("change", async () => {
+          await updatePriceSheetItemField(itemId, field, el.value || "");
+          renderPriceSheet();
+        });
+      }
+    });
+
+    wirePriceSheetDragAndDrop();
+    renderBuilderPositionOptions(state.priceSheetBuilder.selectedCategory || allSectionOptions[0] || "Isopods");
+    syncBuilderFormVisibility();
+  }
+
+  if (priceView === "preview") {
+    renderPriceSheetPreview();
+
+    const exportBtn = $("#exportPriceSheetBtn");
+    if (exportBtn) {
+      exportBtn.onclick = exportPriceSheetImage;
+    }
+  }
+
+  if (priceView === "branding") {
+    const saveBtn = $("#savePriceSheetBtn");
+    if (saveBtn) {
+      saveBtn.onclick = savePriceSheetBrandingSettings;
+    }
+  }
 }
 
 function wirePriceSheetDragAndDrop() {
@@ -3810,8 +3860,11 @@ state.priceSheetBuilder.selectedBotanical = botanicalNames[0] || "";
 }
 
 if (!state.priceSheetBuilder.selectedPosition) {
-state.priceSheetBuilder.selectedPosition = "end";
+  state.priceSheetBuilder.selectedPosition = "end";
 }
+
+if (!["builder", "preview", "branding"].includes(state.priceSheetBuilder.view)) {
+  state.priceSheetBuilder.view = "builder";
 }
 
 function repairPackagedEntryIndexes() {
