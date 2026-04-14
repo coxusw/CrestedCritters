@@ -184,6 +184,7 @@ input,select,textarea,button{
 .iso-section-head{
   display:flex;
   align-items:center;
+  justify-content:space-between;
   gap:10px;
   margin-bottom:10px;
   flex-wrap:wrap;
@@ -251,7 +252,7 @@ textarea{
   border-radius:12px;
   padding:11px 12px;
   outline:none;
-  transition:border-color .15s ease, background .15s ease;
+  transition:border-color .15s ease, background .15s ease, box-shadow .15s ease;
 }
 
 input::placeholder,
@@ -264,6 +265,7 @@ select:focus,
 textarea:focus{
   border-color:rgba(111,161,122,0.45);
   background:rgba(255,255,255,0.055);
+  box-shadow:0 0 0 3px rgba(111,161,122,0.10);
 }
 
 textarea{
@@ -289,6 +291,12 @@ textarea{
 .iso-btn:hover{
   transform:translateY(-1px);
   border-color:rgba(255,255,255,0.16);
+}
+
+.iso-btn:disabled{
+  opacity:.48;
+  cursor:not-allowed;
+  transform:none;
 }
 
 .iso-btn-primary{
@@ -464,6 +472,14 @@ textarea{
   line-height:1.5;
 }
 
+.iso-section-manager{
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.025);
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:18px;
+}
+
 .iso-section-chip{
   display:inline-flex;
   align-items:center;
@@ -519,10 +535,46 @@ textarea{
 }
 
 .iso-drag-handle{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:34px;
+  height:34px;
+  padding:0 8px;
   color:var(--muted);
   font-weight:900;
   cursor:grab;
   user-select:none;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:10px;
+  background:rgba(255,255,255,0.03);
+}
+
+.iso-drag-handle:active{
+  cursor:grabbing;
+}
+
+.iso-sheet-builder-group{
+  margin-bottom:18px;
+}
+
+.iso-sheet-builder-list{
+  display:grid;
+  gap:10px;
+  min-height:18px;
+}
+
+.iso-sheet-builder-item{
+  transition:opacity .15s ease, transform .15s ease, border-color .15s ease, background .15s ease;
+}
+
+.iso-sheet-builder-item.dragging{
+  opacity:.58;
+  transform:scale(.99);
+}
+
+.iso-sheet-builder-item:hover{
+  border-color:rgba(255,255,255,0.14);
 }
 
 .iso-sheet-wrap{
@@ -891,6 +943,26 @@ textarea{
 
   .iso-sheet-cards{
     grid-template-columns:1fr;
+  }
+
+  .iso-builder-topline,
+  .iso-card-head,
+  .iso-sheet-item-top,
+  .iso-section-head{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .iso-builder-left{
+    width:100%;
+  }
+
+  .iso-actions{
+    width:100%;
+  }
+
+  .iso-actions .iso-btn{
+    width:100%;
   }
 
   .iso-panel{
