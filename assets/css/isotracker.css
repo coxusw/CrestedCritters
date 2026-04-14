@@ -977,3 +977,11 @@ textarea{
 .iso-panel .iso-tabs .iso-tab[data-prep-view].active{
   background:rgba(111,161,122,0.15);
 }
+
+.iso-panel .iso-tabs .iso-tab[data-price-view]{
+  background:rgba(255,255,255,0.025);
+}
+
+.iso-panel .iso-tabs .iso-tab[data-price-view].active{
+  background:rgba(111,161,122,0.15);
+}
