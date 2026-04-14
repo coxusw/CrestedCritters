@@ -13,11 +13,12 @@ const DEFAULT_STATE = {
 colonies: [],
 botanicals: [],
 salePrep: {
-packaged: [],
-materials: [],
-search: "",
-category: "all",
-type: "all"
+  packaged: [],
+  materials: [],
+  search: "",
+  category: "all",
+  type: "all",
+  view: "queue"
 },
 settings: {
 appLogoUri: "",
@@ -385,11 +386,12 @@ state.colonies = Array.isArray(state.colonies) ? state.colonies.map(normalizeCol
 state.botanicals = Array.isArray(state.botanicals) ? state.botanicals : [];
 
 state.salePrep = state.salePrep || {
-packaged: [],
-materials: [],
-search: "",
-category: "all",
-type: "all"
+  packaged: [],
+  materials: [],
+  search: "",
+  category: "all",
+  type: "all",
+  view: "queue"
 };
 
 state.salePrep.packaged = Array.isArray(state.salePrep.packaged)
@@ -403,6 +405,7 @@ state.salePrep.materials = Array.isArray(state.salePrep.materials)
 state.salePrep.search = state.salePrep.search || "";
 state.salePrep.category = state.salePrep.category || "all";
 state.salePrep.type = state.salePrep.type || "all";
+state.salePrep.view = state.salePrep.view || "queue";
 
 state.settings.typeThresholds = state.settings.typeThresholds || {};
 state.priceSections = Array.isArray(state.priceSections) && state.priceSections.length
@@ -838,11 +841,12 @@ state.colonies = Array.isArray(state.colonies) ? state.colonies.map(normalizeCol
 state.botanicals = Array.isArray(state.botanicals) ? state.botanicals : [];
 
 state.salePrep = state.salePrep || {
-packaged: [],
-materials: [],
-search: "",
-category: "all",
-type: "all"
+  packaged: [],
+  materials: [],
+  search: "",
+  category: "all",
+  type: "all",
+  view: "queue"
 };
 
 state.salePrep.packaged = Array.isArray(state.salePrep.packaged)
@@ -856,6 +860,7 @@ state.salePrep.materials = Array.isArray(state.salePrep.materials)
 state.salePrep.search = state.salePrep.search || "";
 state.salePrep.category = state.salePrep.category || "all";
 state.salePrep.type = state.salePrep.type || "all";
+state.salePrep.view = state.salePrep.view || "queue";
 state.settings.typeThresholds = state.settings.typeThresholds || {};
 
 state.priceSections = Array.isArray(state.priceSections) && state.priceSections.length
@@ -2974,282 +2979,308 @@ alert("Image export failed.");
 }
 }
 function renderSalePrep() {
-const prepSearch = (state.salePrep.search || "").trim().toLowerCase();
-const prepCategory = state.salePrep.category || "all";
-const prepType = state.salePrep.type || "all";
+  const prepSearch = (state.salePrep.search || "").trim().toLowerCase();
+  const prepCategory = state.salePrep.category || "all";
+  const prepType = state.salePrep.type || "all";
+  const prepView = state.salePrep.view || "queue";
 
-const prepCategories = uniqueCategories();
-const prepTypes = uniqueTypes();
+  const prepCategories = uniqueCategories();
+  const prepTypes = uniqueTypes();
 
-const eligibleColonies = state.colonies
-.map((colony, originalIndex) => ({ colony, originalIndex }))
-.filter(row => row.colony.readyForSale === true)
-.filter(row => {
-const colony = row.colony;
-const hay = `${colony.colonyName || ""} ${colony.typeName || ""}`.toLowerCase();
+  const eligibleColonies = state.colonies
+    .map((colony, originalIndex) => ({ colony, originalIndex }))
+    .filter(row => row.colony.readyForSale === true)
+    .filter(row => {
+      const colony = row.colony;
+      const hay = `${colony.colonyName || ""} ${colony.typeName || ""}`.toLowerCase();
 
-if (prepSearch && !hay.includes(prepSearch)) return false;
-if (prepCategory !== "all" && (colony.category || "") !== prepCategory) return false;
-if (prepType !== "all" && (colony.typeName || "") !== prepType) return false;
-return true;
-})
-.sort((a, b) => a.colony.colonyName.localeCompare(b.colony.colonyName));
+      if (prepSearch && !hay.includes(prepSearch)) return false;
+      if (prepCategory !== "all" && (colony.category || "") !== prepCategory) return false;
+      if (prepType !== "all" && (colony.typeName || "") !== prepType) return false;
+      return true;
+    })
+    .sort((a, b) => a.colony.colonyName.localeCompare(b.colony.colonyName));
 
-const packaged = state.salePrep.packaged || [];
-const materials = state.salePrep.materials || [];
+  const packaged = state.salePrep.packaged || [];
+  const materials = state.salePrep.materials || [];
 
-let html = `
-<h2 class="iso-section-title">For Sale Prep</h2>
-<p class="iso-subtext">Prep inventory by subtracting from colony counts or custom units and moving it into packaged stock.</p>
+  let html = `
+    <h2 class="iso-section-title">For Sale Prep</h2>
+    <p class="iso-subtext">Prep inventory by subtracting from colony counts or custom units and moving it into packaged stock.</p>
 
-<div class="iso-form-grid" style="margin-bottom:14px;">
-<div>
-<label>Search</label>
-<input id="prepSearch" placeholder="Search colony or type" value="${esc(state.salePrep.search || "")}">
-</div>
-<div>
-<label>Category</label>
-<select id="prepCategoryFilter">
-<option value="all"${prepCategory === "all" ? " selected" : ""}>All Categories</option>
-${prepCategories.map(cat => `<option value="${esc(cat)}"${prepCategory === cat ? " selected" : ""}>${esc(cat)}</option>`).join("")}
-</select>
-</div>
-<div>
-<label>Type</label>
-<select id="prepTypeFilter">
-<option value="all"${prepType === "all" ? " selected" : ""}>All Types</option>
-${prepTypes.map(type => `<option value="${esc(type)}"${prepType === type ? " selected" : ""}>${esc(type)}</option>`).join("")}
-</select>
-</div>
-</div>
-`;
+    <div class="iso-tabs" style="margin-bottom:18px;">
+      <button class="iso-tab ${prepView === "queue" ? "active" : ""}" data-prep-view="queue">Prep Queue</button>
+      <button class="iso-tab ${prepView === "packaged" ? "active" : ""}" data-prep-view="packaged">Packaged Inventory</button>
+      <button class="iso-tab ${prepView === "materials" ? "active" : ""}" data-prep-view="materials">Packaging Materials</button>
+    </div>
+  `;
 
-html += `
-<div class="iso-divider"></div>
-<h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaging Materials</h3>
-<div class="iso-actions" style="margin-bottom:12px;">
-<button class="iso-btn iso-btn-primary" id="addMaterialBtn">+ Add Packaging Material</button>
-</div>
-`;
+  if (prepView === "queue") {
+    html += `
+      <div class="iso-form-grid" style="margin-bottom:14px;">
+        <div>
+          <label>Search</label>
+          <input id="prepSearch" placeholder="Search colony or type" value="${esc(state.salePrep.search || "")}">
+        </div>
+        <div>
+          <label>Category</label>
+          <select id="prepCategoryFilter">
+            <option value="all"${prepCategory === "all" ? " selected" : ""}>All Categories</option>
+            ${prepCategories.map(cat => `<option value="${esc(cat)}"${prepCategory === cat ? " selected" : ""}>${esc(cat)}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <label>Type</label>
+          <select id="prepTypeFilter">
+            <option value="all"${prepType === "all" ? " selected" : ""}>All Types</option>
+            ${prepTypes.map(type => `<option value="${esc(type)}"${prepType === type ? " selected" : ""}>${esc(type)}</option>`).join("")}
+          </select>
+        </div>
+      </div>
 
-if (!materials.length) {
-html += `<div class="iso-empty" style="margin-bottom:18px;">No packaging materials added yet.</div>`;
-} else {
-html += `<div class="iso-grid" style="margin-bottom:18px;">`;
-materials.forEach(mat => {
-const low = mat.lowStockAt > 0 && mat.qty <= mat.lowStockAt;
-html += `
-<div class="iso-card ${low ? "iso-status-red" : ""}">
-<div class="iso-card-head">
-<div>
-<h3 class="iso-card-title">${esc(mat.name)}</h3>
-<div class="iso-muted">Packaging Material</div>
-</div>
-<span class="iso-badge ${low ? "iso-badge-red" : ""}">${mat.qty}</span>
-</div>
-<div class="iso-meta">
-<div><strong>Low Stock At:</strong> ${mat.lowStockAt}</div>
-</div>
-<div class="iso-actions">
-<button class="iso-btn" data-edit-material="${mat.id}">Edit</button>
-<button class="iso-btn iso-btn-danger" data-delete-material="${mat.id}">Delete</button>
-</div>
-</div>
-`;
-});
-html += `</div>`;
-}
+      <div class="iso-divider"></div>
+      <h3 class="iso-card-title" style="margin:0 0 10px 0;">Ready For Sale Colonies</h3>
+    `;
 
-html += `
-<div class="iso-divider"></div>
-<h3 class="iso-card-title" style="margin:0 0 10px 0;">Ready For Sale Colonies</h3>
-`;
+    if (!eligibleColonies.length) {
+      html += `<div class="iso-empty">No ready-for-sale colonies match your filters.</div>`;
+    } else {
+      html += `<div class="iso-grid">`;
 
-if (!eligibleColonies.length) {
-html += `<div class="iso-empty">No ready-for-sale colonies match your filters.</div>`;
-} else {
-html += `<div class="iso-grid">`;
+      eligibleColonies.forEach(row => {
+        const colony = row.colony;
+        const originalIndex = row.originalIndex;
+        const inventoryLabel = getColonyUnitLabel(colony, "Population");
+        const packLabel = colony.inventoryMode === "custom" ? `Per Pack (${esc(inventoryLabel)})` : "Pack Count";
 
-eligibleColonies.forEach(row => {
-const colony = row.colony;
-const originalIndex = row.originalIndex;
-const inventoryLabel = getColonyUnitLabel(colony, "Population");
-const packLabel = colony.inventoryMode === "custom" ? `Per Pack (${esc(inventoryLabel)})` : "Pack Count";
+        html += `
+          <div class="iso-card">
+            <div class="iso-card-head">
+              <div>
+                <h3 class="iso-card-title">${esc(colony.colonyName)}</h3>
+                <div class="iso-muted">${esc(colony.typeName)}</div>
+              </div>
+            </div>
 
-html += `
-<div class="iso-card">
-<div class="iso-card-head">
-<div>
-<h3 class="iso-card-title">${esc(colony.colonyName)}</h3>
-<div class="iso-muted">${esc(colony.typeName)}</div>
-</div>
-</div>
+            <div class="iso-meta">
+              <div><strong>Available ${esc(inventoryLabel)}:</strong> ${formatQty(colony.population || 0)}</div>
+              <div><strong>Category:</strong> ${esc(colony.category || "-")}</div>
+              <div><strong>Inventory Mode:</strong> ${colony.inventoryMode === "custom" ? `Custom (${esc(colony.unitName || "units")})` : "Population"}</div>
+            </div>
 
-<div class="iso-meta">
-<div><strong>Available ${esc(inventoryLabel)}:</strong> ${formatQty(colony.population || 0)}</div>
-<div><strong>Category:</strong> ${esc(colony.category || "-")}</div>
-<div><strong>Inventory Mode:</strong> ${colony.inventoryMode === "custom" ? `Custom (${esc(colony.unitName || "units")})` : "Population"}</div>
-</div>
+            <div class="iso-form-grid" style="margin-top:12px;">
+              <div>
+                <label>${packLabel}</label>
+                <input id="prepCount_${originalIndex}" type="number" min="0.01" step="0.01" value="${colony.inventoryMode === "custom" ? "1" : "10"}">
+              </div>
+              <div>
+                <label>How Many Packs</label>
+                <input id="prepPacks_${originalIndex}" type="number" min="1" step="1" value="1">
+              </div>
+            </div>
 
-<div class="iso-form-grid" style="margin-top:12px;">
-<div>
-<label>${packLabel}</label>
-<input id="prepCount_${originalIndex}" type="number" min="0.01" step="0.01" value="${colony.inventoryMode === "custom" ? "1" : "10"}">
-</div>
-<div>
-<label>How Many Packs</label>
-<input id="prepPacks_${originalIndex}" type="number" min="1" step="1" value="1">
-</div>
-</div>
+            <div class="iso-form-grid" style="margin-top:12px;">
+              <div>
+                <label>Material 1</label>
+                <select id="prepMaterial_${originalIndex}_0">
+                  <option value="">None</option>
+                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label>Qty Used</label>
+                <input id="prepMaterialQty_${originalIndex}_0" type="number" min="1" step="1" value="1">
+              </div>
 
-<div class="iso-form-grid" style="margin-top:12px;">
-<div>
-<label>Material 1</label>
-<select id="prepMaterial_${originalIndex}_0">
-<option value="">None</option>
-${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-</select>
-</div>
-<div>
-<label>Qty Used</label>
-<input id="prepMaterialQty_${originalIndex}_0" type="number" min="1" step="1" value="1">
-</div>
+              <div>
+                <label>Material 2</label>
+                <select id="prepMaterial_${originalIndex}_1">
+                  <option value="">None</option>
+                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label>Qty Used</label>
+                <input id="prepMaterialQty_${originalIndex}_1" type="number" min="1" step="1" value="1">
+              </div>
 
-<div>
-<label>Material 2</label>
-<select id="prepMaterial_${originalIndex}_1">
-<option value="">None</option>
-${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-</select>
-</div>
-<div>
-<label>Qty Used</label>
-<input id="prepMaterialQty_${originalIndex}_1" type="number" min="1" step="1" value="1">
-</div>
+              <div>
+                <label>Material 3</label>
+                <select id="prepMaterial_${originalIndex}_2">
+                  <option value="">None</option>
+                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label>Qty Used</label>
+                <input id="prepMaterialQty_${originalIndex}_2" type="number" min="1" step="1" value="1">
+              </div>
 
-<div>
-<label>Material 3</label>
-<select id="prepMaterial_${originalIndex}_2">
-<option value="">None</option>
-${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-</select>
-</div>
-<div>
-<label>Qty Used</label>
-<input id="prepMaterialQty_${originalIndex}_2" type="number" min="1" step="1" value="1">
-</div>
+              <div>
+                <label>Material 4</label>
+                <select id="prepMaterial_${originalIndex}_3">
+                  <option value="">None</option>
+                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label>Qty Used</label>
+                <input id="prepMaterialQty_${originalIndex}_3" type="number" min="1" step="1" value="1">
+              </div>
 
-<div>
-<label>Material 4</label>
-<select id="prepMaterial_${originalIndex}_3">
-<option value="">None</option>
-${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-</select>
-</div>
-<div>
-<label>Qty Used</label>
-<input id="prepMaterialQty_${originalIndex}_3" type="number" min="1" step="1" value="1">
-</div>
+              <div>
+                <label>Material 5</label>
+                <select id="prepMaterial_${originalIndex}_4">
+                  <option value="">None</option>
+                  ${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
+                </select>
+              </div>
+              <div>
+                <label>Qty Used</label>
+                <input id="prepMaterialQty_${originalIndex}_4" type="number" min="1" step="1" value="1">
+              </div>
+            </div>
 
-<div>
-<label>Material 5</label>
-<select id="prepMaterial_${originalIndex}_4">
-<option value="">None</option>
-${materials.map(mat => `<option value="${esc(mat.id)}">${esc(mat.name)} (${mat.qty})</option>`).join("")}
-</select>
-</div>
-<div>
-<label>Qty Used</label>
-<input id="prepMaterialQty_${originalIndex}_4" type="number" min="1" step="1" value="1">
-</div>
-</div>
+            <div class="iso-actions">
+              <button class="iso-btn iso-btn-primary" data-prep-index="${originalIndex}">Prep For Sale</button>
+            </div>
+          </div>
+        `;
+      });
 
-<div class="iso-actions">
-<button class="iso-btn iso-btn-primary" data-prep-index="${originalIndex}">Prep For Sale</button>
-</div>
-</div>
-`;
-});
+      html += `</div>`;
+    }
+  }
 
-html += `</div>`;
-}
+  if (prepView === "packaged") {
+    html += `
+      <div class="iso-divider"></div>
+      <h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaged Inventory</h3>
+    `;
 
-html += `
-<div class="iso-divider"></div>
-<h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaged Inventory</h3>
-`;
+    if (!packaged.length) {
+      html += `<div class="iso-empty">No packaged inventory yet.</div>`;
+    } else {
+      html += `<div class="iso-history-list">`;
+      packaged.forEach((item, i) => {
+        html += `
+          <div class="iso-history-item">
+            <div class="iso-history-time">${esc(item.datePacked || "-")}</div>
+            <div class="iso-history-text">
+              <strong>${esc(item.colonyName)}</strong> — ${esc(item.typeName)} — ${item.packs} pack(s) of ${formatQty(item.packCount)}
+              ${item.inventoryMode === "custom" ? ` ${esc(item.unitName || "units")}` : ""}
+              ${item.materialsUsed && item.materialsUsed.length ? `
+                <br><span class="iso-muted">Materials: ${
+                  item.materialsUsed.map(m => `${esc(m.materialName)} x ${m.materialQtyUsed}`).join(", ")
+                }</span>
+              ` : ""}
+            </div>
+            <div class="iso-actions" style="margin-top:8px;">
+              <button class="iso-btn iso-btn-danger" data-delete-packaged="${i}">Delete Packaged Entry</button>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+  }
 
-if (!packaged.length) {
-html += `<div class="iso-empty">No packaged inventory yet.</div>`;
-} else {
-html += `<div class="iso-history-list">`;
-packaged.forEach((item, i) => {
-html += `
-<div class="iso-history-item">
-<div class="iso-history-time">${esc(item.datePacked || "-")}</div>
-<div class="iso-history-text">
-<strong>${esc(item.colonyName)}</strong> — ${esc(item.typeName)} — ${item.packs} pack(s) of ${formatQty(item.packCount)}
-${item.inventoryMode === "custom" ? ` ${esc(item.unitName || "units")}` : ""}
-${item.materialsUsed && item.materialsUsed.length ? `
-<br><span class="iso-muted">Materials: ${
-item.materialsUsed.map(m => `${esc(m.materialName)} x ${m.materialQtyUsed}`).join(", ")
-}</span>
-` : ""}
-</div>
-<div class="iso-actions" style="margin-top:8px;">
-<button class="iso-btn iso-btn-danger" data-delete-packaged="${i}">Delete Packaged Entry</button>
-</div>
-</div>
-`;
-});
-html += `</div>`;
-}
+  if (prepView === "materials") {
+    html += `
+      <div class="iso-divider"></div>
+      <h3 class="iso-card-title" style="margin:0 0 10px 0;">Packaging Materials</h3>
+      <div class="iso-actions" style="margin-bottom:12px;">
+        <button class="iso-btn iso-btn-primary" id="addMaterialBtn">+ Add Packaging Material</button>
+      </div>
+    `;
 
-app(html);
+    if (!materials.length) {
+      html += `<div class="iso-empty">No packaging materials added yet.</div>`;
+    } else {
+      html += `<div class="iso-grid">`;
+      materials.forEach(mat => {
+        const low = mat.lowStockAt > 0 && mat.qty <= mat.lowStockAt;
+        html += `
+          <div class="iso-card ${low ? "iso-status-red" : ""}">
+            <div class="iso-card-head">
+              <div>
+                <h3 class="iso-card-title">${esc(mat.name)}</h3>
+                <div class="iso-muted">Packaging Material</div>
+              </div>
+              <span class="iso-badge ${low ? "iso-badge-red" : ""}">${mat.qty}</span>
+            </div>
+            <div class="iso-meta">
+              <div><strong>Low Stock At:</strong> ${mat.lowStockAt}</div>
+            </div>
+            <div class="iso-actions">
+              <button class="iso-btn" data-edit-material="${mat.id}">Edit</button>
+              <button class="iso-btn iso-btn-danger" data-delete-material="${mat.id}">Delete</button>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+  }
 
-const prepSearchInput = $("#prepSearch");
-const prepCategoryFilter = $("#prepCategoryFilter");
-const prepTypeFilter = $("#prepTypeFilter");
+  app(html);
 
-if (prepSearchInput) {
-prepSearchInput.addEventListener("input", debounce(() => {
-state.salePrep.search = prepSearchInput.value || "";
-renderSalePrep();
-}, 250));
-}
+  $all("[data-prep-view]").forEach(btn => {
+    btn.onclick = () => {
+      state.salePrep.view = btn.dataset.prepView || "queue";
+      renderSalePrep();
+    };
+  });
 
-if (prepCategoryFilter) {
-prepCategoryFilter.addEventListener("change", () => {
-state.salePrep.category = prepCategoryFilter.value;
-renderSalePrep();
-});
-}
+  if (prepView === "queue") {
+    const prepSearchInput = $("#prepSearch");
+    const prepCategoryFilter = $("#prepCategoryFilter");
+    const prepTypeFilter = $("#prepTypeFilter");
 
-if (prepTypeFilter) {
-prepTypeFilter.addEventListener("change", () => {
-state.salePrep.type = prepTypeFilter.value;
-renderSalePrep();
-});
-}
+    if (prepSearchInput) {
+      prepSearchInput.addEventListener("input", debounce(() => {
+        state.salePrep.search = prepSearchInput.value || "";
+        renderSalePrep();
+      }, 250));
+    }
 
-const addMaterialBtn = $("#addMaterialBtn");
-if (addMaterialBtn) addMaterialBtn.onclick = () => openMaterialModal();
+    if (prepCategoryFilter) {
+      prepCategoryFilter.addEventListener("change", () => {
+        state.salePrep.category = prepCategoryFilter.value;
+        renderSalePrep();
+      });
+    }
 
-$all("[data-edit-material]").forEach(btn => {
-btn.onclick = () => openMaterialModal(btn.dataset.editMaterial);
-});
+    if (prepTypeFilter) {
+      prepTypeFilter.addEventListener("change", () => {
+        state.salePrep.type = prepTypeFilter.value;
+        renderSalePrep();
+      });
+    }
 
-$all("[data-delete-material]").forEach(btn => {
-btn.onclick = () => deleteMaterial(btn.dataset.deleteMaterial);
-});
+    $all("[data-prep-index]").forEach(btn => {
+      btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
+    });
+  }
 
-$all("[data-prep-index]").forEach(btn => {
-btn.onclick = () => prepColonyForSale(Number(btn.dataset.prepIndex));
-});
+  if (prepView === "packaged") {
+    $all("[data-delete-packaged]").forEach(btn => {
+      btn.onclick = () => deletePackagedEntry(Number(btn.dataset.deletePackaged));
+    });
+  }
 
-$all("[data-delete-packaged]").forEach(btn => {
-btn.onclick = () => deletePackagedEntry(Number(btn.dataset.deletePackaged));
-});
+  if (prepView === "materials") {
+    const addMaterialBtn = $("#addMaterialBtn");
+    if (addMaterialBtn) addMaterialBtn.onclick = () => openMaterialModal();
+
+    $all("[data-edit-material]").forEach(btn => {
+      btn.onclick = () => openMaterialModal(btn.dataset.editMaterial);
+    });
+
+    $all("[data-delete-material]").forEach(btn => {
+      btn.onclick = () => deleteMaterial(btn.dataset.deleteMaterial);
+    });
+  }
 }
 
 async function prepColonyForSale(index) {
@@ -3731,11 +3762,12 @@ if (!confirm("Clear all saved data?")) return;
 
 state = structuredCloneSafe(DEFAULT_STATE);
 state.salePrep = {
-packaged: [],
-materials: [],
-search: "",
-category: "all",
-type: "all"
+  packaged: [],
+  materials: [],
+  search: "",
+  category: "all",
+  type: "all",
+  view: "queue"
 };
 
 colonyFilters.search = "";
