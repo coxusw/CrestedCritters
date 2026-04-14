@@ -969,3 +969,11 @@ textarea{
     padding:14px;
   }
 }
+
+.iso-panel .iso-tabs .iso-tab[data-prep-view]{
+  background:rgba(255,255,255,0.025);
+}
+
+.iso-panel .iso-tabs .iso-tab[data-prep-view].active{
+  background:rgba(111,161,122,0.15);
+}
