@@ -3866,6 +3866,7 @@ if (!state.priceSheetBuilder.selectedPosition) {
 if (!["builder", "preview", "branding"].includes(state.priceSheetBuilder.view)) {
   state.priceSheetBuilder.view = "builder";
 }
+}
 
 function repairPackagedEntryIndexes() {
 (state.salePrep?.packaged || []).forEach(entry => {
