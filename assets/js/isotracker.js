@@ -3345,16 +3345,31 @@ async function prepColonyForSale(index) {
 const colony = state.colonies[index];
 if (!colony) return;
 
-const packCountRaw = sanitizeQuantity($(`#prepCount_${index}`)?.value || "0");
-const packsRaw = parseInt($(`#prepPacks_${index}`)?.value || "0", 10);
+const packCountEl = document.getElementById(`prepCount_${index}`);
+const packsEl = document.getElementById(`prepPacks_${index}`);
 
-const packCount = packCountRaw;
-const packs = Math.max(1, packsRaw);
+if (!packCountEl || !packsEl) {
+  alert("Prep inputs could not be found for this colony card.");
+  return;
+}
+
+const packCountValue = String(packCountEl.value || "").trim();
+const packsValue = String(packsEl.value || "").trim();
+
+const packCount = sanitizeQuantity(packCountValue);
+const packs = Math.max(1, parseInt(packsValue || "0", 10));
 const totalToRemove = sanitizeQuantity(packCount * packs);
 
-if (!packCountRaw || packCountRaw <= 0) {
-alert("Enter a valid amount per pack.");
-return;
+if (!packCountValue || !Number.isFinite(Number(packCountValue)) || packCount <= 0) {
+  alert("Enter a valid amount per pack.");
+  packCountEl.focus();
+  return;
+}
+
+if (!packsValue || !Number.isFinite(Number(packsValue)) || packs <= 0) {
+  alert("Enter a valid number of packs.");
+  packsEl.focus();
+  return;
 }
 
 if (!packsRaw || packsRaw <= 0) {
