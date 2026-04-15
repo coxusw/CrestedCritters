@@ -3383,10 +3383,6 @@ if (!packsValue || !Number.isFinite(Number(packsValue)) || packs <= 0) {
   return;
 }
 
-if (!packsRaw || packsRaw <= 0) {
-alert("Enter a valid number of packs.");
-return;
-}
 
 if (totalToRemove > Number(colony.population || 0)) {
 alert(`Not enough ${getColonyUnitLabel(colony, "inventory").toLowerCase()} in this colony.`);
