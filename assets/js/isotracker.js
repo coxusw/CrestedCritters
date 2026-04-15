@@ -3154,12 +3154,23 @@ function renderSalePrep() {
             </div>
 
             <div class="iso-meta">
-              <div><strong>Available ${esc(inventoryLabel)}:</strong> ${formatQty(colony.population || 0)}</div>
-              <div><strong>Category:</strong> ${esc(colony.category || "-")}</div>
-              <div><strong>Inventory Mode:</strong> ${colony.inventoryMode === "custom" ? `Custom (${esc(colony.unitName || "units")})` : "Population"}</div>
-            </div>
+  <div><strong>Available ${esc(inventoryLabel)}:</strong> ${formatQty(colony.population || 0)}</div>
+  <div><strong>Category:</strong> ${esc(colony.category || "-")}</div>
+  <div><strong>Inventory Mode:</strong> ${colony.inventoryMode === "custom" ? `Custom (${esc(colony.unitName || "units")})` : "Population"}</div>
+</div>
 
-            <div class="iso-prep-material-list" style="margin-top:12px;">
+<div class="iso-form-grid" style="margin-top:12px;">
+  <div>
+    <label>${packLabel}</label>
+    <input id="prepCount_${originalIndex}" type="number" min="0.01" step="0.01" value="${colony.inventoryMode === "custom" ? "1" : "10"}">
+  </div>
+  <div>
+    <label>How Many Packs</label>
+    <input id="prepPacks_${originalIndex}" type="number" min="1" step="1" value="1">
+  </div>
+</div>
+
+<div class="iso-prep-material-list" style="margin-top:12px;">
   ${Array.from({ length: 5 }).map((_, i) => `
     <div
       class="iso-prep-material-slot"
