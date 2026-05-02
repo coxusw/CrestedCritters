@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Randomizer Wheel</title>
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: rgba(15, 23, 42, 0.94);
+      --panel-2: rgba(2, 6, 23, 0.94);
+      --text: #ffffff;
+      --muted: #cbd5e1;
+      --accent: #22c55e;
+      --accent-2: #facc15;
+      --danger: #ef4444;
+      --border: rgba(255, 255, 255, 0.16);
+      --shadow: 0 20px 70px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.22), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.15), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      padding: clamp(8px, 1.5vw, 14px);
+    }
+
+    .app {
+      max-width: 1120px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .top {
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.35;
+      font-size: clamp(14px, 1.6vw, 17px);
+    }
+
+    .setup-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: clamp(12px, 1.6vw, 18px);
+      box-shadow: var(--shadow);
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 800;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      background: var(--panel-2);
+      color: var(--text);
+      padding: 10px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(34, 197, 94, 0.72);
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    .names-box {
+      min-height: min(300px, 38vh);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .help {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+      margin-top: 6px;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 13px;
+      padding: 11px 14px;
+      cursor: pointer;
+      font-weight: 900;
+      background: #334155;
+      color: white;
+      transition: transform .12s ease, filter .12s ease;
+    }
+
+    button:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #052e16;
+    }
+
+    button.gold {
+      background: var(--accent-2);
+      color: #422006;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .status.good {
+      color: #bbf7d0;
+      background: rgba(34,197,94,.12);
+      border-color: rgba(34,197,94,.35);
+    }
+
+    .status.bad {
+      color: #fecaca;
+      background: rgba(239,68,68,.12);
+      border-color: rgba(239,68,68,.35);
+    }
+
+    .status a {
+      color: #86efac;
+      font-weight: 900;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 8px;
+      }
+
+      .setup-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 12px;
+      }
+
+      .names-box {
+        min-height: 220px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  
+    .hidden { display: none !important; }
+
+    .top-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #052e16;
+    }
+
+    .faq-area h2,
+    .faq-area h3 {
+      margin: 0 0 8px;
+    }
+
+    .faq-area p,
+    .faq-area li {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+
+    .wide-card {
+      grid-column: 1 / -1;
+    }
+
+    .code-box {
+      width: 100%;
+      min-height: 150px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 12px;
+      white-space: pre;
+      overflow: auto;
+    }
+
+    ol,
+    ul {
+      margin-top: 6px;
+      padding-left: 22px;
+    }
+
+    @media (max-width: 760px) {
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .top-tabs button {
+        flex: 1 1 auto;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <nav class="top-tabs">
+      <button id="tabWheelBtn" class="tab-btn active" type="button" onclick="showMainTab('wheel')">Randomizer</button>
+      <button id="tabFaqBtn" class="tab-btn" type="button" onclick="showMainTab('faq')">FAQ & Name Tools</button>
+    </nav>
+
+    <section id="setupArea">
+      <div class="top">
+        <h1>Randomizer Wheel</h1>
+        <p class="subtitle">
+          Enter details, verify your login, then generate an official server-made randomizer result.
+        </p>
+      </div>
+
+      <div class="setup-grid">
+        <div class="card">
+          <div class="field">
+            <label for="raffleTitle">Wheel Title</label>
+            <input id="raffleTitle" type="text" placeholder="Example: Crested Critters Giveaway" />
+          </div>
+
+          <div class="field">
+            <label for="raffleDescription">Description</label>
+            <textarea id="raffleDescription" placeholder="Example: Winner receives one free isopod culture."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="giveawayRules">Giveaway Rules</label>
+            <textarea id="giveawayRules" placeholder="Example: Must follow the page, like the post, and comment to qualify."></textarea>
+            <div class="help">Rules are saved and displayed on the official result page.</div>
+          </div>
+
+          <div class="field">
+            <label for="logoFile">Logo</label>
+            <input id="logoFile" type="file" accept="image/*" />
+            <div class="help">The logo is compressed before being saved with the official result page.</div>
+          </div>
+
+          <div class="field">
+            <label for="namesInput">Name List</label>
+            <textarea id="namesInput" class="names-box" placeholder="Paste names here, one per line."></textarea>
+            <div class="help">Duplicate names receive multiple entries.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="field">
+            <label for="wheelModeSelect">Wheel Type</label>
+            <select id="wheelModeSelect">
+              <option value="spin-count">Spin Count — final winner is the last spin</option>
+              <option value="last-name-spun">Last Name Spun — remove landed names until one remains</option>
+            </select>
+          </div>
+
+          <div id="spinCountControls" class="field">
+            <label for="spinCountInput">Number of Spins</label>
+            <input id="spinCountInput" type="number" min="1" max="1000" value="1" />
+            <div class="buttons" style="margin-top:8px;">
+              <button id="randomSpinCountBtn" type="button" class="gold">Random 1–10</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="prizeIntervalInput">Prize Winner Every X Spins</label>
+            <input id="prizeIntervalInput" type="number" min="0" max="1000" value="0" />
+            <div class="help">Optional. Use 0 for none. Example: 10 marks every 10th spin as a prize winner.</div>
+          </div>
+
+          <div class="field">
+            <label for="usernameInput">Username</label>
+            <input id="usernameInput" type="text" autocomplete="username" />
+          </div>
+
+          <div class="field">
+            <label for="passwordInput">Password</label>
+            <input id="passwordInput" type="password" autocomplete="current-password" />
+          </div>
+
+          <div class="buttons">
+            <button id="generateBtn" class="primary">Generate Official Wheel</button>
+            <button id="demoBtn" type="button">Load Demo Names</button>
+          </div>
+
+          <div id="authStatus" class="status">
+            Waiting for randomizer details.
+          </div>
+
+          <div class="help">
+            To get a username, contact Crested Critters.
+            Email: Contact_us@crestedcritters.com
+            <br><br>
+            The official winner is generated by Apps Script, saved to Google Sheets, and shown on a shareable results page.
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="faqArea" class="faq-area hidden">
+      <div class="top">
+        <h1>FAQ & Name Tools</h1>
+        <p class="subtitle">How the official randomizer works, how usernames work, and how to collect giveaway entry names.</p>
+      </div>
+
+      <div class="faq-grid">
+        <div class="card">
+          <h2>How the official randomizer works</h2>
+          <p>The public wheel page does not pick the winner. Apps Script verifies the runner login, creates the official spin plan, saves it to Google Sheets, and creates a public result code.</p>
+          <h3>Why this is more trustworthy</h3>
+          <p>The result is saved before it is displayed. The result page includes the original entry list, spin history, final winner, and verification code.</p>
+          <h3>Duplicate entries</h3>
+          <p>Duplicate names are kept as separate entries. If someone earned three entries, list their name three times.</p>
+        </div>
+
+        <div class="card">
+          <h2>Username & Password</h2>
+          <p>To get a username and password, contact Crested Critters at <strong>Contact_us@crestedcritters.com</strong>.</p>
+          <h3>Cost</h3>
+          <p>Current cost: contact Crested Critters for current pricing.</p>
+          <h3>How long are results saved?</h3>
+          <p>Results are intended to stay available for at least 90 days. Long-term storage is not guaranteed and old results may be removed during cleanup.</p>
+          <h3>What players should check</h3>
+          <p>Players should check the original entry list and replay the official wheel from the result page.</p>
+        </div>
+
+        <div class="card wide-card">
+          <h2>Name Collector JavaScript</h2>
+          <p>This helper collects visible/loadable names from Facebook or Instagram pages you can access. It cannot run inside the native Facebook or Instagram app and it does not bypass privacy settings.</p>
+
+          <div class="buttons">
+            <button class="primary copy-code-btn" type="button" data-copy-target="collectorBookmarklet">Copy Bookmarklet Version</button>
+            <button class="copy-code-btn" type="button" data-copy-target="collectorConsole">Copy Console Version</button>
+          </div>
+
+          <h3>Bookmarklet version</h3>
+          <textarea id="collectorBookmarklet" class="code-box" readonly>javascript:(async()=&gt;{const STOP=new Set([&quot;follow&quot;,&quot;following&quot;,&quot;followers&quot;,&quot;likes&quot;,&quot;like&quot;,&quot;liked by&quot;,&quot;more&quot;,&quot;see more&quot;,&quot;view profile&quot;,&quot;message&quot;,&quot;requested&quot;,&quot;cancel&quot;,&quot;close&quot;,&quot;done&quot;,&quot;search&quot;,&quot;suggested&quot;,&quot;verified&quot;,&quot;reels&quot;,&quot;explore&quot;,&quot;home&quot;,&quot;notifications&quot;,&quot;share&quot;,&quot;comment&quot;,&quot;comments&quot;,&quot;reply&quot;,&quot;meta&quot;,&quot;facebook&quot;,&quot;instagram&quot;,&quot;all&quot;,&quot;invite&quot;,&quot;invited&quot;,&quot;add friend&quot;,&quot;friends&quot;]);const sleep=t=&gt;new Promise(r=&gt;setTimeout(r,t));function clean(v){return String(v||&quot;&quot;).replace(/\u00a0/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).replace(/&#x27;s profile picture$/i,&quot;&quot;).replace(/’s profile picture$/i,&quot;&quot;).replace(/ profile picture$/i,&quot;&quot;).replace(/^profile picture of /i,&quot;&quot;).replace(/^View the profile of /i,&quot;&quot;).replace(/^View profile of /i,&quot;&quot;).trim()}function good(v){const n=clean(v),l=n.toLowerCase();if(!n||n.length&lt;2||n.length&gt;60)return false;if(STOP.has(l))return false;if(/^(@)?[._-]+$/.test(n))return false;if(/https?:\/\//i.test(n))return false;if(/^\d+$/.test(n))return false;if(/^\d+\s+(likes|followers|following|comments|shares)$/i.test(n))return false;if(/[{}[\]&lt;&gt;=]/.test(n))return false;const words=n.split(&quot; &quot;).filter(Boolean);if(words.length&gt;8)return false;return true}function root(){const d=[...document.querySelectorAll(&#x27;[role=&quot;dialog&quot;],[aria-modal=&quot;true&quot;]&#x27;)];return d[d.length-1]||document.body}function scroller(r){const els=[r,...r.querySelectorAll(&quot;*&quot;)];return els.filter(el=&gt;{const s=getComputedStyle(el);return((/(auto|scroll)/.test(s.overflowY)||el.scrollHeight&gt;el.clientHeight+80)&amp;&amp;el.scrollHeight&gt;250&amp;&amp;el.clientHeight&gt;80)}).sort((a,b)=&gt;(b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight))[0]||r}const set=new Set();function add(v){const n=clean(v);if(good(n))set.add(n)}function addLines(v){String(v||&quot;&quot;).split(&quot;\n&quot;).map(clean).filter(Boolean).forEach(add)}function collect(r){r.querySelectorAll(&#x27;a[href],[role=&quot;link&quot;],span[dir=&quot;auto&quot;],div[dir=&quot;auto&quot;],img[alt],[aria-label]&#x27;).forEach(el=&gt;{addLines(el.getAttribute(&quot;aria-label&quot;));addLines(el.getAttribute(&quot;title&quot;));addLines(el.getAttribute(&quot;alt&quot;));addLines(el.innerText||el.textContent);if(el.tagName===&quot;A&quot;){try{const u=new URL(el.href,location.href);let p=u.pathname.split(&quot;/&quot;).filter(Boolean)[0]||&quot;&quot;;if(location.hostname.includes(&quot;instagram&quot;)&amp;&amp;p&amp;&amp;![&quot;p&quot;,&quot;reel&quot;,&quot;reels&quot;,&quot;stories&quot;,&quot;explore&quot;,&quot;accounts&quot;,&quot;direct&quot;].includes(p.toLowerCase()))add(&quot;@&quot;+p)}catch(e){}}})}const r=root(),s=scroller(r);let prev=-1,stable=0;for(let i=0;i&lt;90;i++){collect(r);if(s&amp;&amp;typeof s.scrollTop===&quot;number&quot;)s.scrollTop=s.scrollHeight;else scrollTo(0,document.body.scrollHeight);await sleep(350);collect(r);if(set.size===prev)stable++;else stable=0;prev=set.size;if(stable&gt;=5)break}const names=[...set].sort((a,b)=&gt;a.localeCompare(b));try{await navigator.clipboard.writeText(names.join(&quot;\n&quot;))}catch(e){}const old=document.getElementById(&quot;nameCollectorBox&quot;);if(old)old.remove();const box=document.createElement(&quot;div&quot;);box.id=&quot;nameCollectorBox&quot;;box.style.cssText=&quot;position:fixed;inset:12px;z-index:2147483647;background:#0f172a;color:white;border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:14px;font-family:Arial,sans-serif;box-shadow:0 20px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px&quot;;box.innerHTML=&#x27;&lt;div style=&quot;display:flex;gap:8px;align-items:center;justify-content:space-between&quot;&gt;&lt;strong&gt;Collected &#x27;+names.length+&#x27; names&lt;/strong&gt;&lt;button id=&quot;ncClose&quot; style=&quot;padding:8px 10px;border:0;border-radius:10px;background:#ef4444;color:white;font-weight:700&quot;&gt;Close&lt;/button&gt;&lt;/div&gt;&lt;textarea id=&quot;ncText&quot; style=&quot;flex:1;min-height:260px;border-radius:12px;background:#020617;color:white;border:1px solid rgba(255,255,255,.2);padding:10px;font-size:14px&quot;&gt;&lt;/textarea&gt;&lt;button id=&quot;ncCopy&quot; style=&quot;padding:10px;border:0;border-radius:12px;background:#22c55e;color:#052e16;font-weight:900&quot;&gt;Copy Names&lt;/button&gt;&lt;div style=&quot;color:#cbd5e1;font-size:12px&quot;&gt;Only visible/loadable names are collected. Review the list before using it.&lt;/div&gt;&#x27;;document.body.appendChild(box);document.getElementById(&quot;ncText&quot;).value=names.join(&quot;\n&quot;);document.getElementById(&quot;ncClose&quot;).onclick=()=&gt;box.remove();document.getElementById(&quot;ncCopy&quot;).onclick=async()=&gt;{await navigator.clipboard.writeText(document.getElementById(&quot;ncText&quot;).value);document.getElementById(&quot;ncCopy&quot;).textContent=&quot;Copied!&quot;}})();</textarea>
+
+          <h3>Console version</h3>
+          <textarea id="collectorConsole" class="code-box" readonly>(async()=&gt;{const STOP=new Set([&quot;follow&quot;,&quot;following&quot;,&quot;followers&quot;,&quot;likes&quot;,&quot;like&quot;,&quot;liked by&quot;,&quot;more&quot;,&quot;see more&quot;,&quot;view profile&quot;,&quot;message&quot;,&quot;requested&quot;,&quot;cancel&quot;,&quot;close&quot;,&quot;done&quot;,&quot;search&quot;,&quot;suggested&quot;,&quot;verified&quot;,&quot;reels&quot;,&quot;explore&quot;,&quot;home&quot;,&quot;notifications&quot;,&quot;share&quot;,&quot;comment&quot;,&quot;comments&quot;,&quot;reply&quot;,&quot;meta&quot;,&quot;facebook&quot;,&quot;instagram&quot;,&quot;all&quot;,&quot;invite&quot;,&quot;invited&quot;,&quot;add friend&quot;,&quot;friends&quot;]);const sleep=t=&gt;new Promise(r=&gt;setTimeout(r,t));function clean(v){return String(v||&quot;&quot;).replace(/\u00a0/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).replace(/&#x27;s profile picture$/i,&quot;&quot;).replace(/’s profile picture$/i,&quot;&quot;).replace(/ profile picture$/i,&quot;&quot;).replace(/^profile picture of /i,&quot;&quot;).replace(/^View the profile of /i,&quot;&quot;).replace(/^View profile of /i,&quot;&quot;).trim()}function good(v){const n=clean(v),l=n.toLowerCase();if(!n||n.length&lt;2||n.length&gt;60)return false;if(STOP.has(l))return false;if(/^(@)?[._-]+$/.test(n))return false;if(/https?:\/\//i.test(n))return false;if(/^\d+$/.test(n))return false;if(/^\d+\s+(likes|followers|following|comments|shares)$/i.test(n))return false;if(/[{}[\]&lt;&gt;=]/.test(n))return false;const words=n.split(&quot; &quot;).filter(Boolean);if(words.length&gt;8)return false;return true}function root(){const d=[...document.querySelectorAll(&#x27;[role=&quot;dialog&quot;],[aria-modal=&quot;true&quot;]&#x27;)];return d[d.length-1]||document.body}function scroller(r){const els=[r,...r.querySelectorAll(&quot;*&quot;)];return els.filter(el=&gt;{const s=getComputedStyle(el);return((/(auto|scroll)/.test(s.overflowY)||el.scrollHeight&gt;el.clientHeight+80)&amp;&amp;el.scrollHeight&gt;250&amp;&amp;el.clientHeight&gt;80)}).sort((a,b)=&gt;(b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight))[0]||r}const set=new Set();function add(v){const n=clean(v);if(good(n))set.add(n)}function addLines(v){String(v||&quot;&quot;).split(&quot;\n&quot;).map(clean).filter(Boolean).forEach(add)}function collect(r){r.querySelectorAll(&#x27;a[href],[role=&quot;link&quot;],span[dir=&quot;auto&quot;],div[dir=&quot;auto&quot;],img[alt],[aria-label]&#x27;).forEach(el=&gt;{addLines(el.getAttribute(&quot;aria-label&quot;));addLines(el.getAttribute(&quot;title&quot;));addLines(el.getAttribute(&quot;alt&quot;));addLines(el.innerText||el.textContent);if(el.tagName===&quot;A&quot;){try{const u=new URL(el.href,location.href);let p=u.pathname.split(&quot;/&quot;).filter(Boolean)[0]||&quot;&quot;;if(location.hostname.includes(&quot;instagram&quot;)&amp;&amp;p&amp;&amp;![&quot;p&quot;,&quot;reel&quot;,&quot;reels&quot;,&quot;stories&quot;,&quot;explore&quot;,&quot;accounts&quot;,&quot;direct&quot;].includes(p.toLowerCase()))add(&quot;@&quot;+p)}catch(e){}}})}const r=root(),s=scroller(r);let prev=-1,stable=0;for(let i=0;i&lt;90;i++){collect(r);if(s&amp;&amp;typeof s.scrollTop===&quot;number&quot;)s.scrollTop=s.scrollHeight;else scrollTo(0,document.body.scrollHeight);await sleep(350);collect(r);if(set.size===prev)stable++;else stable=0;prev=set.size;if(stable&gt;=5)break}const names=[...set].sort((a,b)=&gt;a.localeCompare(b));try{await navigator.clipboard.writeText(names.join(&quot;\n&quot;))}catch(e){}const old=document.getElementById(&quot;nameCollectorBox&quot;);if(old)old.remove();const box=document.createElement(&quot;div&quot;);box.id=&quot;nameCollectorBox&quot;;box.style.cssText=&quot;position:fixed;inset:12px;z-index:2147483647;background:#0f172a;color:white;border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:14px;font-family:Arial,sans-serif;box-shadow:0 20px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px&quot;;box.innerHTML=&#x27;&lt;div style=&quot;display:flex;gap:8px;align-items:center;justify-content:space-between&quot;&gt;&lt;strong&gt;Collected &#x27;+names.length+&#x27; names&lt;/strong&gt;&lt;button id=&quot;ncClose&quot; style=&quot;padding:8px 10px;border:0;border-radius:10px;background:#ef4444;color:white;font-weight:700&quot;&gt;Close&lt;/button&gt;&lt;/div&gt;&lt;textarea id=&quot;ncText&quot; style=&quot;flex:1;min-height:260px;border-radius:12px;background:#020617;color:white;border:1px solid rgba(255,255,255,.2);padding:10px;font-size:14px&quot;&gt;&lt;/textarea&gt;&lt;button id=&quot;ncCopy&quot; style=&quot;padding:10px;border:0;border-radius:12px;background:#22c55e;color:#052e16;font-weight:900&quot;&gt;Copy Names&lt;/button&gt;&lt;div style=&quot;color:#cbd5e1;font-size:12px&quot;&gt;Only visible/loadable names are collected. Review the list before using it.&lt;/div&gt;&#x27;;document.body.appendChild(box);document.getElementById(&quot;ncText&quot;).value=names.join(&quot;\n&quot;);document.getElementById(&quot;ncClose&quot;).onclick=()=&gt;box.remove();document.getElementById(&quot;ncCopy&quot;).onclick=async()=&gt;{await navigator.clipboard.writeText(document.getElementById(&quot;ncText&quot;).value);document.getElementById(&quot;ncCopy&quot;).textContent=&quot;Copied!&quot;}})();</textarea>
+
+          <h3>Facebook post reactions</h3>
+          <ol>
+            <li>Open Facebook in a browser, not the app.</li>
+            <li>Open the post and click the reactions/likes count.</li>
+            <li>Run the collector script.</li>
+            <li>Review the names, copy them, then paste them into the Randomizer Wheel.</li>
+          </ol>
+
+          <h3>Facebook followers</h3>
+          <ol>
+            <li>Open the followers list in a browser.</li>
+            <li>Run the collector script after the list starts loading.</li>
+            <li>Review the names before using them.</li>
+          </ol>
+
+          <h3>Instagram likes/followers</h3>
+          <ol>
+            <li>Open Instagram in a browser, not the app.</li>
+            <li>Open the likes, followers, or following list.</li>
+            <li>Run the collector script and review the output.</li>
+          </ol>
+
+          <h3>Important limits</h3>
+          <ul>
+            <li>Only names your browser can see/load are collected.</li>
+            <li>Facebook and Instagram may change layouts later.</li>
+            <li>Always review the name list before generating an official result.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+
+    function showMainTab(tabName) {
+      const setup = document.getElementById("setupArea");
+      const faq = document.getElementById("faqArea");
+      const wheelBtn = document.getElementById("tabWheelBtn");
+      const faqBtn = document.getElementById("tabFaqBtn");
+
+      if (tabName === "faq") {
+        setup.classList.add("hidden");
+        faq.classList.remove("hidden");
+        wheelBtn.classList.remove("active");
+        faqBtn.classList.add("active");
+      } else {
+        faq.classList.add("hidden");
+        setup.classList.remove("hidden");
+        faqBtn.classList.remove("active");
+        wheelBtn.classList.add("active");
+      }
+    }
+
+    document.addEventListener("click", async (event) => {
+      const button = event.target.closest(".copy-code-btn");
+      if (!button) return;
+
+      const targetId = button.getAttribute("data-copy-target");
+      const box = document.getElementById(targetId);
+
+      if (!box) return;
+
+      try {
+        await navigator.clipboard.writeText(box.value);
+        const original = button.textContent;
+        button.textContent = "Copied!";
+        setTimeout(() => button.textContent = original, 1200);
+      } catch (err) {
+        box.focus();
+        box.select();
+      }
+    });
+
+    /***************************************************************
+      IMPORTANT:
+      Paste your deployed Apps Script Web App URL below.
+
+      Example:
+      const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycb.../exec";
+    ****************************************************************/
+    const AUTH_ENDPOINT = "https://script.google.com/macros/s/AKfycbwTxxd0TN0DizPQTlcuV-dJlEkMKH1q185Bh7TQSVyGvDLRr9TGF1kdSoZdt5oqA2xSgQ/exec";
+
+    const raffleTitle = document.getElementById("raffleTitle");
+    const raffleDescription = document.getElementById("raffleDescription");
+    const giveawayRules = document.getElementById("giveawayRules");
+    const logoFile = document.getElementById("logoFile");
+    const namesInput = document.getElementById("namesInput");
+    const wheelModeSelect = document.getElementById("wheelModeSelect");
+    const spinCountControls = document.getElementById("spinCountControls");
+    const spinCountInput = document.getElementById("spinCountInput");
+    const prizeIntervalInput = document.getElementById("prizeIntervalInput");
+    const usernameInput = document.getElementById("usernameInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const generateBtn = document.getElementById("generateBtn");
+    const demoBtn = document.getElementById("demoBtn");
+    const randomSpinCountBtn = document.getElementById("randomSpinCountBtn");
+    const authStatus = document.getElementById("authStatus");
+
+    function setStatus(message, type) {
+      authStatus.innerHTML = message;
+      authStatus.className = "status" + (type ? " " + type : "");
+    }
+
+    function cleanName(raw) {
+      return String(raw || "")
+        .replace(/\u00a0/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function parseNames(text) {
+      return String(text || "")
+        .split(/\n+/)
+        .map(cleanName)
+        .filter(Boolean);
+    }
+
+    function secureRandomInt(max) {
+      if (window.crypto && crypto.getRandomValues) {
+        const range = 0x100000000;
+        const limit = range - (range % max);
+        const arr = new Uint32Array(1);
+        let value;
+
+        do {
+          crypto.getRandomValues(arr);
+          value = arr[0];
+        } while (value >= limit);
+
+        return value % max;
+      }
+
+      return Math.floor(Math.random() * max);
+    }
+
+    async function sha256Hex(text) {
+      if (!crypto.subtle) {
+        throw new Error("This page needs HTTPS for secure password hashing. GitHub Pages HTTPS works.");
+      }
+
+      const encoder = new TextEncoder();
+      const data = encoder.encode(text);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+
+      return Array.from(new Uint8Array(hashBuffer))
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+    }
+
+    function openOfficialPopupImmediately() {
+      const popup = window.open(
+        "about:blank",
+        "officialRandomizerPopup",
+        "width=980,height=760,menubar=no,toolbar=no,location=yes,status=no"
+      );
+
+      if (!popup) {
+        throw new Error("The official result popup was blocked. On iPhone, allow pop-ups for this site and try again.");
+      }
+
+      try {
+        popup.document.open();
+        popup.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Generating Official Result...</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+            <style>
+              body {
+                margin: 0;
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #0f172a;
+                color: white;
+                font-family: Arial, sans-serif;
+                padding: 24px;
+              }
+              .box {
+                max-width: 440px;
+                text-align: center;
+                background: #111827;
+                border: 1px solid rgba(255,255,255,.18);
+                border-radius: 18px;
+                padding: 24px;
+                box-shadow: 0 20px 70px rgba(0,0,0,.35);
+              }
+              p { color: #cbd5e1; line-height: 1.45; }
+            
+    .hidden { display: none !important; }
+
+    .top-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #052e16;
+    }
+
+    .faq-area h2,
+    .faq-area h3 {
+      margin: 0 0 8px;
+    }
+
+    .faq-area p,
+    .faq-area li {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+
+    .wide-card {
+      grid-column: 1 / -1;
+    }
+
+    .code-box {
+      width: 100%;
+      min-height: 150px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 12px;
+      white-space: pre;
+      overflow: auto;
+    }
+
+    ol,
+    ul {
+      margin-top: 6px;
+      padding-left: 22px;
+    }
+
+    @media (max-width: 760px) {
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .top-tabs button {
+        flex: 1 1 auto;
+      }
+    }
+
+  </style>
+          </head>
+          <body>
+            <div class="box">
+              <h2>Generating official randomizer...</h2>
+              <p>The official result is being generated and saved by the backend.</p>
+            </div>
+          </body>
+          </html>
+        `);
+        popup.document.close();
+      } catch (err) {}
+
+      return popup;
+    }
+
+    async function compressLogoDataUrl() {
+      const file = logoFile.files && logoFile.files[0];
+
+      if (!file) return "";
+
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result || "");
+        reader.onerror = () => reject(new Error("Could not read logo file."));
+        reader.readAsDataURL(file);
+      });
+
+      return new Promise((resolve) => {
+        const img = new Image();
+
+        img.onload = () => {
+          const maxSize = 420;
+          const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+          const w = Math.max(1, Math.round(img.width * scale));
+          const h = Math.max(1, Math.round(img.height * scale));
+
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, w, h);
+
+          const compressed = canvas.toDataURL("image/jpeg", 0.82);
+
+          // Google Sheets cells have size limits. Drop very large logos instead of breaking the save.
+          resolve(compressed.length <= 45000 ? compressed : "");
+        };
+
+        img.onerror = () => resolve("");
+        img.src = dataUrl;
+      });
+    }
+
+    function postToPopup(url, fields, popup) {
+      const form = document.createElement("form");
+      form.method = "POST";
+      form.action = url;
+      form.target = "officialRandomizerPopup";
+      form.style.display = "none";
+
+      for (const [key, value] of Object.entries(fields)) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = String(value == null ? "" : value);
+        form.appendChild(input);
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+      form.remove();
+
+      try {
+        popup.focus();
+      } catch (err) {}
+    }
+
+    async function handleGenerateOfficial() {
+      const title = cleanName(raffleTitle.value) || "Randomizer Wheel";
+      const description = cleanName(raffleDescription.value);
+      const rules = cleanName(giveawayRules.value);
+      const username = cleanName(usernameInput.value).toLowerCase();
+      const password = String(passwordInput.value || "");
+      const mode = wheelModeSelect.value;
+      const entries = parseNames(namesInput.value);
+      const spinCount = Math.max(1, Math.min(1000, Number(spinCountInput.value || 1)));
+      const prizeInterval = Math.max(0, Math.min(1000, Number(prizeIntervalInput.value || 0)));
+
+      if (!AUTH_ENDPOINT || AUTH_ENDPOINT.includes("PASTE_YOUR_APPS_SCRIPT")) {
+        setStatus("AUTH_ENDPOINT is not set yet. Paste your Apps Script Web App URL into index.html.", "bad");
+        return;
+      }
+
+      if (entries.length < 2) {
+        setStatus("Please enter at least 2 names.", "bad");
+        return;
+      }
+
+      if (!username || !password) {
+        setStatus("Please enter your username and password.", "bad");
+        return;
+      }
+
+      generateBtn.disabled = true;
+      setStatus("Generating official result...", "");
+
+      let popup;
+
+      try {
+        // Open immediately while still inside the user's click/tap, so mobile browsers do not block it.
+        popup = openOfficialPopupImmediately();
+
+        const passwordHash = await sha256Hex(username + ":" + password);
+        const logoDataUrl = await compressLogoDataUrl();
+
+        postToPopup(AUTH_ENDPOINT, {
+          action: "createGiveaway",
+          username,
+          passwordHash,
+          title,
+          description,
+          rules,
+          mode,
+          spinCount,
+          prizeInterval,
+          entriesJson: JSON.stringify(entries),
+          logoDataUrl
+        }, popup);
+
+        setStatus(
+          "Official result opened in a new window. After it loads, copy the result code or share link from that page.",
+          "good"
+        );
+      } catch (err) {
+        console.error(err);
+        setStatus(err.message || "Something went wrong generating the official result.", "bad");
+
+        try {
+          if (popup && !popup.closed) popup.close();
+        } catch (closeErr) {}
+      } finally {
+        generateBtn.disabled = false;
+      }
+    }
+
+    function updateModeUi() {
+      if (wheelModeSelect.value === "last-name-spun") {
+        spinCountControls.style.display = "none";
+      } else {
+        spinCountControls.style.display = "block";
+      }
+    }
+
+    generateBtn.addEventListener("click", handleGenerateOfficial);
+
+    demoBtn.addEventListener("click", () => {
+      raffleTitle.value = "Demo Giveaway";
+      raffleDescription.value = "This is a Demo wheel.";
+      giveawayRules.value = "Demo rules: must be eligible according to the giveaway post.";
+      namesInput.value = [
+        "Name 6",
+        "Name 5",
+        "Name 4",
+        "Name 3",
+        "Name 2",
+        "Name 1"
+      ].join("\n");
+      setStatus("Demo names loaded. Enter an approved username/password, then generate.", "");
+    });
+
+    randomSpinCountBtn.addEventListener("click", () => {
+      spinCountInput.value = secureRandomInt(10) + 1;
+    });
+
+    spinCountInput.addEventListener("input", () => {
+      let value = Number(spinCountInput.value || 1);
+      value = Math.max(1, Math.min(1000, value));
+      spinCountInput.value = value;
+    });
+
+    prizeIntervalInput.addEventListener("input", () => {
+      let value = Number(prizeIntervalInput.value || 0);
+      value = Math.max(0, Math.min(1000, value));
+      prizeIntervalInput.value = value;
+    });
+
+    wheelModeSelect.addEventListener("change", updateModeUi);
+
+    updateModeUi();
+  </script>
+</body>
+</html>
