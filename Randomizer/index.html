@@ -332,6 +332,7 @@
             <select id="wheelModeSelect">
               <option value="spin-count">Spin Count — final winner is the last spin</option>
               <option value="last-name-spun">Last Name Spun — remove landed names until one remains</option>
+              <option value="multi-prize">Multiple Winners / Prize List</option>
             </select>
           </div>
 
@@ -343,10 +344,29 @@
             </div>
           </div>
 
-          <div class="field">
+          <div id="prizeIntervalControls" class="field">
             <label for="prizeIntervalInput">Prize Winner Every X Spins</label>
             <input id="prizeIntervalInput" type="number" min="0" max="1000" value="0" />
             <div class="help">Optional. Use 0 for none. Example: 10 marks every 10th spin as a prize winner.</div>
+          </div>
+
+          <div id="multiPrizeControls" class="field" style="display:none;">
+            <label for="winnerCountInput">Number of Winners</label>
+            <input id="winnerCountInput" type="number" min="1" max="1000" value="1" />
+            <div class="help">Used if the prize list is blank. If you enter prize names below, one winner is picked per prize.</div>
+
+            <label for="prizeListInput" style="margin-top:10px;">Prize List</label>
+            <textarea id="prizeListInput" placeholder="One prize per line. Example:
+Sticker Pack
+10-count Isopod Culture
+Grand Prize"></textarea>
+            <div class="help">Optional. One winner will be picked for each prize line.</div>
+
+            <label for="preventDuplicateWinnerNames" style="margin-top:10px;">Prevent Same Name Winning Multiple Prizes?</label>
+            <select id="preventDuplicateWinnerNames">
+              <option value="yes" selected>Yes — once a name wins, all matching entries are removed from later prizes</option>
+              <option value="no">No — only the exact winning entry is removed</option>
+            </select>
           </div>
 
           <div class="field">
@@ -400,12 +420,12 @@
           <h2>Username & Password</h2>
           <p>To get a username and password, contact Crested Critters at <strong>Contact_us@crestedcritters.com</strong>.</p>
           <h3>Cost</h3>
-          <p>Current cost: $5 for 1 week access, $15 for 1 month access, $100 for 1 year access, $300 for lifetime.</p>
+          <p>Current cost: $5 for 1 week access, $15 for 1 month access, $100 for 1 year acess, $300 for lifetime.</p>
           <h3>How long are results saved?</h3>
           <p>Results are intended to stay available for at least 90 days. Long-term storage is not guaranteed and old results may be removed during cleanup.</p>
           <h3>What players should check</h3>
           <p>Players should check the original entry list and replay the official wheel from the result page.</p>
-          <p>along with clicking the Verify This Result button.</p>
+          <p>along with clicking the Verify this results button.</p>
         </div>
 
         <div class="card wide-card">
@@ -413,166 +433,91 @@
           <p>This helper collects visible/loadable names from Facebook or Instagram pages you can access. It cannot run inside the native Facebook or Instagram app and it does not bypass privacy settings.</p>
 
           <div class="buttons">
-            <button class="primary copy-code-btn" type="button" data-copy-target="collectorBookmarklet">
-              Copy Bookmarklet Code — Best for Most Users
-            </button>
-            <button class="copy-code-btn" type="button" data-copy-target="collectorConsole">
-              Copy Console Code — Advanced Users
-            </button>
+            <button class="primary copy-code-btn" type="button" data-copy-target="collectorBookmarklet">Copy Bookmarklet Code — Best for Most Users</button>
+            <button class="copy-code-btn" type="button" data-copy-target="collectorConsole">Copy Console Code — Advanced Users</button>
           </div>
 
-          <p>
-            Do not paste random JavaScript from websites you do not trust. This helper is provided by Crested Critters for collecting
-            visible giveaway names only.
-          </p>
+          <p>Do not paste random JavaScript from websites you do not trust. This helper is provided by Crested Critters for collecting visible giveaway names only.</p>
 
           <h3>Bookmarklet version</h3>
-          <textarea id="collectorBookmarklet" class="code-box" readonly>javascript:(async()=&gt;{const STOP=new Set([&quot;follow&quot;,&quot;following&quot;,&quot;followers&quot;,&quot;likes&quot;,&quot;like&quot;,&quot;liked by&quot;,&quot;more&quot;,&quot;see more&quot;,&quot;view profile&quot;,&quot;message&quot;,&quot;requested&quot;,&quot;cancel&quot;,&quot;close&quot;,&quot;done&quot;,&quot;search&quot;,&quot;suggested&quot;,&quot;verified&quot;,&quot;reels&quot;,&quot;explore&quot;,&quot;home&quot;,&quot;notifications&quot;,&quot;share&quot;,&quot;comment&quot;,&quot;comments&quot;,&quot;reply&quot;,&quot;meta&quot;,&quot;facebook&quot;,&quot;instagram&quot;,&quot;all&quot;,&quot;invite&quot;,&quot;invited&quot;,&quot;add friend&quot;,&quot;friends&quot;]);const sleep=t=&gt;new Promise(r=&gt;setTimeout(r,t));function clean(v){return String(v||&quot;&quot;).replace(/\u00a0/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).replace(/&#x27;s profile picture$/i,&quot;&quot;).replace(/’s profile picture$/i,&quot;&quot;).replace(/ profile picture$/i,&quot;&quot;).replace(/^profile picture of /i,&quot;&quot;).replace(/^View the profile of /i,&quot;&quot;).replace(/^View profile of /i,&quot;&quot;).trim()}function good(v){const n=clean(v),l=n.toLowerCase();if(!n||n.length&lt;2||n.length&gt;60)return false;if(STOP.has(l))return false;if(/^(@)?[._-]+$/.test(n))return false;if(/https?:\/\//i.test(n))return false;if(/^\d+$/.test(n))return false;if(/^\d+\s+(likes|followers|following|comments|shares)$/i.test(n))return false;if(/[{}[\]&lt;&gt;=]/.test(n))return false;const words=n.split(&quot; &quot;).filter(Boolean);if(words.length&gt;8)return false;return true}function root(){const d=[...document.querySelectorAll(&#x27;[role=&quot;dialog&quot;],[aria-modal=&quot;true&quot;]&#x27;)];return d[d.length-1]||document.body}function scroller(r){const els=[r,...r.querySelectorAll(&quot;*&quot;)];return els.filter(el=&gt;{const s=getComputedStyle(el);return((/(auto|scroll)/.test(s.overflowY)||el.scrollHeight&gt;el.clientHeight+80)&amp;&amp;el.scrollHeight&gt;250&amp;&amp;el.clientHeight&gt;80)}).sort((a,b)=&gt;(b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight))[0]||r}const set=new Set();function add(v){const n=clean(v);if(good(n))set.add(n)}function addLines(v){String(v||&quot;&quot;).split(&quot;\n&quot;).map(clean).filter(Boolean).forEach(add)}function collect(r){r.querySelectorAll(&#x27;a[href],[role=&quot;link&quot;],span[dir=&quot;auto&quot;],div[dir=&quot;auto&quot;],img[alt],[aria-label]&#x27;).forEach(el=&gt;{addLines(el.getAttribute(&quot;aria-label&quot;));addLines(el.getAttribute(&quot;title&quot;));addLines(el.getAttribute(&quot;alt&quot;));addLines(el.innerText||el.textContent);if(el.tagName===&quot;A&quot;){try{const u=new URL(el.href,location.href);let p=u.pathname.split(&quot;/&quot;).filter(Boolean)[0]||&quot;&quot;;if(location.hostname.includes(&quot;instagram&quot;)&amp;&amp;p&amp;&amp;![&quot;p&quot;,&quot;reel&quot;,&quot;reels&quot;,&quot;stories&quot;,&quot;explore&quot;,&quot;accounts&quot;,&quot;direct&quot;].includes(p.toLowerCase()))add(&quot;@&quot;+p)}catch(e){}}})}const r=root(),s=scroller(r);let prev=-1,stable=0;for(let i=0;i&lt;90;i++){collect(r);if(s&amp;&amp;typeof s.scrollTop===&quot;number&quot;)s.scrollTop=s.scrollHeight;else scrollTo(0,document.body.scrollHeight);await sleep(350);collect(r);if(set.size===prev)stable++;else stable=0;prev=set.size;if(stable&gt;=5)break}const names=[...set].sort((a,b)=&gt;a.localeCompare(b));try{await navigator.clipboard.writeText(names.join(&quot;\n&quot;))}catch(e){}const old=document.getElementById(&quot;nameCollectorBox&quot;);if(old)old.remove();const box=document.createElement(&quot;div&quot;);box.id=&quot;nameCollectorBox&quot;;box.style.cssText=&quot;position:fixed;inset:12px;z-index:2147483647;background:#0f172a;color:white;border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:14px;font-family:Arial,sans-serif;box-shadow:0 20px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px&quot;;box.innerHTML=&#x27;&lt;div style=&quot;display:flex;gap:8px;align-items:center;justify-content:space-between&quot;&gt;&lt;strong&gt;Collected &#x27;+names.length+&#x27; names&lt;/strong&gt;&lt;button id=&quot;ncClose&quot; style=&quot;padding:8px 10px;border:0;border-radius:10px;background:#ef4444;color:white;font-weight:700&quot;&gt;Close&lt;/button&gt;&lt;/div&gt;&lt;textarea id=&quot;ncText&quot; style=&quot;flex:1;min-height:260px;border-radius:12px;background:#020617;color:white;border:1px solid rgba(255,255,255,.2);padding:10px;font-size:14px&quot;&gt;&lt;/textarea&gt;&lt;button id=&quot;ncCopy&quot; style=&quot;padding:10px;border:0;border-radius:12px;background:#22c55e;color:#052e16;font-weight:900&quot;&gt;Copy Names&lt;/button&gt;&lt;div style=&quot;color:#cbd5e1;font-size:12px&quot;&gt;Only visible/loadable names are collected. Review the list before using it.&lt;/div&gt;&#x27;;document.body.appendChild(box);document.getElementById(&quot;ncText&quot;).value=names.join(&quot;\n&quot;);document.getElementById(&quot;ncClose&quot;).onclick=()=&gt;box.remove();document.getElementById(&quot;ncCopy&quot;).onclick=async()=&gt;{await navigator.clipboard.writeText(document.getElementById(&quot;ncText&quot;).value);document.getElementById(&quot;ncCopy&quot;).textContent=&quot;Copied!&quot;}})();</textarea>
+          <textarea id="collectorBookmarklet" class="code-box" readonly>javascript:(()=&gt;{const STOP=new Set([&quot;follow&quot;,&quot;following&quot;,&quot;followers&quot;,&quot;likes&quot;,&quot;like&quot;,&quot;liked by&quot;,&quot;more&quot;,&quot;see more&quot;,&quot;view profile&quot;,&quot;message&quot;,&quot;requested&quot;,&quot;cancel&quot;,&quot;close&quot;,&quot;done&quot;,&quot;search&quot;,&quot;suggested&quot;,&quot;verified&quot;,&quot;reels&quot;,&quot;explore&quot;,&quot;home&quot;,&quot;notifications&quot;,&quot;share&quot;,&quot;comment&quot;,&quot;comments&quot;,&quot;reply&quot;,&quot;replies&quot;,&quot;meta&quot;,&quot;facebook&quot;,&quot;instagram&quot;,&quot;all&quot;,&quot;invite&quot;,&quot;invited&quot;,&quot;add friend&quot;,&quot;friends&quot;,&quot;public&quot;,&quot;posts&quot;,&quot;photos&quot;,&quot;videos&quot;,&quot;watch&quot;,&quot;groups&quot;]);const sleep=t=&gt;new Promise(r=&gt;setTimeout(r,t));function clean(v){return String(v||&quot;&quot;).replace(/\u00a0/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).replace(/&#x27;s profile picture$/i,&quot;&quot;).replace(/’s profile picture$/i,&quot;&quot;).replace(/ profile picture$/i,&quot;&quot;).replace(/^profile picture of /i,&quot;&quot;).replace(/^View the profile of /i,&quot;&quot;).replace(/^View profile of /i,&quot;&quot;).replace(/^Comment by /i,&quot;&quot;).replace(/^Reply by /i,&quot;&quot;).trim()}function good(v){const n=clean(v),l=n.toLowerCase();if(!n||n.length&lt;2||n.length&gt;70)return false;if(STOP.has(l))return false;if(/^(@)?[._-]+$/.test(n))return false;if(/https?:\/\//i.test(n))return false;if(/^\d+$/.test(n))return false;if(/^\d+\s+(likes|followers|following|comments|shares|replies)$/i.test(n))return false;if(/[{}[\]&lt;&gt;=]/.test(n))return false;const words=n.split(&quot; &quot;).filter(Boolean);if(words.length&gt;9)return false;return true}function add(set,v){const n=clean(v);if(good(n))set.add(n)}function lines(set,v){String(v||&quot;&quot;).split(&quot;\n&quot;).map(clean).filter(Boolean).forEach(x=&gt;add(set,x))}function root(){const d=[...document.querySelectorAll(&#x27;[role=&quot;dialog&quot;],[aria-modal=&quot;true&quot;]&#x27;)];return d[d.length-1]||document.body}function scroller(r){const els=[r,...r.querySelectorAll(&quot;*&quot;)];return els.filter(el=&gt;{const s=getComputedStyle(el);return((/(auto|scroll)/.test(s.overflowY)||el.scrollHeight&gt;el.clientHeight+80)&amp;&amp;el.scrollHeight&gt;250&amp;&amp;el.clientHeight&gt;80)}).sort((a,b)=&gt;(b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight))[0]||r}function collectVisible(r,set){r.querySelectorAll(&#x27;a[href],[role=&quot;link&quot;],span[dir=&quot;auto&quot;],div[dir=&quot;auto&quot;],img[alt],[aria-label]&#x27;).forEach(el=&gt;{lines(set,el.getAttribute(&quot;aria-label&quot;));lines(set,el.getAttribute(&quot;title&quot;));lines(set,el.getAttribute(&quot;alt&quot;));if(el.tagName===&quot;A&quot;||el.getAttribute(&quot;role&quot;)===&quot;link&quot;||el.matches(&#x27;span[dir=&quot;auto&quot;]&#x27;))lines(set,el.innerText||el.textContent);if(el.tagName===&quot;A&quot;){try{const u=new URL(el.href,location.href);let p=u.pathname.split(&quot;/&quot;).filter(Boolean)[0]||&quot;&quot;;if(location.hostname.includes(&quot;instagram&quot;)&amp;&amp;p&amp;&amp;![&quot;p&quot;,&quot;reel&quot;,&quot;reels&quot;,&quot;stories&quot;,&quot;explore&quot;,&quot;accounts&quot;,&quot;direct&quot;].includes(p.toLowerCase()))add(set,&quot;@&quot;+p)}catch(e){}}})}function collectCommenters(r,set){const nodes=[...r.querySelectorAll(&#x27;[role=&quot;article&quot;],[aria-label*=&quot;comment&quot; i],[aria-label*=&quot;reply&quot; i],ul li,div[dir=&quot;auto&quot;]&#x27;)];nodes.forEach(node=&gt;{const aria=node.getAttribute(&quot;aria-label&quot;)||&quot;&quot;;let m=aria.match(/(?:comment|reply)\s+by\s+([^,.]+)/i);if(m)add(set,m[1]);const links=[...node.querySelectorAll(&#x27;a[href],[role=&quot;link&quot;]&#x27;)];for(const a of links.slice(0,4)){const txt=clean(a.innerText||a.textContent||a.getAttribute(&quot;aria-label&quot;)||&quot;&quot;);if(good(txt)){add(set,txt);break}}})}async function run(mode,box){const r=root(),s=scroller(r),set=new Set();const status=box.querySelector(&quot;#ncStatus&quot;),out=box.querySelector(&quot;#ncText&quot;);let prev=-1,stable=0;for(let i=0;i&lt;120;i++){status.textContent=&quot;Collecting... &quot;+set.size+&quot; names found. Pass &quot;+(i+1);if(mode===&quot;comments&quot;)collectCommenters(r,set);else collectVisible(r,set);if(s&amp;&amp;typeof s.scrollTop===&quot;number&quot;)s.scrollTop=s.scrollHeight;else scrollTo(0,document.body.scrollHeight);await sleep(350);if(mode===&quot;comments&quot;)collectCommenters(r,set);else collectVisible(r,set);if(set.size===prev)stable++;else stable=0;prev=set.size;if(stable&gt;=7)break}const names=[...set].sort((a,b)=&gt;a.localeCompare(b));out.value=names.join(&quot;\n&quot;);status.textContent=&quot;Done. Collected &quot;+names.length+&quot; names. Review before using.&quot;;try{await navigator.clipboard.writeText(out.value)}catch(e){}}function ui(){const old=document.getElementById(&quot;nameCollectorBox&quot;);if(old)old.remove();const box=document.createElement(&quot;div&quot;);box.id=&quot;nameCollectorBox&quot;;box.style.cssText=&quot;position:fixed;inset:12px;z-index:2147483647;background:#0f172a;color:white;border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:14px;font-family:Arial,sans-serif;box-shadow:0 20px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px&quot;;box.innerHTML=&#x27;&lt;div style=&quot;display:flex;gap:8px;align-items:center;justify-content:space-between&quot;&gt;&lt;strong&gt;Name Collector Helper&lt;/strong&gt;&lt;button id=&quot;ncClose&quot; style=&quot;padding:8px 10px;border:0;border-radius:10px;background:#ef4444;color:white;font-weight:700&quot;&gt;Close&lt;/button&gt;&lt;/div&gt;&lt;label style=&quot;font-weight:700&quot;&gt;What are you collecting?&lt;/label&gt;&lt;select id=&quot;ncMode&quot; style=&quot;padding:10px;border-radius:10px;background:#020617;color:white;border:1px solid rgba(255,255,255,.25)&quot;&gt;&lt;option value=&quot;visible&quot;&gt;Reactions / followers / visible name list&lt;/option&gt;&lt;option value=&quot;comments&quot;&gt;Post commenters from loaded comments&lt;/option&gt;&lt;/select&gt;&lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap&quot;&gt;&lt;button id=&quot;ncStart&quot; style=&quot;flex:1;padding:10px;border:0;border-radius:12px;background:#22c55e;color:#052e16;font-weight:900&quot;&gt;Start Collecting&lt;/button&gt;&lt;button id=&quot;ncCopy&quot; style=&quot;flex:1;padding:10px;border:0;border-radius:12px;background:#facc15;color:#422006;font-weight:900&quot;&gt;Copy Names&lt;/button&gt;&lt;/div&gt;&lt;div id=&quot;ncStatus&quot; style=&quot;color:#cbd5e1;font-size:13px&quot;&gt;Choose a mode, then click Start Collecting.&lt;/div&gt;&lt;textarea id=&quot;ncText&quot; style=&quot;flex:1;min-height:260px;border-radius:12px;background:#020617;color:white;border:1px solid rgba(255,255,255,.2);padding:10px;font-size:14px&quot;&gt;&lt;/textarea&gt;&lt;div style=&quot;color:#cbd5e1;font-size:12px;line-height:1.35&quot;&gt;Only visible/loadable names are collected. For comments, open the post comments first and scroll/load comments before running. Always review the list before using it.&lt;/div&gt;&#x27;;document.body.appendChild(box);box.querySelector(&quot;#ncClose&quot;).onclick=()=&gt;box.remove();box.querySelector(&quot;#ncStart&quot;).onclick=()=&gt;run(box.querySelector(&quot;#ncMode&quot;).value,box);box.querySelector(&quot;#ncCopy&quot;).onclick=async()=&gt;{await navigator.clipboard.writeText(box.querySelector(&quot;#ncText&quot;).value);box.querySelector(&quot;#ncCopy&quot;).textContent=&quot;Copied!&quot;}}ui()})();</textarea>
 
           <h3>Console version</h3>
-          <textarea id="collectorConsole" class="code-box" readonly>(async()=&gt;{const STOP=new Set([&quot;follow&quot;,&quot;following&quot;,&quot;followers&quot;,&quot;likes&quot;,&quot;like&quot;,&quot;liked by&quot;,&quot;more&quot;,&quot;see more&quot;,&quot;view profile&quot;,&quot;message&quot;,&quot;requested&quot;,&quot;cancel&quot;,&quot;close&quot;,&quot;done&quot;,&quot;search&quot;,&quot;suggested&quot;,&quot;verified&quot;,&quot;reels&quot;,&quot;explore&quot;,&quot;home&quot;,&quot;notifications&quot;,&quot;share&quot;,&quot;comment&quot;,&quot;comments&quot;,&quot;reply&quot;,&quot;meta&quot;,&quot;facebook&quot;,&quot;instagram&quot;,&quot;all&quot;,&quot;invite&quot;,&quot;invited&quot;,&quot;add friend&quot;,&quot;friends&quot;]);const sleep=t=&gt;new Promise(r=&gt;setTimeout(r,t));function clean(v){return String(v||&quot;&quot;).replace(/\u00a0/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).replace(/&#x27;s profile picture$/i,&quot;&quot;).replace(/’s profile picture$/i,&quot;&quot;).replace(/ profile picture$/i,&quot;&quot;).replace(/^profile picture of /i,&quot;&quot;).replace(/^View the profile of /i,&quot;&quot;).replace(/^View profile of /i,&quot;&quot;).trim()}function good(v){const n=clean(v),l=n.toLowerCase();if(!n||n.length&lt;2||n.length&gt;60)return false;if(STOP.has(l))return false;if(/^(@)?[._-]+$/.test(n))return false;if(/https?:\/\//i.test(n))return false;if(/^\d+$/.test(n))return false;if(/^\d+\s+(likes|followers|following|comments|shares)$/i.test(n))return false;if(/[{}[\]&lt;&gt;=]/.test(n))return false;const words=n.split(&quot; &quot;).filter(Boolean);if(words.length&gt;8)return false;return true}function root(){const d=[...document.querySelectorAll(&#x27;[role=&quot;dialog&quot;],[aria-modal=&quot;true&quot;]&#x27;)];return d[d.length-1]||document.body}function scroller(r){const els=[r,...r.querySelectorAll(&quot;*&quot;)];return els.filter(el=&gt;{const s=getComputedStyle(el);return((/(auto|scroll)/.test(s.overflowY)||el.scrollHeight&gt;el.clientHeight+80)&amp;&amp;el.scrollHeight&gt;250&amp;&amp;el.clientHeight&gt;80)}).sort((a,b)=&gt;(b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight))[0]||r}const set=new Set();function add(v){const n=clean(v);if(good(n))set.add(n)}function addLines(v){String(v||&quot;&quot;).split(&quot;\n&quot;).map(clean).filter(Boolean).forEach(add)}function collect(r){r.querySelectorAll(&#x27;a[href],[role=&quot;link&quot;],span[dir=&quot;auto&quot;],div[dir=&quot;auto&quot;],img[alt],[aria-label]&#x27;).forEach(el=&gt;{addLines(el.getAttribute(&quot;aria-label&quot;));addLines(el.getAttribute(&quot;title&quot;));addLines(el.getAttribute(&quot;alt&quot;));addLines(el.innerText||el.textContent);if(el.tagName===&quot;A&quot;){try{const u=new URL(el.href,location.href);let p=u.pathname.split(&quot;/&quot;).filter(Boolean)[0]||&quot;&quot;;if(location.hostname.includes(&quot;instagram&quot;)&amp;&amp;p&amp;&amp;![&quot;p&quot;,&quot;reel&quot;,&quot;reels&quot;,&quot;stories&quot;,&quot;explore&quot;,&quot;accounts&quot;,&quot;direct&quot;].includes(p.toLowerCase()))add(&quot;@&quot;+p)}catch(e){}}})}const r=root(),s=scroller(r);let prev=-1,stable=0;for(let i=0;i&lt;90;i++){collect(r);if(s&amp;&amp;typeof s.scrollTop===&quot;number&quot;)s.scrollTop=s.scrollHeight;else scrollTo(0,document.body.scrollHeight);await sleep(350);collect(r);if(set.size===prev)stable++;else stable=0;prev=set.size;if(stable&gt;=5)break}const names=[...set].sort((a,b)=&gt;a.localeCompare(b));try{await navigator.clipboard.writeText(names.join(&quot;\n&quot;))}catch(e){}const old=document.getElementById(&quot;nameCollectorBox&quot;);if(old)old.remove();const box=document.createElement(&quot;div&quot;);box.id=&quot;nameCollectorBox&quot;;box.style.cssText=&quot;position:fixed;inset:12px;z-index:2147483647;background:#0f172a;color:white;border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:14px;font-family:Arial,sans-serif;box-shadow:0 20px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px&quot;;box.innerHTML=&#x27;&lt;div style=&quot;display:flex;gap:8px;align-items:center;justify-content:space-between&quot;&gt;&lt;strong&gt;Collected &#x27;+names.length+&#x27; names&lt;/strong&gt;&lt;button id=&quot;ncClose&quot; style=&quot;padding:8px 10px;border:0;border-radius:10px;background:#ef4444;color:white;font-weight:700&quot;&gt;Close&lt;/button&gt;&lt;/div&gt;&lt;textarea id=&quot;ncText&quot; style=&quot;flex:1;min-height:260px;border-radius:12px;background:#020617;color:white;border:1px solid rgba(255,255,255,.2);padding:10px;font-size:14px&quot;&gt;&lt;/textarea&gt;&lt;button id=&quot;ncCopy&quot; style=&quot;padding:10px;border:0;border-radius:12px;background:#22c55e;color:#052e16;font-weight:900&quot;&gt;Copy Names&lt;/button&gt;&lt;div style=&quot;color:#cbd5e1;font-size:12px&quot;&gt;Only visible/loadable names are collected. Review the list before using it.&lt;/div&gt;&#x27;;document.body.appendChild(box);document.getElementById(&quot;ncText&quot;).value=names.join(&quot;\n&quot;);document.getElementById(&quot;ncClose&quot;).onclick=()=&gt;box.remove();document.getElementById(&quot;ncCopy&quot;).onclick=async()=&gt;{await navigator.clipboard.writeText(document.getElementById(&quot;ncText&quot;).value);document.getElementById(&quot;ncCopy&quot;).textContent=&quot;Copied!&quot;}})();</textarea>
-
-          <h3>How to Use the Name Collector Helper</h3>
-
-          <p>
-            The Name Collector Helper is a small browser tool that helps copy names from a visible Facebook or Instagram list.
-            It can help collect names from places like Facebook post reactions, Facebook followers, Instagram likes, or Instagram followers.
-          </p>
+          <textarea id="collectorConsole" class="code-box" readonly>(()=&gt;{const STOP=new Set([&quot;follow&quot;,&quot;following&quot;,&quot;followers&quot;,&quot;likes&quot;,&quot;like&quot;,&quot;liked by&quot;,&quot;more&quot;,&quot;see more&quot;,&quot;view profile&quot;,&quot;message&quot;,&quot;requested&quot;,&quot;cancel&quot;,&quot;close&quot;,&quot;done&quot;,&quot;search&quot;,&quot;suggested&quot;,&quot;verified&quot;,&quot;reels&quot;,&quot;explore&quot;,&quot;home&quot;,&quot;notifications&quot;,&quot;share&quot;,&quot;comment&quot;,&quot;comments&quot;,&quot;reply&quot;,&quot;replies&quot;,&quot;meta&quot;,&quot;facebook&quot;,&quot;instagram&quot;,&quot;all&quot;,&quot;invite&quot;,&quot;invited&quot;,&quot;add friend&quot;,&quot;friends&quot;,&quot;public&quot;,&quot;posts&quot;,&quot;photos&quot;,&quot;videos&quot;,&quot;watch&quot;,&quot;groups&quot;]);const sleep=t=&gt;new Promise(r=&gt;setTimeout(r,t));function clean(v){return String(v||&quot;&quot;).replace(/\u00a0/g,&quot; &quot;).replace(/\s+/g,&quot; &quot;).replace(/&#x27;s profile picture$/i,&quot;&quot;).replace(/’s profile picture$/i,&quot;&quot;).replace(/ profile picture$/i,&quot;&quot;).replace(/^profile picture of /i,&quot;&quot;).replace(/^View the profile of /i,&quot;&quot;).replace(/^View profile of /i,&quot;&quot;).replace(/^Comment by /i,&quot;&quot;).replace(/^Reply by /i,&quot;&quot;).trim()}function good(v){const n=clean(v),l=n.toLowerCase();if(!n||n.length&lt;2||n.length&gt;70)return false;if(STOP.has(l))return false;if(/^(@)?[._-]+$/.test(n))return false;if(/https?:\/\//i.test(n))return false;if(/^\d+$/.test(n))return false;if(/^\d+\s+(likes|followers|following|comments|shares|replies)$/i.test(n))return false;if(/[{}[\]&lt;&gt;=]/.test(n))return false;const words=n.split(&quot; &quot;).filter(Boolean);if(words.length&gt;9)return false;return true}function add(set,v){const n=clean(v);if(good(n))set.add(n)}function lines(set,v){String(v||&quot;&quot;).split(&quot;\n&quot;).map(clean).filter(Boolean).forEach(x=&gt;add(set,x))}function root(){const d=[...document.querySelectorAll(&#x27;[role=&quot;dialog&quot;],[aria-modal=&quot;true&quot;]&#x27;)];return d[d.length-1]||document.body}function scroller(r){const els=[r,...r.querySelectorAll(&quot;*&quot;)];return els.filter(el=&gt;{const s=getComputedStyle(el);return((/(auto|scroll)/.test(s.overflowY)||el.scrollHeight&gt;el.clientHeight+80)&amp;&amp;el.scrollHeight&gt;250&amp;&amp;el.clientHeight&gt;80)}).sort((a,b)=&gt;(b.scrollHeight-b.clientHeight)-(a.scrollHeight-a.clientHeight))[0]||r}function collectVisible(r,set){r.querySelectorAll(&#x27;a[href],[role=&quot;link&quot;],span[dir=&quot;auto&quot;],div[dir=&quot;auto&quot;],img[alt],[aria-label]&#x27;).forEach(el=&gt;{lines(set,el.getAttribute(&quot;aria-label&quot;));lines(set,el.getAttribute(&quot;title&quot;));lines(set,el.getAttribute(&quot;alt&quot;));if(el.tagName===&quot;A&quot;||el.getAttribute(&quot;role&quot;)===&quot;link&quot;||el.matches(&#x27;span[dir=&quot;auto&quot;]&#x27;))lines(set,el.innerText||el.textContent);if(el.tagName===&quot;A&quot;){try{const u=new URL(el.href,location.href);let p=u.pathname.split(&quot;/&quot;).filter(Boolean)[0]||&quot;&quot;;if(location.hostname.includes(&quot;instagram&quot;)&amp;&amp;p&amp;&amp;![&quot;p&quot;,&quot;reel&quot;,&quot;reels&quot;,&quot;stories&quot;,&quot;explore&quot;,&quot;accounts&quot;,&quot;direct&quot;].includes(p.toLowerCase()))add(set,&quot;@&quot;+p)}catch(e){}}})}function collectCommenters(r,set){const nodes=[...r.querySelectorAll(&#x27;[role=&quot;article&quot;],[aria-label*=&quot;comment&quot; i],[aria-label*=&quot;reply&quot; i],ul li,div[dir=&quot;auto&quot;]&#x27;)];nodes.forEach(node=&gt;{const aria=node.getAttribute(&quot;aria-label&quot;)||&quot;&quot;;let m=aria.match(/(?:comment|reply)\s+by\s+([^,.]+)/i);if(m)add(set,m[1]);const links=[...node.querySelectorAll(&#x27;a[href],[role=&quot;link&quot;]&#x27;)];for(const a of links.slice(0,4)){const txt=clean(a.innerText||a.textContent||a.getAttribute(&quot;aria-label&quot;)||&quot;&quot;);if(good(txt)){add(set,txt);break}}})}async function run(mode,box){const r=root(),s=scroller(r),set=new Set();const status=box.querySelector(&quot;#ncStatus&quot;),out=box.querySelector(&quot;#ncText&quot;);let prev=-1,stable=0;for(let i=0;i&lt;120;i++){status.textContent=&quot;Collecting... &quot;+set.size+&quot; names found. Pass &quot;+(i+1);if(mode===&quot;comments&quot;)collectCommenters(r,set);else collectVisible(r,set);if(s&amp;&amp;typeof s.scrollTop===&quot;number&quot;)s.scrollTop=s.scrollHeight;else scrollTo(0,document.body.scrollHeight);await sleep(350);if(mode===&quot;comments&quot;)collectCommenters(r,set);else collectVisible(r,set);if(set.size===prev)stable++;else stable=0;prev=set.size;if(stable&gt;=7)break}const names=[...set].sort((a,b)=&gt;a.localeCompare(b));out.value=names.join(&quot;\n&quot;);status.textContent=&quot;Done. Collected &quot;+names.length+&quot; names. Review before using.&quot;;try{await navigator.clipboard.writeText(out.value)}catch(e){}}function ui(){const old=document.getElementById(&quot;nameCollectorBox&quot;);if(old)old.remove();const box=document.createElement(&quot;div&quot;);box.id=&quot;nameCollectorBox&quot;;box.style.cssText=&quot;position:fixed;inset:12px;z-index:2147483647;background:#0f172a;color:white;border:1px solid rgba(255,255,255,.25);border-radius:16px;padding:14px;font-family:Arial,sans-serif;box-shadow:0 20px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px&quot;;box.innerHTML=&#x27;&lt;div style=&quot;display:flex;gap:8px;align-items:center;justify-content:space-between&quot;&gt;&lt;strong&gt;Name Collector Helper&lt;/strong&gt;&lt;button id=&quot;ncClose&quot; style=&quot;padding:8px 10px;border:0;border-radius:10px;background:#ef4444;color:white;font-weight:700&quot;&gt;Close&lt;/button&gt;&lt;/div&gt;&lt;label style=&quot;font-weight:700&quot;&gt;What are you collecting?&lt;/label&gt;&lt;select id=&quot;ncMode&quot; style=&quot;padding:10px;border-radius:10px;background:#020617;color:white;border:1px solid rgba(255,255,255,.25)&quot;&gt;&lt;option value=&quot;visible&quot;&gt;Reactions / followers / visible name list&lt;/option&gt;&lt;option value=&quot;comments&quot;&gt;Post commenters from loaded comments&lt;/option&gt;&lt;/select&gt;&lt;div style=&quot;display:flex;gap:8px;flex-wrap:wrap&quot;&gt;&lt;button id=&quot;ncStart&quot; style=&quot;flex:1;padding:10px;border:0;border-radius:12px;background:#22c55e;color:#052e16;font-weight:900&quot;&gt;Start Collecting&lt;/button&gt;&lt;button id=&quot;ncCopy&quot; style=&quot;flex:1;padding:10px;border:0;border-radius:12px;background:#facc15;color:#422006;font-weight:900&quot;&gt;Copy Names&lt;/button&gt;&lt;/div&gt;&lt;div id=&quot;ncStatus&quot; style=&quot;color:#cbd5e1;font-size:13px&quot;&gt;Choose a mode, then click Start Collecting.&lt;/div&gt;&lt;textarea id=&quot;ncText&quot; style=&quot;flex:1;min-height:260px;border-radius:12px;background:#020617;color:white;border:1px solid rgba(255,255,255,.2);padding:10px;font-size:14px&quot;&gt;&lt;/textarea&gt;&lt;div style=&quot;color:#cbd5e1;font-size:12px;line-height:1.35&quot;&gt;Only visible/loadable names are collected. For comments, open the post comments first and scroll/load comments before running. Always review the list before using it.&lt;/div&gt;&#x27;;document.body.appendChild(box);box.querySelector(&quot;#ncClose&quot;).onclick=()=&gt;box.remove();box.querySelector(&quot;#ncStart&quot;).onclick=()=&gt;run(box.querySelector(&quot;#ncMode&quot;).value,box);box.querySelector(&quot;#ncCopy&quot;).onclick=async()=&gt;{await navigator.clipboard.writeText(box.querySelector(&quot;#ncText&quot;).value);box.querySelector(&quot;#ncCopy&quot;).textContent=&quot;Copied!&quot;}}ui()})();</textarea>
+<h3>How to Use the Name Collector Helper</h3>
 
           <p>
-            The helper only collects names that are already visible or loadable in your browser. It does not bypass privacy settings,
-            it does not hack Facebook or Instagram, and it cannot collect names from private lists you cannot normally view.
+            The Name Collector Helper now opens a small menu when it runs. You can choose whether you are collecting names from a
+            visible list such as reactions/followers, or whether you want to collect commenters from a post.
           </p>
 
           <h4>Important: Use a browser, not the app</h4>
-
           <p>
-            This tool works best from a web browser such as Chrome, Safari, Edge, or Firefox.
-            It usually will not work inside the Facebook app or Instagram app because those apps do not let users run browser JavaScript.
+            This works best in Chrome, Safari, Edge, or Firefox. It usually will not work inside the Facebook or Instagram app.
           </p>
 
           <h4>Best Method: Bookmarklet</h4>
-
-          <p>
-            A bookmarklet is a normal browser bookmark, except instead of saving a website link, it saves a small JavaScript tool.
-            After you save it once, you can click the bookmark whenever you want to collect names.
-          </p>
-
           <ol>
-            <li>Copy the <strong>Bookmarklet Version</strong> of the Name Collector code.</li>
-            <li>Create a new bookmark in your browser.</li>
-            <li>Name the bookmark something easy, like <strong>Collect Giveaway Names</strong>.</li>
-            <li>Paste the copied code into the bookmark's URL/address field.</li>
+            <li>Copy the <strong>Bookmarklet Code — Best for Most Users</strong>.</li>
+            <li>Create a browser bookmark named <strong>Collect Giveaway Names</strong>.</li>
+            <li>Paste the copied code into the bookmark URL/address field.</li>
             <li>Save the bookmark.</li>
-            <li>Go to Facebook or Instagram in your browser.</li>
-            <li>Open the list you want to collect names from, such as a post's reactions list or a followers list.</li>
-            <li>Click your <strong>Collect Giveaway Names</strong> bookmark.</li>
-            <li>A box should appear showing the names it collected.</li>
-            <li>Review the names, then click <strong>Copy Names</strong>.</li>
-            <li>Paste the names into the Randomizer Wheel name list.</li>
-          </ol>
-
-          <h4>How to create the bookmarklet on desktop</h4>
-
-          <ol>
-            <li>Copy the <strong>Bookmarklet Version</strong> code.</li>
-            <li>In your browser, right-click your bookmarks bar and choose <strong>Add page</strong> or <strong>Add bookmark</strong>.</li>
-            <li>For the name, enter <strong>Collect Giveaway Names</strong>.</li>
-            <li>For the URL, paste the full bookmarklet code.</li>
-            <li>Save it.</li>
-          </ol>
-
-          <p>
-            If you do not see your bookmarks bar, press <strong>Ctrl + Shift + B</strong> on Windows or
-            <strong>Command + Shift + B</strong> on Mac in Chrome or Edge.
-          </p>
-
-          <h4>How to use it for Facebook post reactions</h4>
-
-          <ol>
-            <li>Open Facebook in a browser.</li>
-            <li>Go to the giveaway post.</li>
-            <li>Click the number of reactions/likes on the post.</li>
-            <li>A list of people who reacted should open.</li>
-            <li>Scroll the list a little so Facebook starts loading names.</li>
-            <li>Click your <strong>Collect Giveaway Names</strong> bookmark.</li>
-            <li>Wait a few seconds while it scrolls and collects names.</li>
-            <li>Review the collected names.</li>
-            <li>Click <strong>Copy Names</strong>.</li>
+            <li>Open Facebook or Instagram in your browser.</li>
+            <li>Open the reactions list, followers list, likes list, or comments section you want to collect from.</li>
+            <li>Click the <strong>Collect Giveaway Names</strong> bookmark.</li>
+            <li>Choose the collection mode in the helper menu.</li>
+            <li>Click <strong>Start Collecting</strong>.</li>
+            <li>Review the list, then click <strong>Copy Names</strong>.</li>
             <li>Paste the names into the Randomizer Wheel.</li>
           </ol>
 
-          <h4>How to use it for Facebook followers</h4>
-
+          <h4>Collecting Facebook post reactions</h4>
           <ol>
             <li>Open Facebook in a browser.</li>
-            <li>Go to the page or profile followers list.</li>
-            <li>Scroll until names start loading.</li>
-            <li>Click your <strong>Collect Giveaway Names</strong> bookmark.</li>
-            <li>Wait while it collects visible/loadable names.</li>
-            <li>Review the list, remove anything that should not count, then copy it.</li>
+            <li>Open the giveaway post.</li>
+            <li>Click the reactions/likes count so the list of people opens.</li>
+            <li>Run the Name Collector Helper.</li>
+            <li>Choose <strong>Reactions / followers / visible name list</strong>.</li>
+            <li>Click <strong>Start Collecting</strong>.</li>
           </ol>
 
-          <h4>How to use it for Instagram likes or followers</h4>
+          <h4>Collecting Facebook post comments</h4>
+          <ol>
+            <li>Open Facebook in a browser.</li>
+            <li>Open the giveaway post.</li>
+            <li>Open the comments section and load as many comments as you need.</li>
+            <li>Run the Name Collector Helper.</li>
+            <li>Choose <strong>Post commenters from loaded comments</strong>.</li>
+            <li>Click <strong>Start Collecting</strong>.</li>
+            <li>Review the results. Facebook layouts change often, so remove anything that is not a real entrant.</li>
+          </ol>
 
+          <h4>Collecting Instagram likes, followers, or comments</h4>
           <ol>
             <li>Open Instagram in a browser.</li>
-            <li>Open the post likes list, followers list, or following list.</li>
-            <li>Scroll until names or usernames start loading.</li>
-            <li>Click your <strong>Collect Giveaway Names</strong> bookmark.</li>
-            <li>Review the collected names or usernames.</li>
-            <li>Copy the list and paste it into the Randomizer Wheel.</li>
+            <li>Open the likes list, followers list, or comments section.</li>
+            <li>Run the Name Collector Helper.</li>
+            <li>Choose the mode that matches what you are collecting.</li>
+            <li>Review the names or usernames before generating the official wheel.</li>
           </ol>
 
           <h4>Alternative Method: Browser Console</h4>
-
           <p>
-            The Console Version is mainly for people who are comfortable with browser developer tools.
-            Most users should use the bookmarklet method instead.
-          </p>
-
-          <ol>
-            <li>Open Facebook or Instagram in a desktop browser.</li>
-            <li>Open the list you want to collect names from.</li>
-            <li>Press <strong>F12</strong> or right-click the page and choose <strong>Inspect</strong>.</li>
-            <li>Click the <strong>Console</strong> tab.</li>
-            <li>Paste the <strong>Console Version</strong> of the code.</li>
-            <li>Press <strong>Enter</strong>.</li>
-            <li>Review the collected names and copy them.</li>
-          </ol>
-
-          <h4>Mobile phone note</h4>
-
-          <p>
-            On phones, this is more limited. The Facebook and Instagram apps usually will not work with this tool.
-            If using a phone, open Facebook or Instagram through a browser such as Safari or Chrome.
-          </p>
-
-          <p>
-            Some mobile browsers make bookmarklets harder to use. For the easiest experience, use a desktop or laptop computer
-            when collecting large lists of names.
+            The Console Code is mainly for advanced users. Most people should use the bookmarklet code.
           </p>
 
           <h4>Always review the names</h4>
-
           <p>
             The Name Collector Helper is only a helper. The giveaway runner is responsible for reviewing the final entry list
             before generating the official result.
           </p>
 
-          <p>Before generating the wheel, check for:</p>
-
           <ul>
-            <li>Names that should not be included</li>
-            <li>Missing people who should be included</li>
-            <li>Duplicate entries that were intentional</li>
-            <li>Duplicate entries that were accidental</li>
-            <li>Words like Following, Invited, More, or other non-name text</li>
+            <li>Remove words that are not names.</li>
+            <li>Check that intentional duplicate entries are correct.</li>
+            <li>Check for missing people before generating the official result.</li>
+            <li>Remember: once the official result is generated, the saved result shows the exact entry list that was used.</li>
           </ul>
-
-          <p>
-            Once the official result is generated, the saved result will show the original entry list that was used.
-          </p>
         </div>
       </div>
     </section>
@@ -636,8 +581,13 @@
     const namesInput = document.getElementById("namesInput");
     const wheelModeSelect = document.getElementById("wheelModeSelect");
     const spinCountControls = document.getElementById("spinCountControls");
+    const prizeIntervalControls = document.getElementById("prizeIntervalControls");
+    const multiPrizeControls = document.getElementById("multiPrizeControls");
     const spinCountInput = document.getElementById("spinCountInput");
     const prizeIntervalInput = document.getElementById("prizeIntervalInput");
+    const winnerCountInput = document.getElementById("winnerCountInput");
+    const prizeListInput = document.getElementById("prizeListInput");
+    const preventDuplicateWinnerNames = document.getElementById("preventDuplicateWinnerNames");
     const usernameInput = document.getElementById("usernameInput");
     const passwordInput = document.getElementById("passwordInput");
     const generateBtn = document.getElementById("generateBtn");
@@ -895,6 +845,12 @@
       const entries = parseNames(namesInput.value);
       const spinCount = Math.max(1, Math.min(1000, Number(spinCountInput.value || 1)));
       const prizeInterval = Math.max(0, Math.min(1000, Number(prizeIntervalInput.value || 0)));
+      const winnerCount = Math.max(1, Math.min(1000, Number(winnerCountInput.value || 1)));
+      const prizeList = String(prizeListInput.value || "")
+        .split(/\n+/)
+        .map(cleanName)
+        .filter(Boolean);
+      const preventDuplicateWinners = preventDuplicateWinnerNames.value === "yes";
 
       if (!AUTH_ENDPOINT || AUTH_ENDPOINT.includes("PASTE_YOUR_APPS_SCRIPT")) {
         setStatus("AUTH_ENDPOINT is not set yet. Paste your Apps Script Web App URL into index.html.", "bad");
@@ -909,6 +865,20 @@
       if (!username || !password) {
         setStatus("Please enter your username and password.", "bad");
         return;
+      }
+
+      if (mode === "multi-prize") {
+        const requestedWinners = prizeList.length || winnerCount;
+
+        if (requestedWinners < 1) {
+          setStatus("Please enter at least 1 winner or 1 prize.", "bad");
+          return;
+        }
+
+        if (requestedWinners > entries.length) {
+          setStatus("You requested more winners/prizes than total entries. Add more entries or lower the winner/prize count.", "bad");
+          return;
+        }
       }
 
       generateBtn.disabled = true;
@@ -933,6 +903,9 @@
           mode,
           spinCount,
           prizeInterval,
+          winnerCount,
+          prizeListJson: JSON.stringify(prizeList),
+          preventDuplicateWinners,
           entriesJson: JSON.stringify(entries),
           logoDataUrl
         }, popup);
@@ -956,8 +929,16 @@
     function updateModeUi() {
       if (wheelModeSelect.value === "last-name-spun") {
         spinCountControls.style.display = "none";
+        prizeIntervalControls.style.display = "none";
+        multiPrizeControls.style.display = "none";
+      } else if (wheelModeSelect.value === "multi-prize") {
+        spinCountControls.style.display = "none";
+        prizeIntervalControls.style.display = "none";
+        multiPrizeControls.style.display = "block";
       } else {
         spinCountControls.style.display = "block";
+        prizeIntervalControls.style.display = "block";
+        multiPrizeControls.style.display = "none";
       }
     }
 
@@ -967,6 +948,8 @@
       raffleTitle.value = "Demo Giveaway";
       raffleDescription.value = "This is a Demo wheel.";
       giveawayRules.value = "Demo rules: must be eligible according to the giveaway post.";
+      prizeListInput.value = "Sticker Pack\n10-count Isopod Culture\nGrand Prize";
+      winnerCountInput.value = 3;
       namesInput.value = [
         "Name 6",
         "Name 5",
@@ -992,6 +975,12 @@
       let value = Number(prizeIntervalInput.value || 0);
       value = Math.max(0, Math.min(1000, value));
       prizeIntervalInput.value = value;
+    });
+
+    winnerCountInput.addEventListener("input", () => {
+      let value = Number(winnerCountInput.value || 1);
+      value = Math.max(1, Math.min(1000, value));
+      winnerCountInput.value = value;
     });
 
     wheelModeSelect.addEventListener("change", updateModeUi);
