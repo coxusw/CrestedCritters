@@ -77,6 +77,32 @@
     return String(item.tags || "").split(",").map((t) => t.trim()).filter(Boolean);
   }
 
+  function extractDriveFileId(url) {
+    const text = String(url || "");
+    let match = text.match(/[?&]id=([^&#]+)/);
+    if (match) return decodeURIComponent(match[1]);
+    match = text.match(/\/d\/([^/]+)/);
+    if (match) return decodeURIComponent(match[1]);
+    return "";
+  }
+
+  function displayImageUrl(item) {
+    const raw = String((item && item.imageUrl) || "").trim();
+    const fileId = String((item && (item.imageDriveFileId || item.driveFileId)) || "").trim() || extractDriveFileId(raw);
+
+    // Google Drive's older uc?export=view links often fail inside <img> tags.
+    // The thumbnail endpoint is much more reliable for public/shared Drive images.
+    if (fileId) {
+      return "https://drive.google.com/thumbnail?id=" + encodeURIComponent(fileId) + "&sz=w1200";
+    }
+
+    return raw || "assets/placeholder.svg";
+  }
+
+  function imageFallbackAttr() {
+    return "onerror=\"this.onerror=null;this.src='assets/placeholder.svg';\"";
+  }
+
   function apiConfigured() {
     const cfg = window.ISOPEDIA_CONFIG || {};
     return !!(cfg.API_URL && !cfg.API_URL.includes("PASTE_YOUR"));
@@ -222,11 +248,11 @@
   function cardHtml(item) {
     const tags = tagsArray(item);
     const tagsHtml = tags.slice(0, 4).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("");
-    const img = item.imageUrl || "assets/placeholder.svg";
+    const img = displayImageUrl(item);
     return `
       <article class="iso-card ${String(item.status).toLowerCase() !== "verified" ? "card-highlight" : ""}">
         <a class="iso-card-link" href="species.html?id=${encodeURIComponent(item.id)}" aria-label="View ${escapeHtml(item.speciesName)}">
-          <img class="iso-thumb" src="${escapeHtml(img)}" alt="${escapeHtml(item.speciesName)}" loading="lazy">
+          <img class="iso-thumb" src="${escapeHtml(img)}" alt="${escapeHtml(item.speciesName)}" loading="lazy" ${imageFallbackAttr()}>
           <div class="iso-card-body">
             <div class="card-topline">
               <span class="badge ${statusClass(item.status)}">${statusLabel(item.status)}</span>
@@ -377,11 +403,11 @@
 
     document.title = item.speciesName + " | Isopedia";
     const tags = tagsArray(item);
-    const img = item.imageUrl || "assets/placeholder.svg";
+    const img = displayImageUrl(item);
 
     root.innerHTML = `
       <section class="species-hero ${String(item.status).toLowerCase() !== "verified" ? "card-highlight" : ""}">
-        <img class="species-image" src="${escapeHtml(img)}" alt="${escapeHtml(item.speciesName)}">
+        <img class="species-image" src="${escapeHtml(img)}" alt="${escapeHtml(item.speciesName)}" ${imageFallbackAttr()}>
         <div>
           <div class="card-topline">
             <span class="badge ${statusClass(item.status)}">${statusLabel(item.status)}</span>
@@ -645,12 +671,12 @@
   function pendingContributionHtml(c, user) {
     const p = c.proposedData || {};
     const own = String(c.submittedByUserId) === String(user.userId);
-    const img = p.imageUrl || "assets/placeholder.svg";
+    const img = displayImageUrl(p);
     const tags = tagsArray(p);
 
     return `
       <article class="pending-card">
-        <img class="iso-thumb" src="${escapeHtml(img)}" alt="${escapeHtml(p.speciesName || "Pending isopod")}">
+        <img class="iso-thumb" src="${escapeHtml(img)}" alt="${escapeHtml(p.speciesName || "Pending isopod")}" ${imageFallbackAttr()}>
         <div>
           <div class="card-topline">
             <span class="badge status-pending">Pending Verification</span>
