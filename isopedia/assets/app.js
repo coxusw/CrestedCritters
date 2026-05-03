@@ -7,6 +7,7 @@
     "Cubaris",
     "Porcellionides",
     "Ardentiella",
+    "Troglodillo",
     "Other"
   ];
 
