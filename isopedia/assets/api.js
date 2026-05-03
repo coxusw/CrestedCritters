@@ -3,6 +3,7 @@
 
   const TOKEN_KEY = "isopedia_token";
   const USER_KEY = "isopedia_user";
+  const COOKIE_DAYS = 7;
 
   function config() {
     return window.ISOPEDIA_CONFIG || {};
@@ -12,26 +13,110 @@
     return (config().API_URL || "").trim();
   }
 
-  function getToken() {
-    return localStorage.getItem(TOKEN_KEY) || "";
-  }
-
-  function setToken(token) {
-    if (token) localStorage.setItem(TOKEN_KEY, token);
-    else localStorage.removeItem(TOKEN_KEY);
-  }
-
-  function getUser() {
+  function safeStorage(type) {
     try {
-      return JSON.parse(localStorage.getItem(USER_KEY) || "null");
+      const store = window[type];
+      const testKey = "__isopedia_storage_test__";
+      store.setItem(testKey, "1");
+      store.removeItem(testKey);
+      return store;
     } catch (err) {
       return null;
     }
   }
 
+  function localStore() {
+    return safeStorage("localStorage");
+  }
+
+  function sessionStore() {
+    return safeStorage("sessionStorage");
+  }
+
+  function setCookie(name, value, days) {
+    try {
+      if (!value) {
+        document.cookie = encodeURIComponent(name) + "=; Max-Age=0; path=/; SameSite=Lax";
+        return;
+      }
+      const maxAge = Math.max(1, days || COOKIE_DAYS) * 24 * 60 * 60;
+      document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + "; Max-Age=" + maxAge + "; path=/; SameSite=Lax";
+    } catch (err) {}
+  }
+
+  function getCookie(name) {
+    try {
+      const target = encodeURIComponent(name) + "=";
+      const parts = String(document.cookie || "").split(";");
+      for (const part of parts) {
+        const clean = part.trim();
+        if (clean.indexOf(target) === 0) return decodeURIComponent(clean.slice(target.length));
+      }
+    } catch (err) {}
+    return "";
+  }
+
+  function writeStoredValue(key, value) {
+    const local = localStore();
+    const session = sessionStore();
+
+    if (value == null || value === "") {
+      if (local) local.removeItem(key);
+      if (session) session.removeItem(key);
+      setCookie(key, "");
+      return;
+    }
+
+    if (local) local.setItem(key, value);
+    if (session) session.setItem(key, value);
+    setCookie(key, value, COOKIE_DAYS);
+  }
+
+  function readStoredValue(key) {
+    const local = localStore();
+    const session = sessionStore();
+    return (local && local.getItem(key)) || (session && session.getItem(key)) || getCookie(key) || "";
+  }
+
+  function getToken() {
+    return readStoredValue(TOKEN_KEY);
+  }
+
+  function setToken(token) {
+    writeStoredValue(TOKEN_KEY, token || "");
+  }
+
+  function getUser() {
+    const raw = readStoredValue(USER_KEY);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch (err) {
+      setUser(null);
+      return null;
+    }
+  }
+
   function setUser(user) {
-    if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
-    else localStorage.removeItem(USER_KEY);
+    writeStoredValue(USER_KEY, user ? JSON.stringify(user) : "");
+  }
+
+  function setSession(token, user) {
+    setToken(token || "");
+    setUser(user || null);
+  }
+
+  function clearSession() {
+    setSession("", null);
+  }
+
+  function hasSession() {
+    return !!(getToken() && getUser());
+  }
+
+  function isAuthError(err) {
+    const msg = String((err && err.message) || err || "").toLowerCase();
+    return msg.includes("session expired") || msg.includes("must be logged in") || msg.includes("not active") || msg.includes("incorrect username") || msg.includes("incorrect password");
   }
 
   async function apiCall(action, payload) {
@@ -83,15 +168,13 @@
 
   async function register(payload) {
     const data = await apiCall("register", payload);
-    setToken(data.token);
-    setUser(data.user);
+    setSession(data.token, data.user);
     return data;
   }
 
   async function login(payload) {
     const data = await apiCall("login", payload);
-    setToken(data.token);
-    setUser(data.user);
+    setSession(data.token, data.user);
     return data;
   }
 
@@ -101,23 +184,34 @@
     } catch (err) {
       // Clear local session even if backend logout fails.
     }
-    setToken("");
-    setUser(null);
+    clearSession();
   }
 
-  async function refreshMe() {
+  async function refreshMe(options) {
+    const opts = Object.assign({ clearOnFailure: true }, options || {});
     if (!getToken()) return null;
     try {
       const data = await apiCall("me", {});
       setUser(data.user);
       return data.user;
     } catch (err) {
-      setToken("");
-      setUser(null);
-      return null;
+      // Only clear local login data for true auth/session failures. This avoids
+      // asking users to log in again because of a temporary Apps Script/network hiccup.
+      if (opts.clearOnFailure && isAuthError(err)) {
+        clearSession();
+        return null;
+      }
+      return getUser();
     }
   }
 
+  async function getReliableUser() {
+    const cached = getUser();
+    const token = getToken();
+    if (cached && token) return cached;
+    if (token) return await refreshMe({ clearOnFailure: true });
+    return null;
+  }
 
   function estimateDataUrlBytes(dataUrl) {
     const clean = String(dataUrl || "");
@@ -220,6 +314,10 @@
     setToken,
     getUser,
     setUser,
+    setSession,
+    clearSession,
+    hasSession,
+    getReliableUser,
     apiCall,
     publicApi,
     register,
