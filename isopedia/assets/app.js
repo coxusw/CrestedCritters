@@ -90,6 +90,67 @@
     return type === "Isopod" ? "Genus" : "Genus / Group";
   }
 
+  function setSelectValueAllowCustom(select, value) {
+    if (!select) return;
+    const cleanValue = String(value || "").trim();
+    if (!cleanValue) return;
+    const exists = Array.from(select.options).some((option) => option.value === cleanValue);
+    if (!exists) {
+      const option = document.createElement("option");
+      option.value = cleanValue;
+      option.textContent = cleanValue;
+      select.appendChild(option);
+    }
+    select.value = cleanValue;
+  }
+
+  function setFormField(form, name, value) {
+    if (!form) return;
+    const field = form.elements[name];
+    if (!field) return;
+    if (field.tagName === "SELECT") {
+      setSelectValueAllowCustom(field, value);
+    } else {
+      field.value = value == null ? "" : String(value);
+    }
+  }
+
+  function populateGroupSelectForType(type, genusSelect, selectedValue) {
+    if (!genusSelect) return;
+    const groups = ORGANISM_GROUPS[type] || ORGANISM_GROUPS.Other;
+    genusSelect.innerHTML = groups.map((g) => `<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join("");
+    setSelectValueAllowCustom(genusSelect, selectedValue || groups[0] || "Other");
+  }
+
+  function entryEditUrl(item) {
+    return `edit.html?id=${encodeURIComponent(item.id || item.isopodId || "")}`;
+  }
+
+  function entryViewUrl(item) {
+    return `species.html?id=${encodeURIComponent(item.id || item.isopodId || "")}`;
+  }
+
+  function entrySourceFields(item) {
+    return {
+      organismType: organismType(item),
+      genus: item.genus || "Other",
+      speciesName: item.speciesName || "",
+      tags: tagsArray(item).join(", "),
+      origin: item.origin || "",
+      basicDescription: item.basicDescription || "",
+      careDifficulty: careFieldValue(item, CARE_FIELDS[0]),
+      careTemperature: careFieldValue(item, CARE_FIELDS[1]),
+      careHumidity: careFieldValue(item, CARE_FIELDS[2]),
+      careSubstrateMoisture: careFieldValue(item, CARE_FIELDS[3]),
+      careVentilation: careFieldValue(item, CARE_FIELDS[4]),
+      careFoods: careFieldValue(item, CARE_FIELDS[5]),
+      careProtein: careFieldValue(item, CARE_FIELDS[6]),
+      careCalcium: careFieldValue(item, CARE_FIELDS[7]),
+      careBreeding: careFieldValue(item, CARE_FIELDS[8]),
+      careNotes: careFieldValue(item, CARE_FIELDS[9])
+    };
+  }
+
   function entryWord(item) {
     const type = organismType(item);
     return type === "Isopod" ? "isopod" : type.toLowerCase();
@@ -737,8 +798,11 @@
         </div>
         <div>
           <h2>Community Review</h2>
-          <p>Logged-in members can dispute or suggest a correction if something looks inaccurate.</p>
-          <button class="button warning" id="openDisputeBtn">Contest / Suggest Correction</button>
+          <p>Logged-in members can suggest a full edit or dispute information that appears inaccurate.</p>
+          <div class="button-row">
+            <a class="button primary" id="suggestEditBtn" href="${escapeHtml(entryEditUrl(item))}">Suggest Edit</a>
+            <button class="button warning" id="openDisputeBtn">Contest / Suggest Correction</button>
+          </div>
         </div>
       </section>
 
@@ -1001,6 +1065,100 @@
     });
   }
 
+
+  async function initEdit() {
+    const user = await requireLoggedIn();
+    if (!user) return;
+
+    await loadIsopods();
+    const id = getQueryParam("id");
+    const item = allIsopods.find((entry) => String(entry.id) === String(id));
+    const root = $("#editRoot");
+    const form = $("#editContributionForm");
+    const notice = $("#formNotice");
+    const organismSelect = $("#editOrganismType");
+    const genusSelect = $("#editGenus");
+    const genusLabelText = $("#editGenusLabelText");
+    const nameInput = $("#editorPublicName");
+
+    if (!item) {
+      if (root) {
+        root.innerHTML = `
+          <div class="empty-state">
+            <h2>Entry not found</h2>
+            <p>This entry may not exist yet or the public data has not loaded.</p>
+            <a class="button primary" href="index.html">Back to Database</a>
+          </div>
+        `;
+      }
+      return;
+    }
+
+    if (nameInput && user.publicDisplayName) nameInput.value = user.publicDisplayName;
+
+    if (organismSelect) {
+      organismSelect.innerHTML = ORGANISM_TYPES.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+      setSelectValueAllowCustom(organismSelect, organismType(item));
+      organismSelect.addEventListener("change", () => {
+        populateGroupSelectForType(organismSelect.value, genusSelect, "");
+        if (genusLabelText) genusLabelText.textContent = groupLabelForType(organismSelect.value);
+      });
+    }
+
+    populateGroupSelectForType(organismType(item), genusSelect, item.genus || "Other");
+    if (genusLabelText) genusLabelText.textContent = groupLabelForType(organismType(item));
+
+    const fields = entrySourceFields(item);
+    Object.keys(fields).forEach((key) => setFormField(form, key, fields[key]));
+    const idInput = form ? form.elements.isopodId : null;
+    if (idInput) idInput.value = item.id || item.isopodId || "";
+
+    const pageTitle = $("#editEntryTitle");
+    if (pageTitle) pageTitle.textContent = item.speciesName || "Suggested Edit";
+    document.title = "Suggest Edit: " + (item.speciesName || "Entry") + " | Isopedia";
+
+    if (!form) return;
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      setMessage(notice, "Submitting suggested edit...", "info");
+
+      try {
+        const result = await IsopediaAPI.apiCall("submitEditContribution", {
+          isopodId: data.get("isopodId"),
+          organismType: data.get("organismType"),
+          genus: data.get("genus"),
+          speciesName: data.get("speciesName"),
+          tags: data.get("tags"),
+          origin: data.get("origin"),
+          basicDescription: data.get("basicDescription"),
+          careDifficulty: data.get("careDifficulty"),
+          careTemperature: data.get("careTemperature"),
+          careHumidity: data.get("careHumidity"),
+          careSubstrateMoisture: data.get("careSubstrateMoisture"),
+          careVentilation: data.get("careVentilation"),
+          careFoods: data.get("careFoods"),
+          careProtein: data.get("careProtein"),
+          careCalcium: data.get("careCalcium"),
+          careBreeding: data.get("careBreeding"),
+          careNotes: data.get("careNotes"),
+          editorPublicOptIn: data.get("editorPublicOptIn") === "on",
+          editorPublicName: data.get("editorPublicName"),
+          notes: data.get("notes")
+        });
+
+        const changed = result.changedFields && result.changedFields.length
+          ? " Changed fields: " + result.changedFields.join(", ") + "."
+          : "";
+        setMessage(notice, "Suggested edit submitted and waiting for another member to verify." + changed, "success");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (err) {
+        setMessage(notice, err.message, "error");
+      }
+    });
+  }
+
   async function initVerify() {
     const user = await requireLoggedIn();
     if (!user) return;
@@ -1220,22 +1378,25 @@
     const p = c.proposedData || {};
     const own = String(c.submittedByUserId) === String(user.userId);
     const img = displayImageUrl(p);
+    const type = String(c.type || "new").toLowerCase();
+    const isEdit = type === "edit";
     const summary = p.basicDescription || p.origin || "Open this submission to review the full details.";
 
     return `
-      <article class="verify-card">
+      <article class="verify-card ${isEdit ? "suggested-edit-card" : ""}">
         <img class="iso-thumb" src="${escapeHtml(img)}" alt="${escapeHtml(p.speciesName || "Pending entry")}" ${imageFallbackAttr()}>
         <div class="verify-card-body">
           <div class="card-topline">
-            <span class="badge status-pending">Pending Verification</span>
+            <span class="badge status-pending">${isEdit ? "Pending Suggested Edit" : "Pending Verification"}</span>
+            <span class="type-pill">${escapeHtml(p.organismType || "Isopod")}</span>
             <span class="genus-pill">${escapeHtml(p.genus || "Other")}</span>
           </div>
           <h3>${escapeHtml(p.speciesName || "Unnamed")}</h3>
-          <p class="verify-meta"><strong>Submitted by:</strong> ${escapeHtml(c.submittedByPublicName || "Anonymous Member")}</p>
+          <p class="verify-meta"><strong>${isEdit ? "Edit suggested by:" : "Submitted by:"}</strong> ${escapeHtml(c.submittedByPublicName || "Anonymous Member")}</p>
           <p class="verify-summary">${escapeHtml(summary)}</p>
-          ${own ? `<p class="verify-own-note">You submitted this entry, so you cannot verify it yourself.</p>` : ""}
+          ${own ? `<p class="verify-own-note">You submitted this ${isEdit ? "suggested edit" : "entry"}, so you cannot verify it yourself.</p>` : ""}
           <div class="button-row">
-            <button class="button primary" data-review-id="${escapeHtml(c.contributionId)}">Review Submission</button>
+            <button class="button primary" data-review-id="${escapeHtml(c.contributionId)}">${isEdit ? "Review Suggested Edit" : "Review Submission"}</button>
           </div>
         </div>
       </article>
@@ -1276,6 +1437,8 @@
     const own = String(c.submittedByUserId) === String(user.userId);
     const img = displayImageUrl(p);
     const tags = tagsArray(p);
+    const type = String(c.type || "new").toLowerCase();
+    const isEdit = type === "edit";
 
     return `
       <div class="verify-detail">
@@ -1283,18 +1446,20 @@
           <img class="verify-detail-image" src="${escapeHtml(img)}" alt="${escapeHtml(p.speciesName || "Pending entry")}" ${imageFallbackAttr()}>
           <div class="verify-detail-copy">
             <div class="card-topline">
-              <span class="badge status-pending">Pending Verification</span>
+              <span class="badge status-pending">${isEdit ? "Pending Suggested Edit" : "Pending Verification"}</span>
+              <span class="type-pill">${escapeHtml(p.organismType || "Isopod")}</span>
               <span class="genus-pill">${escapeHtml(p.genus || "Other")}</span>
             </div>
             <h2 id="verifyModalHeading">${escapeHtml(p.speciesName || "Unnamed")}</h2>
-            <p><strong>Submitted by:</strong> ${escapeHtml(c.submittedByPublicName || "Anonymous Member")}</p>
+            <p><strong>${isEdit ? "Edit suggested by:" : "Submitted by:"}</strong> ${escapeHtml(c.submittedByPublicName || "Anonymous Member")}</p>
+            ${isEdit ? `<p class="notice info inline-notice"><strong>Suggested edit:</strong> verifying this will automatically update the entry with the information shown below.</p>` : ""}
             ${p.origin ? `<p><strong>Origin:</strong> ${escapeHtml(p.origin)}</p>` : ""}
             ${tags.length ? `<div class="tag-row">${tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
             ${p.basicDescription ? `<p class="verify-detail-summary">${escapeHtml(p.basicDescription)}</p>` : ""}
-            ${own ? `<p class="verify-own-note">You submitted this entry, so you cannot verify it yourself.</p>` : ""}
+            ${own ? `<p class="verify-own-note">You submitted this ${isEdit ? "suggested edit" : "entry"}, so you cannot verify it yourself.</p>` : ""}
             <div class="button-row">
               <button id="modalVerifyBtn" class="button primary" ${own ? "disabled title='You cannot verify your own contribution.'" : ""}>
-                ${own ? "Cannot Verify Own Entry" : "Verify Contribution"}
+                ${own ? "Cannot Verify Own Entry" : (isEdit ? "Verify & Apply Edit" : "Verify Contribution")}
               </button>
               <button id="modalContestBtn" class="button warning">Contest / Suggest Correction</button>
             </div>
@@ -1611,6 +1776,7 @@
     if (current === "register") await initRegister();
     if (current === "login") await initLogin();
     if (current === "contribute") await initContribute();
+    if (current === "edit") await initEdit();
     if (current === "verify") await initVerify();
     if (current === "faq") await initFaq();
     if (current === "donate") await initDonate();
