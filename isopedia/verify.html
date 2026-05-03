@@ -31,10 +31,10 @@
 <main class="site-shell main">
   <section class="content-card">
     <h1>Verify Contributions</h1>
-    <p>Review pending isopod contributions. By verifying, you are confirming the information appears accurate to the best of your knowledge.</p>
+    <p>Review pending isopod submissions. The cards below stay simple so you can quickly browse what needs review. Click any card to open the full submission details.</p>
     <p><strong>Important:</strong> You cannot verify your own contribution.</p>
 
-    <div class="form-grid">
+    <div class="form-grid verify-settings-grid">
       <label class="check-row">
         <input id="verifierPublicOptIn" type="checkbox">
         List my name publicly as verifier
@@ -48,8 +48,15 @@
 
   <p id="formNotice" class="notice" hidden></p>
 
-  <section id="pendingGrid" class="grid"></section>
+  <section id="pendingGrid" class="verify-grid"></section>
 </main>
+
+<div id="verifyModal" class="modal-backdrop" hidden>
+  <div class="modal-panel verify-modal-panel" role="dialog" aria-modal="true" aria-labelledby="verifyModalHeading">
+    <button id="verifyModalClose" class="modal-close" type="button" aria-label="Close review dialog">×</button>
+    <div id="verifyModalContent"></div>
+  </div>
+</div>
 
 <footer class="footer">
   <div class="site-shell">
@@ -58,4 +65,3 @@
 </footer>
 </body>
 </html>
-
