@@ -1,15 +1,18 @@
 (function () {
   "use strict";
 
-  const GENUS = [
-    "Armadillidium",
-    "Porcellio",
-    "Cubaris",
-    "Porcellionides",
-    "Ardentiella",
-    "Troglodillo",
-    "Other"
-  ];
+  const ORGANISM_TYPES = ["Isopod", "Springtail", "Millipede", "Beetle", "Roach", "Other"];
+
+  const ORGANISM_GROUPS = {
+    Isopod: ["Armadillidium", "Porcellio", "Cubaris", "Porcellionides", "Ardentiella", "Troglodillo", "Other"],
+    Springtail: ["Tropical Springtail", "Temperate Springtail", "Orange Springtail", "White Springtail", "Coecobrya", "Folsomia", "Sinella", "Other Springtail"],
+    Millipede: ["Narceus", "Bumblebee Millipede", "Ivory Millipede", "Scarlet Millipede", "Other Millipede"],
+    Beetle: ["Asbolus", "Blue Death Feigning Beetle", "Darkling Beetle", "Flower Beetle", "Other Beetle"],
+    Roach: ["Dubia Roach", "Hissing Roach", "Surinam Roach", "Cleaner Roach", "Other Roach"],
+    Other: ["Bioactive Invertebrate", "Cleanup Crew", "Other"]
+  };
+
+  const GENUS = Array.from(new Set(Object.values(ORGANISM_GROUPS).flat()));
 
   let allIsopods = [];
 
@@ -76,6 +79,20 @@
   function tagsArray(item) {
     if (Array.isArray(item.tags)) return item.tags;
     return String(item.tags || "").split(",").map((t) => t.trim()).filter(Boolean);
+  }
+
+  function organismType(item) {
+    const type = String((item && item.organismType) || "Isopod").trim();
+    return ORGANISM_TYPES.includes(type) ? type : "Isopod";
+  }
+
+  function groupLabelForType(type) {
+    return type === "Isopod" ? "Genus" : "Genus / Group";
+  }
+
+  function entryWord(item) {
+    const type = organismType(item);
+    return type === "Isopod" ? "isopod" : type.toLowerCase();
   }
 
   const CARE_FIELDS = [
@@ -229,7 +246,7 @@
         allIsopods = data.isopods || [];
         return allIsopods;
       } catch (apiErr) {
-        console.warn("Live API isopod load failed, falling back to static JSON:", apiErr);
+        console.warn("Live API entry load failed, falling back to static JSON:", apiErr);
       }
     }
 
@@ -288,6 +305,7 @@
   function buildSearchText(item) {
     return normalize([
       item.speciesName,
+      organismType(item),
       item.genus,
       tagsArray(item).join(" "),
       item.origin,
@@ -302,6 +320,7 @@
 
     const queryWords = words(q);
     const name = normalize(item.speciesName);
+    const type = normalize(organismType(item));
     const genus = normalize(item.genus);
     const tags = tagsArray(item).map(normalize);
     const origin = normalize(item.origin);
@@ -314,6 +333,7 @@
     if (tags.some((t) => t === q)) score += 900;
     if (name.includes(q)) score += 600;
     if (tags.some((t) => t.includes(q))) score += 550;
+    if (type.includes(q)) score += 400;
     if (genus.includes(q)) score += 350;
     if (origin.includes(q)) score += 150;
     if (desc.includes(q)) score += 75;
@@ -322,6 +342,7 @@
       if (!w) return;
       if (name.includes(w)) score += 90;
       if (tags.some((t) => t.includes(w))) score += 80;
+      if (type.includes(w)) score += 45;
       if (genus.includes(w)) score += 30;
       if (full.includes(w)) score += 10;
     });
@@ -339,13 +360,14 @@
     return score;
   }
 
-  function searchIsopods(query, genus) {
+  function searchIsopods(query, genus, activeType) {
     return allIsopods
       .map((item) => ({ item, score: scoreItem(item, query) }))
       .filter(({ item, score }) => {
+        const typeOk = !activeType || activeType === "All" || organismType(item) === activeType;
         const genusOk = !genus || genus === "All" || item.genus === genus;
         const queryOk = !query || score > 0;
-        return genusOk && queryOk;
+        return typeOk && genusOk && queryOk;
       })
       .sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
@@ -365,9 +387,10 @@
           <div class="iso-card-body">
             <div class="card-topline">
               <span class="badge ${statusClass(item.status)}">${statusLabel(item.status)}</span>
+              <span class="type-pill">${escapeHtml(organismType(item))}</span>
               <span class="genus-pill">${escapeHtml(item.genus || "Other")}</span>
             </div>
-            <h3>${escapeHtml(item.speciesName || "Unnamed Isopod")}</h3>
+            <h3>${escapeHtml(item.speciesName || "Unnamed Entry")}</h3>
             <p>${escapeHtml(item.basicDescription || "No description available.").slice(0, 180)}${String(item.basicDescription || "").length > 180 ? "..." : ""}</p>
             <div class="tag-row">${tagsHtml}</div>
           </div>
@@ -381,8 +404,8 @@
     if (!items.length) {
       container.innerHTML = `
         <div class="empty-state">
-          <h3>No isopods found</h3>
-          <p>Try another search term, browse by genus, or add a new isopod.</p>
+          <h3>No entries found</h3>
+          <p>Try another search term, browse by category/group, or add a new entry.</p>
         </div>
       `;
       return;
@@ -423,10 +446,21 @@
     }
   }
 
-  function setupGenusButtons() {
+  function setupOrganismButtons() {
+    const wrap = $("#organismButtons");
+    if (!wrap) return;
+    wrap.innerHTML = ["All"].concat(ORGANISM_TYPES).map((type) => `
+      <button class="organism-btn" data-type="${escapeHtml(type)}">${escapeHtml(type)}</button>
+    `).join("");
+  }
+
+  function setupGenusButtons(activeType) {
     const wrap = $("#genusButtons");
     if (!wrap) return;
-    wrap.innerHTML = ["All"].concat(GENUS).map((g) => `
+    const groups = activeType && activeType !== "All"
+      ? (ORGANISM_GROUPS[activeType] || ["Other"])
+      : GENUS;
+    wrap.innerHTML = ["All"].concat(groups).map((g) => `
       <button class="genus-btn" data-genus="${escapeHtml(g)}">${escapeHtml(g)}</button>
     `).join("");
   }
@@ -435,14 +469,36 @@
     const searchInput = $("#searchInput");
     const resultGrid = $("#resultGrid");
     const activeGenusLabel = $("#activeGenusLabel");
+    const genusHelp = $("#genusHelp");
+    let activeType = "All";
     let activeGenus = "All";
+
+    function refreshGroupButtons() {
+      setupGenusButtons(activeType);
+      $all(".genus-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          activeGenus = btn.getAttribute("data-genus") || "All";
+          $all(".genus-btn").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          runSearch();
+        });
+      });
+      const allBtn = $('.genus-btn[data-genus="All"]');
+      if (allBtn) allBtn.classList.add("active");
+    }
 
     function runSearch() {
       const query = searchInput ? searchInput.value : "";
-      const items = searchIsopods(query, activeGenus);
+      const items = searchIsopods(query, activeGenus, activeType);
       renderCards(items, resultGrid);
       if (activeGenusLabel) {
-        activeGenusLabel.textContent = activeGenus === "All" ? "All Isopods" : activeGenus;
+        const typeText = activeType === "All" ? "All Entries" : activeType + " Entries";
+        activeGenusLabel.textContent = activeGenus === "All" ? typeText : activeType + " · " + activeGenus;
+      }
+      if (genusHelp) {
+        genusHelp.textContent = activeType === "All"
+          ? "Choose an organism type first, or browse all groups below."
+          : "Browse " + activeType.toLowerCase() + " groups.";
       }
     }
 
@@ -450,25 +506,39 @@
       searchInput.addEventListener("input", runSearch);
     }
 
-    $all(".genus-btn").forEach((btn) => {
+    $all(".organism-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
-        activeGenus = btn.getAttribute("data-genus") || "All";
-        $all(".genus-btn").forEach((b) => b.classList.remove("active"));
+        activeType = btn.getAttribute("data-type") || "All";
+        activeGenus = "All";
+        $all(".organism-btn").forEach((b) => b.classList.remove("active"));
         btn.classList.add("active");
+        refreshGroupButtons();
         runSearch();
       });
     });
 
+    const startType = getQueryParam("type");
     const startGenus = getQueryParam("genus");
-    if (startGenus && GENUS.includes(startGenus)) {
-      const btn = $(`.genus-btn[data-genus="${CSS.escape(startGenus)}"]`);
-      if (btn) btn.click();
-      else runSearch();
-    } else {
-      const allBtn = $('.genus-btn[data-genus="All"]');
-      if (allBtn) allBtn.classList.add("active");
-      runSearch();
+    if (startType && ORGANISM_TYPES.includes(startType)) activeType = startType;
+    const typeBtn = $(`.organism-btn[data-type="${CSS.escape(activeType)}"]`);
+    if (typeBtn) typeBtn.classList.add("active");
+    else {
+      const allTypeBtn = $('.organism-btn[data-type="All"]');
+      if (allTypeBtn) allTypeBtn.classList.add("active");
     }
+
+    refreshGroupButtons();
+
+    if (startGenus && GENUS.includes(startGenus)) {
+      activeGenus = startGenus;
+      const btn = $(`.genus-btn[data-genus="${CSS.escape(startGenus)}"]`);
+      if (btn) {
+        $all(".genus-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+      }
+    }
+
+    runSearch();
   }
 
   function renderStats() {
@@ -481,7 +551,8 @@
   }
 
   async function initHome() {
-    setupGenusButtons();
+    setupOrganismButtons();
+    setupGenusButtons("All");
     await loadIsopods();
     renderStats();
     attachHomeSearch();
@@ -526,7 +597,7 @@
           ${photos.map((photo, index) => `
             <article class="photo-card">
               <button class="photo-preview-btn" type="button" data-photo-preview="${escapeHtml(String(index))}" aria-label="View photo ${index + 1}">
-                <img src="${escapeHtml(displayImageUrl(photo))}" alt="${escapeHtml(item.speciesName || "Isopod photo")}" ${imageFallbackAttr()}>
+                <img src="${escapeHtml(displayImageUrl(photo))}" alt="${escapeHtml(item.speciesName || "Entry photo")}" ${imageFallbackAttr()}>
               </button>
               <div class="photo-card-body">
                 <p><strong>${photo.isPrimary ? "Primary photo" : "Additional photo"}</strong></p>
@@ -550,7 +621,7 @@
       return `
         <section class="content-card">
           <h2>Add a Photo</h2>
-          <p>Logged-in members can upload additional photos for this isopod. Photos must be attached to an existing entry and are credited to the uploader.</p>
+          <p>Logged-in members can upload additional photos for this entry. Photos must be attached to an existing entry and are credited to the uploader.</p>
           <div class="photo-rights-note">
             <strong>Photo notice:</strong> Photos should be your own or shared with permission. Uploaded photos may be used by Crested Critters for Isopedia and other Crested Critters educational, promotional, or project-related uses.
           </div>
@@ -562,7 +633,7 @@
     return `
       <section class="content-card">
         <h2>Add a Photo</h2>
-        <p>Upload another clear photo for this isopod. Please only add useful, accurate photos that help the hobby. Admins may remove duplicate, low-quality, or unrelated photos.</p>
+        <p>Upload another clear photo for this entry. Please only add useful, accurate photos that help the hobby. Admins may remove duplicate, low-quality, or unrelated photos.</p>
         <div class="photo-rights-note">
           <strong>Photo notice:</strong> Upload only photos you personally took or have clear permission to share. Do not upload photos copied from other keepers, sellers, social media, websites, or search results. By uploading, you allow Crested Critters to use the photo for Isopedia and other Crested Critters educational, promotional, or project-related uses.
         </div>
@@ -594,9 +665,9 @@
   function photoLightboxHtml() {
     return `
       <div id="photoLightbox" class="modal-backdrop" hidden>
-        <div class="modal-panel photo-lightbox-panel" role="dialog" aria-modal="true" aria-label="Isopod photo preview">
+        <div class="modal-panel photo-lightbox-panel" role="dialog" aria-modal="true" aria-label="Isopedia photo preview">
           <button id="photoLightboxClose" class="modal-close" type="button" aria-label="Close photo preview">×</button>
-          <img id="photoLightboxImage" class="photo-lightbox-image" src="assets/placeholder.svg" alt="Expanded isopod photo">
+          <img id="photoLightboxImage" class="photo-lightbox-image" src="assets/placeholder.svg" alt="Expanded entry photo">
         </div>
       </div>
     `;
@@ -615,7 +686,7 @@
     if (!item) {
       root.innerHTML = `
         <div class="empty-state">
-          <h2>Isopod not found</h2>
+          <h2>Entry not found</h2>
           <p>This entry may not exist yet or the public JSON has not been published.</p>
           <a class="button primary" href="index.html">Back to Isopedia</a>
         </div>
@@ -635,6 +706,7 @@
         <div>
           <div class="card-topline">
             <span class="badge ${statusClass(item.status)}">${statusLabel(item.status)}</span>
+            <span class="type-pill">${escapeHtml(organismType(item))}</span>
             <span class="genus-pill">${escapeHtml(item.genus || "Other")}</span>
           </div>
           <h1>${escapeHtml(item.speciesName)}</h1>
@@ -769,7 +841,7 @@
     }
 
     const field = prompt(
-      "What are you disputing? Use one of these for automatic correction: Genus, Species Name, Tags, Origin, Basic Description, Care Guide, Care Difficulty, Temperature, Humidity, Substrate Moisture, Ventilation, Favorite Foods, Protein Needs, Calcium Needs, Breeding Notes, Special Notes, Image, Other",
+      "What are you disputing? Use one of these for automatic correction: Organism Type, Genus, Species Name, Tags, Origin, Basic Description, Care Guide, Care Difficulty, Temperature, Humidity, Substrate Moisture, Ventilation, Favorite Foods, Protein Needs, Calcium Needs, Breeding Notes, Special Notes, Image, Other",
       "Origin"
     );
     if (field === null) return;
@@ -856,10 +928,23 @@
     const user = await requireLoggedIn();
     if (!user) return;
 
+    const organismSelect = $("#organismType");
     const genusSelect = $("#genus");
-    if (genusSelect) {
-      genusSelect.innerHTML = GENUS.map((g) => `<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join("");
+    const genusLabelText = $("#genusLabelText");
+
+    function populateGroups() {
+      if (!genusSelect) return;
+      const type = organismSelect ? organismSelect.value : "Isopod";
+      const groups = ORGANISM_GROUPS[type] || ORGANISM_GROUPS.Other;
+      genusSelect.innerHTML = groups.map((g) => `<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join("");
+      if (genusLabelText) genusLabelText.textContent = groupLabelForType(type);
     }
+
+    if (organismSelect) {
+      organismSelect.innerHTML = ORGANISM_TYPES.map((t) => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
+      organismSelect.addEventListener("change", populateGroups);
+    }
+    populateGroups();
 
     const nameInput = $("#contributorPublicName");
     if (nameInput && user.publicDisplayName) nameInput.value = user.publicDisplayName;
@@ -886,6 +971,7 @@
         setMessage(notice, "Submitting contribution...", "info");
         const result = await IsopediaAPI.apiCall("submitContribution", {
           type: "new",
+          organismType: data.get("organismType"),
           genus: data.get("genus"),
           speciesName: data.get("speciesName"),
           tags: data.get("tags"),
@@ -940,7 +1026,7 @@
 
     async function submitContest(item) {
       const field = prompt(
-        "What are you contesting? Use one of these for automatic correction: Genus, Species Name, Tags, Origin, Basic Description, Care Guide, Care Difficulty, Temperature, Humidity, Substrate Moisture, Ventilation, Favorite Foods, Protein Needs, Calcium Needs, Breeding Notes, Special Notes, Image, Other",
+        "What are you contesting? Use one of these for automatic correction: Organism Type, Genus, Species Name, Tags, Origin, Basic Description, Care Guide, Care Difficulty, Temperature, Humidity, Substrate Moisture, Ventilation, Favorite Foods, Protein Needs, Calcium Needs, Breeding Notes, Special Notes, Image, Other",
         "Origin"
       );
       if (field === null) return;
@@ -1093,7 +1179,7 @@
           pendingGrid.innerHTML = `
             <div class="empty-state">
               <h3>No pending submissions</h3>
-              <p>No new isopod entries need verification right now.</p>
+              <p>No new entries need verification right now.</p>
             </div>
           `;
         } else {
@@ -1138,7 +1224,7 @@
 
     return `
       <article class="verify-card">
-        <img class="iso-thumb" src="${escapeHtml(img)}" alt="${escapeHtml(p.speciesName || "Pending isopod")}" ${imageFallbackAttr()}>
+        <img class="iso-thumb" src="${escapeHtml(img)}" alt="${escapeHtml(p.speciesName || "Pending entry")}" ${imageFallbackAttr()}>
         <div class="verify-card-body">
           <div class="card-topline">
             <span class="badge status-pending">Pending Verification</span>
@@ -1194,7 +1280,7 @@
     return `
       <div class="verify-detail">
         <div class="verify-detail-head">
-          <img class="verify-detail-image" src="${escapeHtml(img)}" alt="${escapeHtml(p.speciesName || "Pending isopod")}" ${imageFallbackAttr()}>
+          <img class="verify-detail-image" src="${escapeHtml(img)}" alt="${escapeHtml(p.speciesName || "Pending entry")}" ${imageFallbackAttr()}>
           <div class="verify-detail-copy">
             <div class="card-topline">
               <span class="badge status-pending">Pending Verification</span>
@@ -1407,7 +1493,7 @@
         <p><strong>Role:</strong> ${escapeHtml(user.role)}</p>
 
         <div class="button-row">
-          <a class="button primary" href="contribute.html">Add an Isopod</a>
+          <a class="button primary" href="contribute.html">Add an Entry</a>
           <a class="button" href="verify.html">Verify Contributions</a>
           <a class="button" href="${profileUrl(user.userId)}">View Public Profile</a>
           ${user.role === "admin" ? `<button class="button warning" id="publishBtn">Publish Public JSON</button>` : ""}
@@ -1495,7 +1581,7 @@
     const publishBtn = $("#publishBtn");
     if (publishBtn) {
       publishBtn.addEventListener("click", async () => {
-        if (!confirm("Publish current public isopod and donator JSON to GitHub?")) return;
+        if (!confirm("Publish current public Isopedia entry and donator JSON to GitHub?")) return;
         publishBtn.disabled = true;
         publishBtn.textContent = "Publishing...";
         try {
