@@ -1,265 +1,89 @@
----
-layout: default
-title: Home
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Isopedia | Community Isopod Knowledge Base</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="assets/config.js"></script>
+<script defer src="assets/api.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body data-page="home">
+<header class="site-header">
+  <div class="site-shell nav nav-stacked">
+    <div class="nav-primary-row">
+      <a class="brand" href="index.html" aria-label="Isopedia Home">
+        <img class="brand-logo" src="../assets/images/logo.png" alt="Crested Critters logo" onerror="this.onerror=null; this.src='assets/placeholder.svg';">
+        <span class="brand-title">Isopedia</span>
+      </a>
+      <nav class="nav-links main-site-links" aria-label="Crested Critters navigation">
+        <a href="../">Home</a>
+        <a href="../shop/">Shop</a>
+        <a href="../about/">About</a>
+        <a href="../contact/">Contact</a>
+        <a href="../isotracker/">IsoTracker</a>
+        <a href="index.html">Isopedia</a>
+        <a href="../Randomizer/">Randomizer</a>
+      </nav>
+    </div>
+    <nav class="nav-links isopedia-links" aria-label="Isopedia navigation">
+      <a href="index.html">Database</a>
+      <a href="contribute.html">Add an Isopod</a>
+      <a id="verifyLink" href="verify.html" hidden>Verify</a>
+      <a href="faq.html">FAQ</a>
+      <a href="donate.html">Donate</a>
+      <a id="accountLink" href="login.html">Account</a>
+      <a id="loginLink" href="login.html">Log In</a>
+    </nav>
+  </div>
+</header>
 
-{% for block in site.data.home.blocks %}
-
-  {% case block.type %}
-
-  {% when "hero" %}
-    <section class="hero">
-      <div class="hero-inner">
-        <div class="hero-text">
-          {% if block.kicker %}<p class="kicker">{{ block.kicker }}</p>{% endif %}
-          <h1>{{ block.headline }}</h1>
-          {% if block.subheadline %}<p class="sub">{{ block.subheadline }}</p>{% endif %}
-
-          {% if block.buttons %}
-            <div class="hero-actions">
-              {% for btn in block.buttons %}
-                {% assign href = btn.link | relative_url %}
-                {% if btn.style == "primary" %}
-                  <a class="btn primary" href="{{ href }}">{{ btn.label }}</a>
-                {% else %}
-                  <a class="btn ghost" href="{{ href }}">{{ btn.label }}</a>
-                {% endif %}
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
-
-        <div class="hero-media">
-          {% if block.image %}
-            <img src="{{ block.image | relative_url }}" alt="Crested Critters hero image">
-          {% endif %}
-        </div>
+<main class="site-shell main">
+  <section class="hero">
+    <div>
+      <h1>Community-built isopod knowledge.</h1>
+      <p>Search isopods by species name, common name, nickname, genus, origin, or tags. Contributions are highlighted until another member verifies them.</p>
+      <div class="button-row">
+        <a class="button primary" href="contribute.html">Add an Isopod</a>
+        <a class="button" href="faq.html">How Isopedia Works</a>
       </div>
-    </section>
-
-  {% when "categories" %}
-    <section class="section" id="categories">
-      <div class="container">
-        <div class="section-head">
-          <h2>{{ block.title }}</h2>
-          {% if block.subtitle %}<p class="muted">{{ block.subtitle }}</p>{% endif %}
-        </div>
-
-        {%- assign product_categories = site.products | map: "category" | uniq | sort -%}
-        {%- assign meta_list = site.data.category_meta.categories | default: empty | sort: "order" -%}
-        {%- assign shop_url = '/shop/' | relative_url -%}
-
-        <div class="card-grid">
-
-          {%- for m in meta_list -%}
-            {%- if m.enabled != false and product_categories contains m.name -%}
-              <a class="card" href="{{ shop_url }}#{{ m.name | slugify }}">
-                <div class="card-img">
-                  {% if m.image %}
-                    <img src="{{ m.image | relative_url }}" alt="{{ m.name }}">
-                  {% endif %}
-                </div>
-                <div class="card-body">
-                  <h3>{{ m.name }}</h3>
-                  {% if m.description %}<p class="muted">{{ m.description }}</p>{% endif %}
-                  <span class="card-cta">Shop →</span>
-                </div>
-              </a>
-            {%- endif -%}
-          {%- endfor -%}
-
-          {%- for cat in product_categories -%}
-            {%- assign found = false -%}
-            {%- for m in meta_list -%}
-              {%- if m.name == cat -%}{%- assign found = true -%}{%- endif -%}
-            {%- endfor -%}
-
-            {%- if found == false -%}
-              <a class="card" href="{{ shop_url }}#{{ cat | slugify }}">
-                <div class="card-body">
-                  <h3>{{ cat }}</h3>
-                  <p class="muted">Browse {{ cat | downcase }} products.</p>
-                  <span class="card-cta">Shop →</span>
-                </div>
-              </a>
-            {%- endif -%}
-          {%- endfor -%}
-
-        </div>
+    </div>
+    <aside class="hero-card">
+      <h2>Project Stats</h2>
+      <p>These numbers update from the public Isopedia data file.</p>
+      <div class="stat-row">
+        <div class="stat"><strong id="statTotal">0</strong><span>Total</span></div>
+        <div class="stat"><strong id="statVerified">0</strong><span>Verified</span></div>
+        <div class="stat"><strong id="statPending">0</strong><span>Pending / Contested</span></div>
       </div>
-    </section>
+    </aside>
+  </section>
 
-  {% when "featured_products" %}
-    <section class="section alt">
-      <div class="container">
-        <div class="section-head">
-          <h2>{{ block.title }}</h2>
-          {% if block.cta_link and block.cta_label %}
-            <a class="btn ghost" href="{{ block.cta_link | relative_url }}">{{ block.cta_label }}</a>
-          {% endif %}
-        </div>
+  <section class="search-panel">
+    <div class="search-row">
+      <input id="searchInput" class="search-input" type="search" placeholder="Search Rubber Ducky, Duckies, Porcellio, Cubaris..." autocomplete="off">
+      <a class="button primary" href="contribute.html">Add an Isopod</a>
+    </div>
+    <div id="genusButtons" class="genus-bar" aria-label="Browse by genus"></div>
+  </section>
 
-        {% if block.subtitle %}<p class="muted" style="margin-top:-12px;">{{ block.subtitle }}</p>{% endif %}
+  <div class="section-head">
+    <h2 id="activeGenusLabel">All Isopods</h2>
+    <span class="muted">Search includes tags / also-known-as names.</span>
+  </div>
+  <section id="resultGrid" class="grid" aria-live="polite"></section>
 
-        <div class="product-grid">
-          {% assign featured_products = site.products | where: "featured", true | sort: "title" %}
-          {% for product in featured_products limit: block.max_items %}
-            {% assign is_sold = false %}
-            {% if product.sold_out == true or product.inventory == 0 %}
-              {% assign is_sold = true %}
-            {% endif %}
+  <div class="section-head">
+    <h2>Recently Updated</h2>
+  </div>
+  <section id="recentGrid" class="grid"></section>
+</main>
 
-            <div class="p-card">
-              <a href="{{ product.url | relative_url }}" class="p-link">
-                <div class="p-img">
-                  {% if product.image %}
-                    {% assign img = product.image %}
-                    {% if img contains '://' %}
-                      <img src="{{ img }}" alt="{{ product.title }}">
-                    {% else %}
-                      <img src="{{ img | relative_url }}" alt="{{ product.title }}">
-                    {% endif %}
-                  {% else %}
-                    <div class="p-img-placeholder">No image</div>
-                  {% endif %}
-
-                  {% if is_sold %}
-                    <span class="badge sold">Sold Out</span>
-                  {% else %}
-                    {% if product.inventory and product.inventory <= 4 %}
-                      <span class="badge low">Low stock: {{ product.inventory }}</span>
-                    {% else %}
-                      <span class="badge stock">{{ product.inventory }} in stock</span>
-                    {% endif %}
-                  {% endif %}
-                </div>
-
-                <div class="p-body">
-                  <div class="p-top">
-                    <h3>{{ product.title }}</h3>
-                    <span class="price">${{ product.price }}</span>
-                  </div>
-                  <p class="muted p-cat">{{ product.category }}</p>
-                </div>
-              </a>
-            </div>
-          {% endfor %}
-        </div>
-
-        {% if featured_products.size == 0 %}
-          <p class="muted">No featured products yet — open a product in Admin and toggle “Featured on Homepage”.</p>
-        {% endif %}
-      </div>
-    </section>
-
-  {% when "bullet_cards" %}
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <h2>{{ block.title }}</h2>
-        </div>
-
-        <div class="card-grid">
-          {% for b in block.bullets %}
-            <div class="card">
-              <div class="card-body">
-                <p>{{ b }}</p>
-              </div>
-            </div>
-          {% endfor %}
-        </div>
-      </div>
-    </section>
-
-  {% when "image_text" %}
-    {% if block.enabled != false %}
-      <section class="section">
-        <div class="container">
-          <div class="it-grid {% if block.image_side == 'right' %}it-right{% endif %}">
-            <div class="it-media">
-              {% if block.image %}
-                <img src="{{ block.image | relative_url }}" alt="{{ block.title }}">
-              {% else %}
-                <div class="p-img-placeholder">No image</div>
-              {% endif %}
-            </div>
-
-            <div class="it-text">
-              <h2 style="margin-top:0;">{{ block.title }}</h2>
-              <p class="muted" style="line-height:1.75;">{{ block.text }}</p>
-
-              {% if block.button_label and block.button_link %}
-                {% if block.button_style == "ghost" %}
-                  <a class="btn ghost" href="{{ block.button_link | relative_url }}">{{ block.button_label }}</a>
-                {% else %}
-                  <a class="btn primary" href="{{ block.button_link | relative_url }}">{{ block.button_label }}</a>
-                {% endif %}
-              {% endif %}
-            </div>
-          </div>
-        </div>
-      </section>
-    {% endif %}
-
-  {% when "cta_strip" %}
-    {% if block.enabled != false %}
-      <section class="section" style="padding:30px 0;">
-        <div class="container">
-          <div class="cta-strip">
-            <div class="cta-text">{{ block.text }}</div>
-
-            {% if block.button_label and block.button_link %}
-              {% if block.button_style == "ghost" %}
-                <a class="btn ghost" href="{{ block.button_link | relative_url }}">{{ block.button_label }}</a>
-              {% else %}
-                <a class="btn primary" href="{{ block.button_link | relative_url }}">{{ block.button_label }}</a>
-              {% endif %}
-            {% endif %}
-          </div>
-        </div>
-      </section>
-    {% endif %}
-
-  {% when "testimonials" %}
-    {% if block.enabled != false %}
-      <section class="section alt">
-        <div class="container">
-          <div class="section-head">
-            <h2>{{ block.title }}</h2>
-            {% if block.subtitle %}<p class="muted">{{ block.subtitle }}</p>{% endif %}
-          </div>
-
-          <div class="t-grid">
-            {% for t in block.items %}
-              <div class="t-card">
-                <div class="t-top">
-                  {% if t.photo %}
-                    <img class="t-photo" src="{{ t.photo | relative_url }}" alt="{{ t.name }}">
-                  {% else %}
-                    <div class="t-photo t-photo-placeholder"></div>
-                  {% endif %}
-
-                  <div class="t-meta">
-                    <div class="t-name">{{ t.name }}</div>
-                    {% if t.source %}<div class="t-source">{{ t.source }}</div>{% endif %}
-                    {% if t.rating %}
-                      <div class="t-stars">
-                        {% for i in (1..5) %}
-                          {% if i <= t.rating %}★{% else %}☆{% endif %}
-                        {% endfor %}
-                      </div>
-                    {% endif %}
-                  </div>
-                </div>
-
-                <div class="t-quote">“{{ t.quote }}”</div>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      </section>
-    {% endif %}
-
-  {% endcase %}
-
-{% endfor %}
+<footer class="footer">
+  <div class="site-shell">
+    <p>Isopedia is a community-built isopod knowledge project by Crested Critters.</p>
+  </div>
+</footer>
+</body>
+</html>
