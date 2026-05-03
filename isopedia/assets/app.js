@@ -492,11 +492,118 @@
     }
   }
 
+  function publicPhotosForItem(item) {
+    const photos = Array.isArray(item.photos) ? item.photos.slice() : [];
+    if (!photos.length) {
+      photos.push({
+        photoId: "primary_" + (item.id || item.isopodId || ""),
+        isopodId: item.id || item.isopodId || "",
+        imageUrl: item.imageUrl,
+        imageDriveFileId: item.imageDriveFileId,
+        uploadedByName: item.contributorName || "Anonymous Member",
+        uploadedByUserId: item.contributorUserId || "",
+        isPrimary: true
+      });
+    }
+    return photos;
+  }
+
+  function photoGalleryHtml(item, user) {
+    const photos = publicPhotosForItem(item);
+    const isAdmin = user && user.role === "admin";
+
+    return `
+      <section class="content-card">
+        <div class="section-head dark photo-section-head">
+          <div>
+            <h2>Photo Gallery</h2>
+            <p class="muted">Photos are credited to the member who uploaded them unless they chose to stay anonymous.</p>
+          </div>
+          <span class="genus-pill">${photos.length} photo${photos.length === 1 ? "" : "s"}</span>
+        </div>
+        <div class="photo-gallery">
+          ${photos.map((photo, index) => `
+            <article class="photo-card">
+              <button class="photo-preview-btn" type="button" data-photo-preview="${escapeHtml(String(index))}" aria-label="View photo ${index + 1}">
+                <img src="${escapeHtml(displayImageUrl(photo))}" alt="${escapeHtml(item.speciesName || "Isopod photo")}" ${imageFallbackAttr()}>
+              </button>
+              <div class="photo-card-body">
+                <p><strong>${photo.isPrimary ? "Primary photo" : "Additional photo"}</strong></p>
+                <p class="muted">Uploaded by ${profileCreditHtml(photo.uploadedByUserId, photo.uploadedByName, "Anonymous Member")}</p>
+                ${photo.uploadedAt ? `<p class="muted">${escapeHtml(String(photo.uploadedAt).slice(0, 10))}</p>` : ""}
+                ${isAdmin && !photo.isPrimary && photo.photoId ? `
+                  <button class="button danger small-button" type="button" data-delete-photo-id="${escapeHtml(photo.photoId)}">
+                    Delete Photo
+                  </button>
+                ` : ""}
+              </div>
+            </article>
+          `).join("")}
+        </div>
+      </section>
+    `;
+  }
+
+  function uploadPhotoPanelHtml(item, user) {
+    if (!user) {
+      return `
+        <section class="content-card">
+          <h2>Add a Photo</h2>
+          <p>Logged-in members can upload additional photos for this isopod. Photos must be attached to an existing entry and are credited to the uploader.</p>
+          <a class="button primary" href="login.html?next=${encodeURIComponent(location.href)}">Log in to Add a Photo</a>
+        </section>
+      `;
+    }
+
+    return `
+      <section class="content-card">
+        <h2>Add a Photo</h2>
+        <p>Upload another clear photo for this isopod. Please only add useful, accurate photos that help the hobby. Admins may remove duplicate, low-quality, or unrelated photos.</p>
+        <form id="photoUploadForm" class="form-grid photo-upload-form">
+          <input type="hidden" name="isopodId" value="${escapeHtml(item.id || item.isopodId || "")}">
+          <label>
+            Photo
+            <input name="photo" type="file" accept="image/jpeg,image/png,image/webp,image/gif" required>
+          </label>
+          <label class="check-row">
+            <input name="photoPublicOptIn" type="checkbox" checked>
+            List my name publicly as the photo contributor
+          </label>
+          <label>
+            Photo Contributor Display Name
+            <input name="photoPublicName" type="text" value="${escapeHtml(user.publicDisplayName || user.username || "")}" placeholder="Name to show for this photo">
+          </label>
+          <label>
+            Notes for admin / viewers, optional
+            <textarea name="notes" placeholder="Example: Adult male, natural light photo, captive-bred colony."></textarea>
+          </label>
+          <button class="button primary submit-wide" type="submit">Upload Photo</button>
+        </form>
+        <p id="photoUploadNotice" class="notice" hidden></p>
+      </section>
+    `;
+  }
+
+  function photoLightboxHtml() {
+    return `
+      <div id="photoLightbox" class="modal-backdrop" hidden>
+        <div class="modal-panel photo-lightbox-panel" role="dialog" aria-modal="true" aria-label="Isopod photo preview">
+          <button id="photoLightboxClose" class="modal-close" type="button" aria-label="Close photo preview">×</button>
+          <img id="photoLightboxImage" class="photo-lightbox-image" src="assets/placeholder.svg" alt="Expanded isopod photo">
+        </div>
+      </div>
+    `;
+  }
+
   async function initSpecies() {
     await loadIsopods();
     const id = getQueryParam("id");
     const item = allIsopods.find((i) => String(i.id) === String(id));
     const root = $("#speciesRoot");
+    let user = IsopediaAPI.getUser();
+    if (!user && IsopediaAPI.getToken && IsopediaAPI.getToken()) {
+      user = await IsopediaAPI.refreshMe();
+    }
 
     if (!item) {
       root.innerHTML = `
@@ -511,7 +618,9 @@
 
     document.title = item.speciesName + " | Isopedia";
     const tags = tagsArray(item);
-    const img = displayImageUrl(item);
+    const photos = publicPhotosForItem(item);
+    const primaryPhoto = photos[0] || item;
+    const img = displayImageUrl(primaryPhoto);
 
     root.innerHTML = `
       <section class="species-hero ${String(item.status).toLowerCase() !== "verified" ? "card-highlight" : ""}">
@@ -528,6 +637,8 @@
           </div>
         </div>
       </section>
+
+      ${photoGalleryHtml(item, user)}
 
       <section class="content-card">
         <h2>Basic Description</h2>
@@ -551,9 +662,95 @@
           <button class="button warning" id="openDisputeBtn">Contest / Suggest Correction</button>
         </div>
       </section>
+
+      ${uploadPhotoPanelHtml(item, user)}
+      ${photoLightboxHtml()}
     `;
 
     $("#openDisputeBtn").addEventListener("click", () => openDisputeDialog(item));
+    initPhotoGalleryHandlers(item, user);
+  }
+
+  function initPhotoGalleryHandlers(item, user) {
+    const lightbox = $("#photoLightbox");
+    const lightboxImg = $("#photoLightboxImage");
+    const lightboxClose = $("#photoLightboxClose");
+    const photos = publicPhotosForItem(item);
+
+    function closeLightbox() {
+      if (!lightbox) return;
+      lightbox.hidden = true;
+      lightbox.classList.remove("open");
+      document.body.classList.remove("modal-open");
+    }
+
+    $all("[data-photo-preview]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const index = Number(btn.getAttribute("data-photo-preview") || 0);
+        const photo = photos[index] || photos[0] || item;
+        if (lightboxImg) lightboxImg.src = displayImageUrl(photo);
+        if (lightbox) {
+          lightbox.hidden = false;
+          lightbox.classList.add("open");
+          document.body.classList.add("modal-open");
+        }
+      });
+    });
+
+    if (lightboxClose) lightboxClose.addEventListener("click", closeLightbox);
+    if (lightbox) lightbox.addEventListener("click", (event) => {
+      if (event.target === lightbox) closeLightbox();
+    });
+
+    $all("[data-delete-photo-id]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (!user || user.role !== "admin") return;
+        const photoId = btn.getAttribute("data-delete-photo-id");
+        if (!confirm("Delete this photo from the public gallery and move the Drive file to trash?")) return;
+        btn.disabled = true;
+        btn.textContent = "Deleting...";
+        try {
+          await IsopediaAPI.apiCall("deleteIsopodPhoto", { photoId, deleteDriveFile: true });
+          alert("Photo deleted.");
+          location.reload();
+        } catch (err) {
+          alert(err.message);
+          btn.disabled = false;
+          btn.textContent = "Delete Photo";
+        }
+      });
+    });
+
+    const uploadForm = $("#photoUploadForm");
+    const notice = $("#photoUploadNotice");
+    if (uploadForm) {
+      uploadForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = new FormData(uploadForm);
+        const file = data.get("photo");
+        try {
+          setMessage(notice, "Compressing photo for storage...", "info");
+          const imageDataUrl = await IsopediaAPI.imageFileToCompressedDataUrl(file, {
+            maxInputBytes: 15 * 1024 * 1024,
+            maxOutputBytes: 4.5 * 1024 * 1024,
+            maxDimension: 1400,
+            quality: 0.82
+          });
+          setMessage(notice, "Uploading photo...", "info");
+          await IsopediaAPI.apiCall("uploadIsopodPhoto", {
+            isopodId: data.get("isopodId"),
+            imageDataUrl,
+            photoPublicOptIn: data.get("photoPublicOptIn") === "on",
+            photoPublicName: data.get("photoPublicName"),
+            notes: data.get("notes")
+          });
+          setMessage(notice, "Photo uploaded. Refreshing gallery...", "success");
+          setTimeout(() => location.reload(), 800);
+        } catch (err) {
+          setMessage(notice, err.message, "error");
+        }
+      });
+    }
   }
 
   function openDisputeDialog(item) {
