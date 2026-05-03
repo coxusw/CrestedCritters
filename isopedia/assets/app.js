@@ -668,8 +668,15 @@
       const imageFile = data.get("image");
 
       try {
-        const imageDataUrl = await IsopediaAPI.fileToDataUrl(imageFile, 5 * 1024 * 1024);
+        setMessage(notice, "Compressing image for storage...", "info");
+        const imageDataUrl = await IsopediaAPI.imageFileToCompressedDataUrl(imageFile, {
+          maxInputBytes: 15 * 1024 * 1024,
+          maxOutputBytes: 4.5 * 1024 * 1024,
+          maxDimension: 1400,
+          quality: 0.82
+        });
 
+        setMessage(notice, "Submitting contribution...", "info");
         const result = await IsopediaAPI.apiCall("submitContribution", {
           type: "new",
           genus: data.get("genus"),
