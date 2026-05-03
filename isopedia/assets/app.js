@@ -487,11 +487,11 @@
       if (loginLink) {
         loginLink.textContent = "Log Out";
         loginLink.href = "#logout";
-        loginLink.addEventListener("click", async (event) => {
+        loginLink.onclick = async (event) => {
           event.preventDefault();
           await IsopediaAPI.logout();
           window.location.href = "index.html";
-        }, { once: true });
+        };
       }
       if (verifyLink) verifyLink.hidden = false;
     } else {
@@ -502,8 +502,23 @@
       if (loginLink) {
         loginLink.textContent = "Log In";
         loginLink.href = "login.html";
+        loginLink.onclick = null;
       }
       if (verifyLink) verifyLink.hidden = true;
+    }
+  }
+
+  function safeRedirectTarget(rawTarget, fallback) {
+    const fallbackPage = fallback || "account.html";
+    const target = String(rawTarget || "").trim();
+    if (!target) return fallbackPage;
+
+    try {
+      const url = new URL(target, window.location.href);
+      if (url.origin !== window.location.origin) return fallbackPage;
+      return url.href;
+    } catch (err) {
+      return fallbackPage;
     }
   }
 
@@ -959,19 +974,30 @@
     const notice = $("#formNotice");
     if (!form) return;
 
+    const nextTarget = safeRedirectTarget(getQueryParam("next"), "account.html");
+    const alreadyLoggedIn = await IsopediaAPI.getReliableUser();
+    if (alreadyLoggedIn) {
+      updateNavForUser(alreadyLoggedIn);
+      setMessage(notice, "You are already logged in. Redirecting...", "success");
+      setTimeout(() => {
+        window.location.href = nextTarget;
+      }, 450);
+      return;
+    }
+
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       setMessage(notice, "Logging in...", "info");
 
       const data = new FormData(form);
       try {
-        await IsopediaAPI.login({
+        const result = await IsopediaAPI.login({
           username: data.get("username"),
           password: data.get("password")
         });
+        updateNavForUser(result.user);
         setMessage(notice, "Logged in. Redirecting...", "success");
-        const next = getQueryParam("next") || "contribute.html";
-        window.location.href = next;
+        window.location.href = nextTarget;
       } catch (err) {
         setMessage(notice, err.message, "error");
       }
@@ -979,12 +1005,12 @@
   }
 
   async function requireLoggedIn() {
-    let user = IsopediaAPI.getUser();
-    if (!user) user = await IsopediaAPI.refreshMe();
+    const user = await IsopediaAPI.getReliableUser();
     if (!user) {
       window.location.href = "login.html?next=" + encodeURIComponent(location.href);
       return null;
     }
+    updateNavForUser(user);
     return user;
   }
 
@@ -1768,7 +1794,9 @@
 
   async function main() {
     updateNavForUser(IsopediaAPI.getUser());
-    IsopediaAPI.refreshMe().then(updateNavForUser);
+    IsopediaAPI.refreshMe({ clearOnFailure: false }).then((user) => {
+      updateNavForUser(user || IsopediaAPI.getUser());
+    });
 
     const current = page();
     if (current === "home") await initHome();
