@@ -1190,3 +1190,20 @@ body.modal-open {
     height: 145px;
   }
 }
+
+
+/* v1.1.1 photo rights / upload notice */
+.photo-rights-note {
+  background: #fff8df;
+  border: 1px solid rgba(217, 173, 79, .45);
+  border-left: 5px solid var(--gold);
+  border-radius: 16px;
+  padding: 13px 14px;
+  color: #4b3712;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.photo-rights-note strong {
+  color: #332100;
+}
