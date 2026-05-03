@@ -259,7 +259,8 @@ a.button {
   margin-top: 16px;
 }
 
-.genus-btn {
+.genus-btn,
+.organism-btn {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: #fffaf0;
@@ -270,7 +271,9 @@ a.button {
 }
 
 .genus-btn.active,
-.genus-btn:hover {
+.genus-btn:hover,
+.organism-btn.active,
+.organism-btn:hover {
   background: var(--green);
   color: white;
 }
@@ -357,6 +360,7 @@ a.button {
 
 .badge,
 .genus-pill,
+.type-pill,
 .tag {
   display: inline-flex;
   align-items: center;
@@ -385,6 +389,11 @@ a.button {
 .genus-pill {
   background: #e9eee4;
   color: #304234;
+}
+
+.type-pill {
+  background: #e5eef8;
+  color: #244262;
 }
 
 .tag-row {
@@ -1206,4 +1215,15 @@ body.modal-open {
 
 .photo-rights-note strong {
   color: #332100;
+}
+
+.secondary-filter-bar {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.page-subtitle {
+  color: var(--muted);
+  margin-top: -8px;
 }
