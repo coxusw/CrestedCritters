@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Add an Isopod | Isopedia</title>
+<title>Add an Entry | Isopedia</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="assets/style.css">
@@ -29,7 +29,7 @@
     </div>
     <nav class="nav-links isopedia-links" aria-label="Isopedia navigation">
       <a href="index.html">Database</a>
-      <a href="contribute.html">Add an Isopod</a>
+      <a href="contribute.html">Add an Entry</a>
       <a id="verifyLink" href="verify.html" hidden>Verify</a>
       <a href="faq.html">FAQ</a>
       <a href="donate.html">Donate</a>
@@ -41,7 +41,8 @@
 
 <main class="site-shell main">
   <section class="form-card wide-form">
-    <h1>Add an Isopod</h1>
+    <h1>Add an Entry</h1>
+    <p class="page-subtitle">Isopedia now supports isopods, springtails, millipedes, beetles, roaches, and other bioactive invertebrates.</p>
 
     <div class="notice info">
       <strong>Contributor Notice:</strong> Please give accurate information only so we can provide the best knowledge we can for the hobby.
@@ -53,21 +54,26 @@
     <form id="contributionForm" class="form-grid">
       <section class="form-section">
         <h2>Basic Entry Information</h2>
-        <p class="field-help">These fields help visitors find the isopod by genus, name, common nickname, and visual appearance.</p>
+        <p class="field-help">These fields help visitors find the entry by organism type, genus/group, name, common nickname, and visual appearance.</p>
 
         <label>
-          Genus
+          Organism Type
+          <select id="organismType" name="organismType" required></select>
+        </label>
+
+        <label>
+          <span id="genusLabelText">Genus / Group</span>
           <select id="genus" name="genus" required></select>
         </label>
 
         <label>
           Species Name
-          <input name="speciesName" type="text" required placeholder='Example: Cubaris sp. “Rubber Ducky”'>
+          <input name="speciesName" type="text" required placeholder='Example: Cubaris sp. “Rubber Ducky” or Florida Orange Springtail'>
         </label>
 
         <label>
           Also Known As / Search Tags
-          <span class="field-help">Add other names this isopod may be known by. Separate each with a comma. Example: Rubber Duckies, Rubber Ducky, Duckies</span>
+          <span class="field-help">Add other names this entry may be known by. Separate each with a comma. Example: Rubber Duckies, Rubber Ducky, Duckies</span>
           <input name="tags" type="text" placeholder="Rubber Duckies, Rubber Ducky, Duckies">
         </label>
 
@@ -176,7 +182,7 @@
 
         <label>
           Picture
-          <span class="field-help">Required. Isopods without pictures cannot be added. JPEG, PNG, WEBP, or GIF. Photos up to 15MB are accepted and automatically compressed before storage.</span>
+          <span class="field-help">Required. Entries without pictures cannot be added. JPEG, PNG, WEBP, or GIF. Photos up to 15MB are accepted and automatically compressed before storage.</span>
           <div class="photo-rights-note">
             <strong>Photo notice:</strong> Upload only photos you personally took or have clear permission to share. Do not upload photos copied from other keepers, sellers, social media, websites, or search results. By uploading, you allow Crested Critters to use the photo for Isopedia and other Crested Critters educational, promotional, or project-related uses.
           </div>
@@ -202,7 +208,7 @@
 
 <footer class="footer">
   <div class="site-shell">
-    <p>Isopedia is a community-built isopod knowledge project by Crested Critters.</p>
+    <p>Isopedia is a community-built bioactive invertebrate database by Crested Critters.</p>
   </div>
 </footer>
 </body>
