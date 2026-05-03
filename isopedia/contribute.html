@@ -29,7 +29,7 @@
 </header>
 
 <main class="site-shell main">
-  <section class="form-card">
+  <section class="form-card wide-form">
     <h1>Add an Isopod</h1>
 
     <div class="notice info">
@@ -40,55 +40,148 @@
     <p id="formNotice" class="notice" hidden></p>
 
     <form id="contributionForm" class="form-grid">
-      <label>
-        Genus
-        <select id="genus" name="genus" required></select>
-      </label>
+      <section class="form-section">
+        <h2>Basic Entry Information</h2>
+        <p class="field-help">These fields help visitors find the isopod by genus, name, common nickname, and visual appearance.</p>
 
-      <label>
-        Species Name
-        <input name="speciesName" type="text" required placeholder='Example: Cubaris sp. “Rubber Ducky”'>
-      </label>
+        <label>
+          Genus
+          <select id="genus" name="genus" required></select>
+        </label>
 
-      <label>
-        Also Known As / Search Tags
-        <span class="field-help">Add other names this isopod may be known by. Separate each with a comma. Example: Rubber Duckies, Rubber Ducky, Duckies</span>
-        <input name="tags" type="text" placeholder="Rubber Duckies, Rubber Ducky, Duckies">
-      </label>
+        <label>
+          Species Name
+          <input name="speciesName" type="text" required placeholder='Example: Cubaris sp. “Rubber Ducky”'>
+        </label>
 
-      <label>
-        Origin
-        <input name="origin" type="text" required placeholder="Example: Thailand">
-      </label>
+        <label>
+          Also Known As / Search Tags
+          <span class="field-help">Add other names this isopod may be known by. Separate each with a comma. Example: Rubber Duckies, Rubber Ducky, Duckies</span>
+          <input name="tags" type="text" placeholder="Rubber Duckies, Rubber Ducky, Duckies">
+        </label>
 
-      <label>
-        Basic Description
-        <textarea name="basicDescription" required placeholder="Describe appearance, behavior, size, and helpful hobby details."></textarea>
-      </label>
+        <label>
+          Origin
+          <input name="origin" type="text" required placeholder="Example: Thailand">
+        </label>
 
-      <label>
-        Care Guide
-        <textarea name="careGuide" required placeholder="Humidity, ventilation, substrate, food, calcium, difficulty, breeding notes, etc."></textarea>
-      </label>
+        <label>
+          Basic Description
+          <textarea name="basicDescription" required placeholder="Describe appearance, behavior, size, and helpful hobby details."></textarea>
+        </label>
+      </section>
 
-      <label>
-        Picture
-        <span class="field-help">Required. Isopods without pictures cannot be added. JPEG, PNG, WEBP, or GIF under 5MB.</span>
-        <input name="image" type="file" required accept="image/jpeg,image/png,image/webp,image/gif">
-      </label>
+      <section class="form-section">
+        <h2>Care Guide</h2>
+        <p class="field-help">Use the categories below instead of one long paragraph. This keeps every Isopedia page easier to read and verify.</p>
 
-      <label class="check-row">
-        <input name="contributorPublicOptIn" type="checkbox">
-        List my name publicly as the contributor
-      </label>
+        <div class="care-form-grid">
+          <label>
+            Care Difficulty
+            <select name="careDifficulty" required>
+              <option value="">Choose difficulty</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Experienced">Experienced</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </label>
 
-      <label>
-        Contributor Display Name
-        <span class="field-help">Only shown publicly if you check the box above. Otherwise, it will show Anonymous Member.</span>
-        <input id="contributorPublicName" name="contributorPublicName" type="text">
-      </label>
+          <label>
+            Temperature Range
+            <input name="careTemperature" type="text" required placeholder="Example: 70–82°F">
+          </label>
 
-      <button class="button primary" type="submit">Submit for Verification</button>
+          <label>
+            Humidity Level
+            <select name="careHumidity" required>
+              <option value="">Choose humidity</option>
+              <option value="Low">Low</option>
+              <option value="Low-Moderate">Low-Moderate</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Moderate-High">Moderate-High</option>
+              <option value="High">High</option>
+            </select>
+          </label>
+
+          <label>
+            Substrate Moisture
+            <select name="careSubstrateMoisture" required>
+              <option value="">Choose substrate moisture</option>
+              <option value="Dry side + moist side">Dry side + moist side</option>
+              <option value="Slightly moist">Slightly moist</option>
+              <option value="Moderately moist">Moderately moist</option>
+              <option value="High moisture">High moisture</option>
+              <option value="Very high moisture">Very high moisture</option>
+            </select>
+          </label>
+
+          <label>
+            Ventilation
+            <select name="careVentilation" required>
+              <option value="">Choose ventilation</option>
+              <option value="Low">Low</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Moderate-High">Moderate-High</option>
+              <option value="High">High</option>
+            </select>
+          </label>
+
+          <label>
+            Favorite Foods / Diet Notes
+            <input name="careFoods" type="text" required placeholder="Example: Cucumber, sweet potato, leaf litter, rotting wood">
+          </label>
+
+          <label>
+            Protein Needs
+            <select name="careProtein">
+              <option value="">Choose protein needs, if known</option>
+              <option value="Low">Low</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Moderate-High">Moderate-High</option>
+              <option value="High">High</option>
+            </select>
+          </label>
+
+          <label>
+            Calcium Needs
+            <input name="careCalcium" type="text" placeholder="Example: Cuttlebone, limestone, crushed eggshell">
+          </label>
+        </div>
+
+        <label>
+          Breeding Notes
+          <textarea name="careBreeding" placeholder="Optional: breeding speed, colony growth, reproduction notes, or setup stability notes."></textarea>
+        </label>
+
+        <label>
+          Special Notes
+          <textarea name="careNotes" placeholder="Optional: add anything that does not fit above. Example: sensitive to drying out, needs stable humidity, prefers deep substrate, etc."></textarea>
+        </label>
+      </section>
+
+      <section class="form-section">
+        <h2>Picture & Credit</h2>
+
+        <label>
+          Picture
+          <span class="field-help">Required. Isopods without pictures cannot be added. JPEG, PNG, WEBP, or GIF under 5MB.</span>
+          <input name="image" type="file" required accept="image/jpeg,image/png,image/webp,image/gif">
+        </label>
+
+        <label class="check-row">
+          <input name="contributorPublicOptIn" type="checkbox">
+          List my name publicly as the contributor
+        </label>
+
+        <label>
+          Contributor Display Name
+          <span class="field-help">Only shown publicly if you check the box above. Otherwise, it will show Anonymous Member.</span>
+          <input id="contributorPublicName" name="contributorPublicName" type="text">
+        </label>
+      </section>
+
+      <button class="button primary submit-wide" type="submit">Submit for Verification</button>
     </form>
   </section>
 </main>
@@ -100,4 +193,3 @@
 </footer>
 </body>
 </html>
-
