@@ -77,6 +77,93 @@
     return String(item.tags || "").split(",").map((t) => t.trim()).filter(Boolean);
   }
 
+  const CARE_FIELDS = [
+    { label: "Difficulty", key: "difficulty", legacy: "careDifficulty", aliases: ["Care Difficulty", "Isopod Basic Care Knowledge Level"] },
+    { label: "Temperature", key: "temperature", legacy: "careTemperature", aliases: ["Temperature Range", "Preferred Temperatures", "Isopod Preferred Temperatures"] },
+    { label: "Humidity", key: "humidity", legacy: "careHumidity", aliases: ["Humidity Level", "Preferred Humidity", "Isopod Preferred Humidity"] },
+    { label: "Substrate Moisture", key: "substrateMoisture", legacy: "careSubstrateMoisture", aliases: ["Substrate Humidity", "Preferred Substrate Humidity", "Isopod Preferred Substrate Humidity"] },
+    { label: "Ventilation", key: "ventilation", legacy: "careVentilation", aliases: ["Preferred Ventilation"] },
+    { label: "Favorite Foods / Diet", key: "foods", legacy: "careFoods", aliases: ["Favorite Foods", "Diet", "Food"] },
+    { label: "Protein Needs", key: "protein", legacy: "careProtein", aliases: ["Protein", "Protein Level"] },
+    { label: "Calcium Needs", key: "calcium", legacy: "careCalcium", aliases: ["Calcium", "Calcium Sources"] },
+    { label: "Breeding Notes", key: "breeding", legacy: "careBreeding", aliases: ["Breeding", "Breeding Speed"] },
+    { label: "Special Notes", key: "notes", legacy: "careNotes", aliases: ["Notes", "Additional Notes"] }
+  ];
+
+  function careFieldValue(item, field) {
+    if (!item) return "";
+    const care = item.care && typeof item.care === "object" ? item.care : {};
+    const direct = String(item[field.legacy] || care[field.key] || "").trim();
+    return direct || legacyCareValue(item, field);
+  }
+
+  function legacyCareValue(item, wantedField) {
+    const text = careSummaryText(item).replace(/\s+/g, " ").trim();
+    if (!text) return "";
+
+    const matches = [];
+    const lower = text.toLowerCase();
+
+    CARE_FIELDS.forEach((field) => {
+      [field.label].concat(field.aliases || []).forEach((label) => {
+        const target = String(label).toLowerCase() + ":";
+        let start = lower.indexOf(target);
+        while (start !== -1) {
+          matches.push({ start, valueStart: start + target.length, field });
+          start = lower.indexOf(target, start + 1);
+        }
+      });
+    });
+
+    matches.sort((a, b) => a.start - b.start || b.valueStart - a.valueStart);
+    const match = matches.find((m) => m.field === wantedField);
+    if (!match) return "";
+
+    const next = matches.find((m) => m.start > match.valueStart);
+    return text.slice(match.valueStart, next ? next.start : text.length)
+      .replace(/^[-–—\s]+/, "")
+      .replace(/[.;,\s]+$/, "")
+      .trim();
+  }
+
+  function careSummaryText(item) {
+    if (!item) return "";
+    const care = item.care && typeof item.care === "object" ? item.care : {};
+    return String(item.careGuide || care.summary || "").trim();
+  }
+
+  function getCareSearchText(item) {
+    return CARE_FIELDS.map((field) => careFieldValue(item, field)).concat(careSummaryText(item)).join(" ");
+  }
+
+  function renderCareGuideHtml(item) {
+    const rows = CARE_FIELDS
+      .map((field) => ({ label: field.label, value: careFieldValue(item, field) }))
+      .filter((row) => row.value);
+
+    const summary = careSummaryText(item);
+
+    if (!rows.length && !summary) {
+      return `<p>No care guide available.</p>`;
+    }
+
+    if (!rows.length && summary) {
+      return `<p class="preline">${escapeHtml(summary)}</p>`;
+    }
+
+    return `
+      <div class="care-grid">
+        ${rows.map((row) => `
+          <article class="care-item">
+            <span class="care-label">${escapeHtml(row.label)}</span>
+            <p class="care-value">${escapeHtml(row.value)}</p>
+          </article>
+        `).join("")}
+      </div>
+      ${summary && rows.length < 4 ? `<p class="care-legacy-note preline">${escapeHtml(summary)}</p>` : ""}
+    `;
+  }
+
   function extractDriveFileId(url) {
     const text = String(url || "");
     let match = text.match(/[?&]id=([^&#]+)/);
@@ -183,7 +270,7 @@
       tagsArray(item).join(" "),
       item.origin,
       item.basicDescription,
-      item.careGuide
+      getCareSearchText(item)
     ].join(" "));
   }
 
@@ -196,7 +283,7 @@
     const genus = normalize(item.genus);
     const tags = tagsArray(item).map(normalize);
     const origin = normalize(item.origin);
-    const desc = normalize(item.basicDescription + " " + item.careGuide);
+    const desc = normalize(item.basicDescription + " " + getCareSearchText(item));
     const full = buildSearchText(item);
 
     let score = 0;
@@ -428,7 +515,7 @@
 
       <section class="content-card">
         <h2>Care Guide</h2>
-        <p>${escapeHtml(item.careGuide || "No care guide available.")}</p>
+        ${renderCareGuideHtml(item)}
       </section>
 
       <section class="content-card two-col">
@@ -569,7 +656,16 @@
           tags: data.get("tags"),
           origin: data.get("origin"),
           basicDescription: data.get("basicDescription"),
-          careGuide: data.get("careGuide"),
+          careDifficulty: data.get("careDifficulty"),
+          careTemperature: data.get("careTemperature"),
+          careHumidity: data.get("careHumidity"),
+          careSubstrateMoisture: data.get("careSubstrateMoisture"),
+          careVentilation: data.get("careVentilation"),
+          careFoods: data.get("careFoods"),
+          careProtein: data.get("careProtein"),
+          careCalcium: data.get("careCalcium"),
+          careBreeding: data.get("careBreeding"),
+          careNotes: data.get("careNotes"),
           imageDataUrl,
           contributorPublicOptIn: data.get("contributorPublicOptIn") === "on",
           contributorPublicName: data.get("contributorPublicName")
@@ -688,7 +784,7 @@
           <p>${escapeHtml(p.basicDescription || "")}</p>
           <details>
             <summary>Care Guide</summary>
-            <p>${escapeHtml(p.careGuide || "")}</p>
+            ${renderCareGuideHtml(p)}
           </details>
           <div class="tag-row">${tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
           <div class="button-row">
