@@ -1227,3 +1227,21 @@ body.modal-open {
   color: var(--muted);
   margin-top: -8px;
 }
+
+
+/* v1.2.1 suggested edit system */
+.suggested-edit-section {
+  border-left: 5px solid rgba(70, 123, 80, .55);
+}
+
+.suggested-edit-card {
+  outline-color: rgba(70, 123, 80, .65);
+}
+
+.inline-notice {
+  margin: 12px 0;
+}
+
+.submit-button-row {
+  justify-content: center;
+}
