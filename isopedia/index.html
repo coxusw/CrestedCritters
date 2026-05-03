@@ -1,1 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Isopedia | Community Isopod Knowledge Base</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="assets/config.js"></script>
+<script defer src="assets/api.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body data-page="home">
+<header class="site-header">
+  <div class="site-shell nav">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">ISO</span>
+      <span>Isopedia</span>
+    </a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="contribute.html">Add an Isopod</a>
+      <a id="verifyLink" href="verify.html" hidden>Verify</a>
+      <a href="faq.html">FAQ</a>
+      <a href="donate.html">Donate</a>
+      <a id="accountLink" href="login.html">Account</a>
+      <a id="loginLink" href="login.html">Log In</a>
+    </nav>
+  </div>
+</header>
+
+<main class="site-shell main">
+  <section class="hero">
+    <div>
+      <h1>Community-built isopod knowledge.</h1>
+      <p>Search isopods by species name, common name, nickname, genus, origin, or tags. Contributions are highlighted until another member verifies them.</p>
+      <div class="button-row">
+        <a class="button primary" href="contribute.html">Add an Isopod</a>
+        <a class="button" href="faq.html">How Isopedia Works</a>
+      </div>
+    </div>
+    <aside class="hero-card">
+      <h2>Project Stats</h2>
+      <p>These numbers update from the public Isopedia data file.</p>
+      <div class="stat-row">
+        <div class="stat"><strong id="statTotal">0</strong><span>Total</span></div>
+        <div class="stat"><strong id="statVerified">0</strong><span>Verified</span></div>
+        <div class="stat"><strong id="statPending">0</strong><span>Pending / Contested</span></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="search-panel">
+    <div class="search-row">
+      <input id="searchInput" class="search-input" type="search" placeholder="Search Rubber Ducky, Duckies, Porcellio, Cubaris..." autocomplete="off">
+      <a class="button primary" href="contribute.html">Add an Isopod</a>
+    </div>
+    <div id="genusButtons" class="genus-bar" aria-label="Browse by genus"></div>
+  </section>
+
+  <div class="section-head">
+    <h2 id="activeGenusLabel">All Isopods</h2>
+    <span class="muted">Search includes tags / also-known-as names.</span>
+  </div>
+  <section id="resultGrid" class="grid" aria-live="polite"></section>
+
+  <div class="section-head">
+    <h2>Recently Updated</h2>
+  </div>
+  <section id="recentGrid" class="grid"></section>
+</main>
+
+<footer class="footer">
+  <div class="site-shell">
+    <p>Isopedia is a community-built isopod knowledge project by Crested Critters.</p>
+  </div>
+</footer>
+</body>
+</html>
 
