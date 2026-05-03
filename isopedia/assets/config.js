@@ -7,7 +7,7 @@
  */
 window.ISOPEDIA_CONFIG = {
   SITE_NAME: "Isopedia",
-  API_URL: "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE",
+  API_URL: "https://script.google.com/macros/s/AKfycbyROPf_zU0eWchzCn2RjCp9JiYc5e8_ZW0A0mQIhmNxQYAEk9WzLAfQna9v9RqKLyjP/exec",
   DATA_URL: "data/isopods.json",
   DONATORS_URL: "data/donators.json",
 
