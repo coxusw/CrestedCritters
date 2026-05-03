@@ -936,3 +936,87 @@ body.modal-open {
 .dispute-current-care {
   margin-top: 14px;
 }
+
+/* v1.0.7 Crested Critters logo + main site navigation */
+.nav-stacked {
+  min-height: auto;
+  padding: 14px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.nav-primary-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand-logo {
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  display: block;
+  border-radius: 16px;
+  background: rgba(255,250,240,.08);
+  padding: 4px;
+  box-shadow: 0 10px 28px rgba(0,0,0,.22);
+}
+
+.brand-title {
+  font-size: 1.35rem;
+}
+
+.main-site-links a {
+  font-size: .92rem;
+}
+
+.main-site-links a[href="index.html"] {
+  background: rgba(255,255,255,.12);
+}
+
+.isopedia-links {
+  width: 100%;
+  justify-content: flex-end;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.isopedia-links a {
+  background: rgba(255,255,255,.06);
+}
+
+.isopedia-links a:hover,
+.main-site-links a:hover {
+  background: rgba(255,255,255,.14);
+}
+
+@media (max-width: 980px) {
+  .nav-primary-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .main-site-links,
+  .isopedia-links {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 800px) {
+  .nav-stacked {
+    padding: 12px 0;
+  }
+
+  .brand-logo {
+    width: 52px;
+    height: 52px;
+  }
+
+  .brand-title {
+    font-size: 1.2rem;
+  }
+}
