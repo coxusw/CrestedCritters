@@ -901,3 +901,38 @@ body.modal-open {
     padding: 18px;
   }
 }
+
+
+/* v1.0.6 dispute review upgrade */
+.verify-section-head {
+  color: var(--cream);
+  align-items: start;
+  margin-top: 30px;
+}
+
+.verify-section-head p {
+  margin: 6px 0 0;
+  color: rgba(255, 250, 240, .76);
+}
+
+.dispute-card {
+  outline-color: rgba(155, 61, 52, .58);
+}
+
+.dispute-detail .verify-detail-section p + p {
+  margin-top: 8px;
+}
+
+.dispute-reason-box {
+  background: #fff8df;
+  border-color: rgba(217, 173, 79, .42);
+}
+
+.dispute-correction-box {
+  background: #eef4e8;
+  border-color: rgba(49, 95, 60, .16);
+}
+
+.dispute-current-care {
+  margin-top: 14px;
+}
