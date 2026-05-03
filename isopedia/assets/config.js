@@ -11,8 +11,14 @@ window.ISOPEDIA_CONFIG = {
   DATA_URL: "data/isopods.json",
   DONATORS_URL: "data/donators.json",
 
+  // During early testing, true makes the site read current Sheet data through Apps Script first.
+  // Later, after GitHub publishing is configured, you can set this to false to prefer static JSON.
+  USE_LIVE_API_DATA: true,
+
   // Optional donation links. Replace with your real Square/PayPal/Cash App links.
   DONATE_LINKS: {
-    square: "https://square.link/u/lWUshYUI",
+    square: "",
+    paypal: "",
+    cashapp: ""
   }
 };
