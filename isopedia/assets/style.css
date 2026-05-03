@@ -635,3 +635,87 @@ textarea:focus {
     columns: 1;
   }
 }
+
+/* v1.0.4 structured care guide upgrade */
+.wide-form {
+  width: min(980px, 100%);
+}
+
+.form-section {
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 18px;
+  display: grid;
+  gap: 16px;
+}
+
+.form-section h2 {
+  margin: 0;
+}
+
+.care-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.submit-wide {
+  width: min(360px, 100%);
+  justify-self: center;
+}
+
+.care-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.care-item {
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+  min-height: 92px;
+}
+
+.care-label {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .055em;
+  font-weight: 950;
+  color: var(--green);
+  background: #eef4e8;
+  border: 1px solid rgba(49,95,60,.12);
+  border-radius: 999px;
+  padding: 6px 9px;
+}
+
+.care-value {
+  margin: 10px 0 0;
+  line-height: 1.55;
+  font-weight: 700;
+  white-space: pre-wrap;
+}
+
+.care-legacy-note {
+  margin-top: 14px;
+  padding: 14px;
+  background: #fff8df;
+  border: 1px solid rgba(217, 173, 79, .4);
+  border-radius: 16px;
+}
+
+.preline {
+  white-space: pre-wrap;
+}
+
+@media (max-width: 800px) {
+  .care-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
