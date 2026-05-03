@@ -550,6 +550,9 @@
         <section class="content-card">
           <h2>Add a Photo</h2>
           <p>Logged-in members can upload additional photos for this isopod. Photos must be attached to an existing entry and are credited to the uploader.</p>
+          <div class="photo-rights-note">
+            <strong>Photo notice:</strong> Photos should be your own or shared with permission. Uploaded photos may be used by Crested Critters for Isopedia and other Crested Critters educational, promotional, or project-related uses.
+          </div>
           <a class="button primary" href="login.html?next=${encodeURIComponent(location.href)}">Log in to Add a Photo</a>
         </section>
       `;
@@ -559,6 +562,9 @@
       <section class="content-card">
         <h2>Add a Photo</h2>
         <p>Upload another clear photo for this isopod. Please only add useful, accurate photos that help the hobby. Admins may remove duplicate, low-quality, or unrelated photos.</p>
+        <div class="photo-rights-note">
+          <strong>Photo notice:</strong> Upload only photos you personally took or have clear permission to share. Do not upload photos copied from other keepers, sellers, social media, websites, or search results. By uploading, you allow Crested Critters to use the photo for Isopedia and other Crested Critters educational, promotional, or project-related uses.
+        </div>
         <form id="photoUploadForm" class="form-grid photo-upload-form">
           <input type="hidden" name="isopodId" value="${escapeHtml(item.id || item.isopodId || "")}">
           <label>
