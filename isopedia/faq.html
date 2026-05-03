@@ -1,1 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>FAQ | Isopedia</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="assets/config.js"></script>
+<script defer src="assets/api.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body data-page="faq">
+<header class="site-header">
+  <div class="site-shell nav">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">ISO</span>
+      <span>Isopedia</span>
+    </a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="contribute.html">Add an Isopod</a>
+      <a id="verifyLink" href="verify.html" hidden>Verify</a>
+      <a href="faq.html">FAQ</a>
+      <a href="donate.html">Donate</a>
+      <a id="accountLink" href="login.html">Account</a>
+      <a id="loginLink" href="login.html">Log In</a>
+    </nav>
+  </div>
+</header>
+
+<main class="site-shell main">
+  <section class="content-card">
+    <h1>Isopedia FAQ</h1>
+    <p>Isopedia is a community-built isopod information project created to help hobbyists find, share, and verify information about different isopods in the hobby.</p>
+
+    <div class="faq-list">
+      <details open>
+        <summary>What is Isopedia?</summary>
+        <p>Isopedia is a community-built isopod information project. The goal is to provide easy-to-search care information, origin details, pictures, descriptions, tags, and common names for isopods in one organized place.</p>
+        <p>Isopedia is not meant to replace experienced keepers, scientific resources, or responsible research. It is meant to be a helpful community knowledge base that improves over time.</p>
+      </details>
+
+      <details>
+        <summary>How do I use Isopedia?</summary>
+        <p>You can search for an isopod by typing its species name, common name, nickname, genus, origin, or tag into the search bar. You can also browse by genus.</p>
+      </details>
+
+      <details>
+        <summary>What are tags?</summary>
+        <p>Tags are additional names or nicknames an isopod may be known by. For example, Cubaris sp. “Rubber Ducky” may also be searched as Rubber Duckies, Rubber Ducky, or Duckies.</p>
+      </details>
+
+      <details>
+        <summary>How do I contribute?</summary>
+        <p>Create an account, log in, and click <strong>Add an Isopod</strong>. Each submission requires a genus, species name, tags, origin, basic description, care guide, and picture.</p>
+        <p>Isopods cannot be submitted without a picture.</p>
+      </details>
+
+      <details>
+        <summary>What happens after I submit an isopod?</summary>
+        <p>After submission, the entry appears as a pending contribution. Pending contributions are highlighted so visitors know the information has not been fully verified yet.</p>
+      </details>
+
+      <details>
+        <summary>How does verification work?</summary>
+        <p>Another logged-in member must verify the contribution before it becomes verified. You cannot verify your own contribution.</p>
+      </details>
+
+      <details>
+        <summary>Can I dispute information?</summary>
+        <p>Yes. Logged-in users can dispute or suggest corrections to information they believe is inaccurate, incomplete, outdated, or unclear.</p>
+      </details>
+
+      <details>
+        <summary>Do contributors and verifiers get credit?</summary>
+        <p>Yes, but only if they choose to be listed. If they choose not to be listed, the entry will show Anonymous Member.</p>
+      </details>
+
+      <details>
+        <summary>How can I support Isopedia?</summary>
+        <p>Donations help support project costs, improvements, image storage, domain/hosting needs, and the time needed to maintain the project.</p>
+        <p>Donations are optional and do not give anyone special control over verified information.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="content-card">
+    <h2>Project Donators</h2>
+    <p>Thank you to the following people for supporting Isopedia.</p>
+    <ul id="donatorList" class="donator-list"></ul>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="site-shell">
+    <p>Isopedia is a community-built isopod knowledge project by Crested Critters.</p>
+  </div>
+</footer>
+</body>
+</html>
 
