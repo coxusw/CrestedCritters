@@ -687,16 +687,112 @@
     const notice = $("#formNotice");
     const grid = $("#pendingGrid");
     const verifierName = $("#verifierPublicName");
+    const modal = $("#verifyModal");
+    const modalContent = $("#verifyModalContent");
+    const modalClose = $("#verifyModalClose");
+    let pendingItems = [];
+
     if (verifierName && user.publicDisplayName) verifierName.value = user.publicDisplayName;
+
+    function closeModal() {
+      if (!modal) return;
+      modal.hidden = true;
+      modal.classList.remove("open");
+      document.body.classList.remove("modal-open");
+    }
+
+    async function submitContest(item) {
+      const field = prompt("What are you contesting?", "Other");
+      if (field === null) return;
+      const reason = prompt("Why are you contesting this contribution?");
+      if (!reason) return;
+      const suggestedCorrection = prompt("Optional suggested correction:", "") || "";
+
+      await IsopediaAPI.apiCall("contest", {
+        isopodId: item.isopodId,
+        contributionId: item.contributionId,
+        field,
+        reason,
+        suggestedCorrection,
+        publicOptIn: true,
+        publicName: user.publicDisplayName || user.username
+      });
+
+      alert("Dispute submitted.");
+      closeModal();
+      await loadPending();
+    }
+
+    async function submitVerification(item) {
+      const publicOptIn = $("#verifierPublicOptIn").checked;
+      const publicName = $("#verifierPublicName").value;
+      if (!confirm("Verify this contribution as accurate to the best of your knowledge?")) return;
+
+      await IsopediaAPI.apiCall("verifyContribution", {
+        contributionId: item.contributionId,
+        verifierPublicOptIn: publicOptIn,
+        verifierPublicName: publicName
+      });
+
+      alert("Contribution verified.");
+      closeModal();
+      await loadPending();
+    }
+
+    function wireModalActions(item) {
+      const verifyBtn = $("#modalVerifyBtn");
+      const contestBtn = $("#modalContestBtn");
+
+      if (verifyBtn) {
+        verifyBtn.addEventListener("click", async () => {
+          try {
+            await submitVerification(item);
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+      }
+
+      if (contestBtn) {
+        contestBtn.addEventListener("click", async () => {
+          try {
+            await submitContest(item);
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+      }
+    }
+
+    function openModal(contributionId) {
+      const item = pendingItems.find((entry) => String(entry.contributionId) === String(contributionId));
+      if (!item || !modal || !modalContent) return;
+
+      modalContent.innerHTML = verifyModalHtml(item, user);
+      modal.hidden = false;
+      modal.classList.add("open");
+      document.body.classList.add("modal-open");
+      wireModalActions(item);
+    }
+
+    if (modalClose) modalClose.addEventListener("click", closeModal);
+    if (modal) {
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) closeModal();
+      });
+    }
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && modal && modal.classList.contains("open")) closeModal();
+    });
 
     async function loadPending() {
       setMessage(notice, "Loading pending contributions...", "info");
       try {
         const data = await IsopediaAPI.apiCall("getPending", {});
-        const list = data.contributions || [];
+        pendingItems = data.contributions || [];
         setMessage(notice, "", "");
 
-        if (!list.length) {
+        if (!pendingItems.length) {
           grid.innerHTML = `
             <div class="empty-state">
               <h3>No pending contributions</h3>
@@ -706,54 +802,11 @@
           return;
         }
 
-        grid.innerHTML = list.map((c) => pendingContributionHtml(c, user)).join("");
+        grid.innerHTML = pendingItems.map((item) => verifyListCardHtml(item, user)).join("");
 
-        $all("[data-verify-id]", grid).forEach((btn) => {
-          btn.addEventListener("click", async () => {
-            const contributionId = btn.getAttribute("data-verify-id");
-            const publicOptIn = $("#verifierPublicOptIn").checked;
-            const publicName = $("#verifierPublicName").value;
-
-            if (!confirm("Verify this contribution as accurate to the best of your knowledge?")) return;
-
-            try {
-              await IsopediaAPI.apiCall("verifyContribution", {
-                contributionId,
-                verifierPublicOptIn: publicOptIn,
-                verifierPublicName: publicName
-              });
-              alert("Contribution verified.");
-              await loadPending();
-            } catch (err) {
-              alert(err.message);
-            }
-          });
-        });
-
-        $all("[data-contest-isopod]", grid).forEach((btn) => {
-          btn.addEventListener("click", async () => {
-            const isopodId = btn.getAttribute("data-contest-isopod");
-            const contributionId = btn.getAttribute("data-contest-id");
-            const field = prompt("What are you contesting?", "Other");
-            if (field === null) return;
-            const reason = prompt("Why are you contesting this contribution?");
-            if (!reason) return;
-            const suggestedCorrection = prompt("Optional suggested correction:", "") || "";
-            try {
-              await IsopediaAPI.apiCall("contest", {
-                isopodId,
-                contributionId,
-                field,
-                reason,
-                suggestedCorrection,
-                publicOptIn: true,
-                publicName: user.publicDisplayName || user.username
-              });
-              alert("Dispute submitted.");
-              await loadPending();
-            } catch (err) {
-              alert(err.message);
-            }
+        $all("[data-review-id]", grid).forEach((btn) => {
+          btn.addEventListener("click", () => {
+            openModal(btn.getAttribute("data-review-id"));
           });
         });
       } catch (err) {
@@ -764,43 +817,77 @@
     await loadPending();
   }
 
-  function pendingContributionHtml(c, user) {
+  function verifyListCardHtml(c, user) {
     const p = c.proposedData || {};
     const own = String(c.submittedByUserId) === String(user.userId);
     const img = displayImageUrl(p);
-    const tags = tagsArray(p);
+    const summary = p.basicDescription || p.origin || "Open this submission to review the full details.";
 
     return `
-      <article class="pending-card">
+      <article class="verify-card">
         <img class="iso-thumb" src="${escapeHtml(img)}" alt="${escapeHtml(p.speciesName || "Pending isopod")}" ${imageFallbackAttr()}>
-        <div>
+        <div class="verify-card-body">
           <div class="card-topline">
             <span class="badge status-pending">Pending Verification</span>
             <span class="genus-pill">${escapeHtml(p.genus || "Other")}</span>
           </div>
           <h3>${escapeHtml(p.speciesName || "Unnamed")}</h3>
-          <p><strong>Submitted by:</strong> ${escapeHtml(c.submittedByPublicName || "Anonymous Member")}</p>
-          <p><strong>Origin:</strong> ${escapeHtml(p.origin || "")}</p>
-          <p>${escapeHtml(p.basicDescription || "")}</p>
-          <details>
-            <summary>Care Guide</summary>
-            ${renderCareGuideHtml(p)}
-          </details>
-          <div class="tag-row">${tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>
+          <p class="verify-meta"><strong>Submitted by:</strong> ${escapeHtml(c.submittedByPublicName || "Anonymous Member")}</p>
+          <p class="verify-summary">${escapeHtml(summary)}</p>
+          ${own ? `<p class="verify-own-note">You submitted this entry, so you cannot verify it yourself.</p>` : ""}
           <div class="button-row">
-            <button class="button primary" data-verify-id="${escapeHtml(c.contributionId)}" ${own ? "disabled title='You cannot verify your own contribution.'" : ""}>
-              ${own ? "Cannot Verify Own Entry" : "Verify Contribution"}
-            </button>
-            <button class="button warning" data-contest-isopod="${escapeHtml(c.isopodId)}" data-contest-id="${escapeHtml(c.contributionId)}">
-              Contest / Suggest Correction
-            </button>
+            <button class="button primary" data-review-id="${escapeHtml(c.contributionId)}">Review Submission</button>
           </div>
         </div>
       </article>
     `;
   }
 
+  function verifyModalHtml(c, user) {
+    const p = c.proposedData || {};
+    const own = String(c.submittedByUserId) === String(user.userId);
+    const img = displayImageUrl(p);
+    const tags = tagsArray(p);
+
+    return `
+      <div class="verify-detail">
+        <div class="verify-detail-head">
+          <img class="verify-detail-image" src="${escapeHtml(img)}" alt="${escapeHtml(p.speciesName || "Pending isopod")}" ${imageFallbackAttr()}>
+          <div class="verify-detail-copy">
+            <div class="card-topline">
+              <span class="badge status-pending">Pending Verification</span>
+              <span class="genus-pill">${escapeHtml(p.genus || "Other")}</span>
+            </div>
+            <h2 id="verifyModalHeading">${escapeHtml(p.speciesName || "Unnamed")}</h2>
+            <p><strong>Submitted by:</strong> ${escapeHtml(c.submittedByPublicName || "Anonymous Member")}</p>
+            ${p.origin ? `<p><strong>Origin:</strong> ${escapeHtml(p.origin)}</p>` : ""}
+            ${tags.length ? `<div class="tag-row">${tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
+            ${p.basicDescription ? `<p class="verify-detail-summary">${escapeHtml(p.basicDescription)}</p>` : ""}
+            ${own ? `<p class="verify-own-note">You submitted this entry, so you cannot verify it yourself.</p>` : ""}
+            <div class="button-row">
+              <button id="modalVerifyBtn" class="button primary" ${own ? "disabled title='You cannot verify your own contribution.'" : ""}>
+                ${own ? "Cannot Verify Own Entry" : "Verify Contribution"}
+              </button>
+              <button id="modalContestBtn" class="button warning">Contest / Suggest Correction</button>
+            </div>
+          </div>
+        </div>
+
+        <section class="verify-detail-section">
+          <h3>Basic Description</h3>
+          <p>${escapeHtml(p.basicDescription || "No description provided.")}</p>
+        </section>
+
+        <section class="verify-detail-section">
+          <h3>Care Guide</h3>
+          ${renderCareGuideHtml(p)}
+        </section>
+      </div>
+    `;
+  }
+
   async function initFaq() {
+
     const donorList = $("#donatorList");
     if (!donorList) return;
 
