@@ -77,9 +77,26 @@
     return String(item.tags || "").split(",").map((t) => t.trim()).filter(Boolean);
   }
 
+  function apiConfigured() {
+    const cfg = window.ISOPEDIA_CONFIG || {};
+    return !!(cfg.API_URL && !cfg.API_URL.includes("PASTE_YOUR"));
+  }
+
   async function loadIsopods() {
     const cfg = window.ISOPEDIA_CONFIG || {};
     const dataUrl = cfg.DATA_URL || "data/isopods.json";
+
+    // During setup/testing, this lets the public pages show current Google Sheet data immediately.
+    // Later, set USE_LIVE_API_DATA to false in assets/config.js after GitHub JSON publishing is working.
+    if (cfg.USE_LIVE_API_DATA && apiConfigured()) {
+      try {
+        const data = await IsopediaAPI.publicApi("publicIsopods");
+        allIsopods = data.isopods || [];
+        return allIsopods;
+      } catch (apiErr) {
+        console.warn("Live API isopod load failed, falling back to static JSON:", apiErr);
+      }
+    }
 
     try {
       const res = await fetch(dataUrl + "?v=" + Date.now());
@@ -88,8 +105,7 @@
       if (!Array.isArray(allIsopods)) allIsopods = [];
       return allIsopods;
     } catch (staticErr) {
-      // Fallback to Apps Script if configured.
-      if (cfg.API_URL && !cfg.API_URL.includes("PASTE_YOUR")) {
+      if (apiConfigured()) {
         try {
           const data = await IsopediaAPI.publicApi("publicIsopods");
           allIsopods = data.isopods || [];
@@ -107,13 +123,22 @@
     const cfg = window.ISOPEDIA_CONFIG || {};
     const dataUrl = cfg.DONATORS_URL || "data/donators.json";
 
+    if (cfg.USE_LIVE_API_DATA && apiConfigured()) {
+      try {
+        const data = await IsopediaAPI.publicApi("publicDonators");
+        return data.donators || [];
+      } catch (apiErr) {
+        console.warn("Live API donator load failed, falling back to static JSON:", apiErr);
+      }
+    }
+
     try {
       const res = await fetch(dataUrl + "?v=" + Date.now());
       if (!res.ok) throw new Error("Could not load donators JSON.");
       const list = await res.json();
       return Array.isArray(list) ? list : [];
     } catch (staticErr) {
-      if (cfg.API_URL && !cfg.API_URL.includes("PASTE_YOUR")) {
+      if (apiConfigured()) {
         try {
           const data = await IsopediaAPI.publicApi("publicDonators");
           return data.donators || [];
