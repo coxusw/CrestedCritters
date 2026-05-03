@@ -17,8 +17,6 @@ window.ISOPEDIA_CONFIG = {
 
   // Optional donation links. Replace with your real Square/PayPal/Cash App links.
   DONATE_LINKS: {
-    square: "",
-    paypal: "",
-    cashapp: ""
+    square: "https://square.link/u/lWUshYUI",
   }
 };
