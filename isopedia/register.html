@@ -1,1 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Register | Isopedia</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="assets/config.js"></script>
+<script defer src="assets/api.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body data-page="register">
+<header class="site-header">
+  <div class="site-shell nav">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">ISO</span>
+      <span>Isopedia</span>
+    </a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="contribute.html">Add an Isopod</a>
+      <a id="verifyLink" href="verify.html" hidden>Verify</a>
+      <a href="faq.html">FAQ</a>
+      <a href="donate.html">Donate</a>
+      <a id="accountLink" href="login.html">Account</a>
+      <a id="loginLink" href="login.html">Log In</a>
+    </nav>
+  </div>
+</header>
+
+<main class="site-shell main">
+  <section class="form-card">
+    <h1>Create an Account</h1>
+    <p class="muted">You only need an account to contribute, verify, or dispute information. Viewing Isopedia is public.</p>
+
+    <p id="formNotice" class="notice" hidden></p>
+
+    <form id="registerForm" class="form-grid">
+      <label>
+        Username
+        <input name="username" type="text" minlength="3" required autocomplete="username">
+      </label>
+
+      <label>
+        Email <span class="field-help">Optional. Useful if you later add password resets or contributor contact.</span>
+        <input name="email" type="email" autocomplete="email">
+      </label>
+
+      <label>
+        Password
+        <input name="password" type="password" minlength="8" required autocomplete="new-password">
+      </label>
+
+      <label>
+        Public Display Name <span class="field-help">This can be used when you choose to be credited publicly.</span>
+        <input name="publicDisplayName" type="text" placeholder="Example: PodKeeper92">
+      </label>
+
+      <label class="check-row">
+        <input name="publicCreditOptIn" type="checkbox">
+        Default to sharing my public display name for credits
+      </label>
+
+      <button class="button primary" type="submit">Create Account</button>
+    </form>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="site-shell">
+    <p>Isopedia is a community-built isopod knowledge project by Crested Critters.</p>
+  </div>
+</footer>
+</body>
+</html>
 
