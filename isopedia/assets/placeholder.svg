@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#d9ad4f"/>
+      <stop offset="1" stop-color="#315f3c"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="900" rx="70" fill="#f8f3e7"/>
+  <circle cx="450" cy="450" r="300" fill="url(#g)" opacity=".22"/>
+  <path d="M220 490c30-138 150-232 292-210 93 14 159 76 178 155 25 102-38 191-151 214-151 31-284-32-319-159z" fill="#315f3c"/>
+  <path d="M310 477c17-78 84-131 164-119 53 8 90 43 101 87 14 58-21 108-85 121-86 18-160-18-180-89z" fill="#467b50"/>
+  <circle cx="580" cy="396" r="22" fill="#fffaf0"/>
+  <circle cx="585" cy="397" r="10" fill="#102117"/>
+  <path d="M246 548c-26 8-54 18-77 34m134 10c-19 25-36 51-50 80m152-48c-5 32-7 61-6 87m162-95c16 28 33 51 51 70m30-141c33 17 63 31 91 43" fill="none" stroke="#315f3c" stroke-width="24" stroke-linecap="round"/>
+  <text x="450" y="790" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#315f3c">Isopedia</text>
+</svg>
