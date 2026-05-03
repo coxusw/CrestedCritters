@@ -1,0 +1,22 @@
+[
+  {
+    "id": "sample_rubber_ducky",
+    "genus": "Cubaris",
+    "speciesName": "Cubaris sp. “Rubber Ducky”",
+    "tags": [
+      "Rubber Duckies",
+      "Rubber Ducky",
+      "Duckies"
+    ],
+    "origin": "Thailand",
+    "basicDescription": "Sample entry showing how Isopedia cards look. Replace or delete this sample after your backend is connected.",
+    "careGuide": "Sample care guide. Add accurate humidity, ventilation, substrate, calcium, food, and breeding notes.",
+    "imageUrl": "assets/placeholder.svg",
+    "status": "pending",
+    "contributorName": "Sample Contributor",
+    "verifierName": "",
+    "createdAt": "2026-05-03",
+    "verifiedAt": "",
+    "updatedAt": "2026-05-03"
+  }
+]
