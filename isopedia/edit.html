@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Suggest Edit | Isopedia</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="assets/config.js"></script>
+<script defer src="assets/api.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body data-page="edit">
+<header class="site-header">
+  <div class="site-shell nav nav-stacked">
+    <div class="nav-primary-row">
+      <a class="brand" href="index.html" aria-label="Isopedia Home">
+        <img class="brand-logo" src="../assets/images/logo.png" alt="Crested Critters logo" onerror="this.onerror=null; this.src='assets/placeholder.svg';">
+        <span class="brand-title">Isopedia</span>
+      </a>
+      <nav class="nav-links main-site-links" aria-label="Crested Critters navigation">
+        <a href="../">Home</a>
+        <a href="../shop/">Shop</a>
+        <a href="../about/">About</a>
+        <a href="../contact/">Contact</a>
+        <a href="../isotracker/">IsoTracker</a>
+        <a href="index.html">Isopedia</a>
+        <a href="../Randomizer/">Randomizer</a>
+      </nav>
+    </div>
+    <nav class="nav-links isopedia-links" aria-label="Isopedia navigation">
+      <a href="index.html">Database</a>
+      <a href="contribute.html">Add an Entry</a>
+      <a id="verifyLink" href="verify.html" hidden>Verify</a>
+      <a href="faq.html">FAQ</a>
+      <a href="donate.html">Donate</a>
+      <a id="accountLink" href="login.html">Account</a>
+      <a id="loginLink" href="login.html">Log In</a>
+    </nav>
+  </div>
+</header>
+
+<main class="site-shell main">
+  <div id="editRoot">
+    <section class="form-card wide-form">
+      <h1>Suggest Edit</h1>
+      <p class="page-subtitle">Propose an update to <strong id="editEntryTitle">this entry</strong>. Your suggested edit will not go live until another logged-in member verifies it.</p>
+
+      <div class="notice info">
+        <strong>Suggested Edit Notice:</strong> Please only submit accurate updates that improve the entry. Another member must verify your suggested edit before it is applied.
+      </div>
+
+      <p id="formNotice" class="notice" hidden></p>
+
+      <form id="editContributionForm" class="form-grid">
+        <input type="hidden" name="isopodId">
+
+        <section class="form-section suggested-edit-section">
+          <h2>Entry Information</h2>
+          <p class="field-help">The current entry information is pre-filled below. Change only what needs updated.</p>
+
+          <label>
+            Organism Type
+            <select id="editOrganismType" name="organismType" required></select>
+          </label>
+
+          <label>
+            <span id="editGenusLabelText">Genus / Group</span>
+            <select id="editGenus" name="genus" required></select>
+          </label>
+
+          <label>
+            Species / Entry Name
+            <input name="speciesName" type="text" required>
+          </label>
+
+          <label>
+            Also Known As / Search Tags
+            <span class="field-help">Separate tags with commas.</span>
+            <input name="tags" type="text">
+          </label>
+
+          <label>
+            Origin
+            <input name="origin" type="text" required>
+          </label>
+
+          <label>
+            Basic Description
+            <textarea name="basicDescription" required></textarea>
+          </label>
+        </section>
+
+        <section class="form-section suggested-edit-section">
+          <h2>Care Guide</h2>
+          <p class="field-help">Edit the care categories that need corrected or improved.</p>
+
+          <div class="care-form-grid">
+            <label>
+              Care Difficulty
+              <select name="careDifficulty" required>
+                <option value="">Choose difficulty</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Experienced">Experienced</option>
+                <option value="Advanced">Advanced</option>
+              </select>
+            </label>
+
+            <label>
+              Temperature Range
+              <input name="careTemperature" type="text" required>
+            </label>
+
+            <label>
+              Humidity Level
+              <select name="careHumidity" required>
+                <option value="">Choose humidity</option>
+                <option value="Low">Low</option>
+                <option value="Low-Moderate">Low-Moderate</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Moderate-High">Moderate-High</option>
+                <option value="High">High</option>
+              </select>
+            </label>
+
+            <label>
+              Substrate Moisture
+              <select name="careSubstrateMoisture" required>
+                <option value="">Choose substrate moisture</option>
+                <option value="Dry side + moist side">Dry side + moist side</option>
+                <option value="Slightly moist">Slightly moist</option>
+                <option value="Moderately moist">Moderately moist</option>
+                <option value="High moisture">High moisture</option>
+                <option value="Very high moisture">Very high moisture</option>
+              </select>
+            </label>
+
+            <label>
+              Ventilation
+              <select name="careVentilation" required>
+                <option value="">Choose ventilation</option>
+                <option value="Low">Low</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Moderate-High">Moderate-High</option>
+                <option value="High">High</option>
+              </select>
+            </label>
+
+            <label>
+              Favorite Foods / Diet Notes
+              <input name="careFoods" type="text" required>
+            </label>
+
+            <label>
+              Protein Needs
+              <select name="careProtein">
+                <option value="">Choose protein needs, if known</option>
+                <option value="Low">Low</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Moderate-High">Moderate-High</option>
+                <option value="High">High</option>
+              </select>
+            </label>
+
+            <label>
+              Calcium Needs
+              <input name="careCalcium" type="text">
+            </label>
+          </div>
+
+          <label>
+            Breeding Notes
+            <textarea name="careBreeding"></textarea>
+          </label>
+
+          <label>
+            Special Notes
+            <textarea name="careNotes"></textarea>
+          </label>
+        </section>
+
+        <section class="form-section suggested-edit-section">
+          <h2>Edit Credit</h2>
+
+          <label>
+            Edit Summary / Reason
+            <span class="field-help">Optional, but helpful for verifiers. Example: “Updated humidity and added alternate common name.”</span>
+            <textarea name="notes" placeholder="Briefly explain what you changed and why."></textarea>
+          </label>
+
+          <label class="check-row">
+            <input name="editorPublicOptIn" type="checkbox">
+            List my name publicly as the edit contributor
+          </label>
+
+          <label>
+            Edit Contributor Display Name
+            <span class="field-help">Only shown publicly if you check the box above. Otherwise, it will show Anonymous Member.</span>
+            <input id="editorPublicName" name="editorPublicName" type="text">
+          </label>
+        </section>
+
+        <div class="button-row submit-button-row">
+          <button class="button primary submit-wide" type="submit">Submit Suggested Edit</button>
+          <a class="button" href="index.html">Cancel</a>
+        </div>
+      </form>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="site-shell">
+    <p>Isopedia is a community-built bioactive invertebrate database by Crested Critters.</p>
+  </div>
+</footer>
+</body>
+</html>
