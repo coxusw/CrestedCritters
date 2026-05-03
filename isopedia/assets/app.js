@@ -767,7 +767,10 @@
       return;
     }
 
-    const field = prompt("What are you disputing? Example: Origin, Care Guide, Tags, Species Name, Image, Other", "Other");
+    const field = prompt(
+      "What are you disputing? Use one of these for automatic correction: Genus, Species Name, Tags, Origin, Basic Description, Care Guide, Care Difficulty, Temperature, Humidity, Substrate Moisture, Ventilation, Favorite Foods, Protein Needs, Calcium Needs, Breeding Notes, Special Notes, Image, Other",
+      "Origin"
+    );
     if (field === null) return;
     const reason = prompt("Please explain why this information may be inaccurate.");
     if (!reason) return;
@@ -935,7 +938,10 @@
     }
 
     async function submitContest(item) {
-      const field = prompt("What are you contesting?", "Other");
+      const field = prompt(
+        "What are you contesting? Use one of these for automatic correction: Genus, Species Name, Tags, Origin, Basic Description, Care Guide, Care Difficulty, Temperature, Humidity, Substrate Moisture, Ventilation, Favorite Foods, Protein Needs, Calcium Needs, Breeding Notes, Special Notes, Image, Other",
+        "Origin"
+      );
       if (field === null) return;
       const reason = prompt("Why are you contesting this contribution?");
       if (!reason) return;
@@ -973,9 +979,9 @@
     }
 
     async function submitDisputeReview(item, decision) {
-      const actionText = decision === "accepted" ? "accept this suggested correction" : "reject / close this dispute";
+      const actionText = decision === "accepted" ? "accept and automatically apply this suggested correction" : "reject / close this dispute";
       if (!confirm(`Are you sure you want to ${actionText}?`)) return;
-      const resolutionNotes = prompt("Optional review note:", decision === "accepted" ? "Suggested correction accepted." : "Dispute rejected / closed.") || "";
+      const resolutionNotes = prompt("Optional review note:", decision === "accepted" ? "Suggested correction accepted and applied." : "Dispute rejected / closed.") || "";
 
       const result = await IsopediaAPI.apiCall("reviewDispute", {
         disputeId: item.disputeId,
@@ -1245,7 +1251,7 @@
             ${tags.length ? `<div class="tag-row">${tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
             ${own ? `<p class="verify-own-note">You submitted this dispute, so you cannot review it yourself.</p>` : ""}
             <div class="button-row">
-              <button id="modalAcceptDisputeBtn" class="button primary" ${own ? "disabled title='You cannot review your own dispute.'" : ""}>Accept / Verify Correction</button>
+              <button id="modalAcceptDisputeBtn" class="button primary" ${own ? "disabled title='You cannot review your own dispute.'" : ""}>Accept / Apply Correction</button>
               <button id="modalRejectDisputeBtn" class="button danger" ${own ? "disabled title='You cannot review your own dispute.'" : ""}>Reject / Close Dispute</button>
             </div>
           </div>
@@ -1258,6 +1264,7 @@
 
         <section class="verify-detail-section dispute-correction-box">
           <h3>Suggested correction / additional information</h3>
+          <p class="muted"><strong>Note:</strong> accepting this will automatically update the matching entry field when the field is editable.</p>
           <p>${escapeHtml(correction)}</p>
         </section>
 
