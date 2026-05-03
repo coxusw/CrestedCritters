@@ -1,1 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Add an Isopod | Isopedia</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="assets/style.css">
+<script defer src="assets/config.js"></script>
+<script defer src="assets/api.js"></script>
+<script defer src="assets/app.js"></script>
+</head>
+<body data-page="contribute">
+<header class="site-header">
+  <div class="site-shell nav">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">ISO</span>
+      <span>Isopedia</span>
+    </a>
+    <nav class="nav-links" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="contribute.html">Add an Isopod</a>
+      <a id="verifyLink" href="verify.html" hidden>Verify</a>
+      <a href="faq.html">FAQ</a>
+      <a href="donate.html">Donate</a>
+      <a id="accountLink" href="login.html">Account</a>
+      <a id="loginLink" href="login.html">Log In</a>
+    </nav>
+  </div>
+</header>
+
+<main class="site-shell main">
+  <section class="form-card">
+    <h1>Add an Isopod</h1>
+
+    <div class="notice info">
+      <strong>Contributor Notice:</strong> Please give accurate information only so we can provide the best knowledge we can for the hobby.
+      Submitted information may be reviewed, verified, disputed, corrected, or removed if it appears inaccurate.
+    </div>
+
+    <p id="formNotice" class="notice" hidden></p>
+
+    <form id="contributionForm" class="form-grid">
+      <label>
+        Genus
+        <select id="genus" name="genus" required></select>
+      </label>
+
+      <label>
+        Species Name
+        <input name="speciesName" type="text" required placeholder='Example: Cubaris sp. “Rubber Ducky”'>
+      </label>
+
+      <label>
+        Also Known As / Search Tags
+        <span class="field-help">Add other names this isopod may be known by. Separate each with a comma. Example: Rubber Duckies, Rubber Ducky, Duckies</span>
+        <input name="tags" type="text" placeholder="Rubber Duckies, Rubber Ducky, Duckies">
+      </label>
+
+      <label>
+        Origin
+        <input name="origin" type="text" required placeholder="Example: Thailand">
+      </label>
+
+      <label>
+        Basic Description
+        <textarea name="basicDescription" required placeholder="Describe appearance, behavior, size, and helpful hobby details."></textarea>
+      </label>
+
+      <label>
+        Care Guide
+        <textarea name="careGuide" required placeholder="Humidity, ventilation, substrate, food, calcium, difficulty, breeding notes, etc."></textarea>
+      </label>
+
+      <label>
+        Picture
+        <span class="field-help">Required. Isopods without pictures cannot be added. JPEG, PNG, WEBP, or GIF under 5MB.</span>
+        <input name="image" type="file" required accept="image/jpeg,image/png,image/webp,image/gif">
+      </label>
+
+      <label class="check-row">
+        <input name="contributorPublicOptIn" type="checkbox">
+        List my name publicly as the contributor
+      </label>
+
+      <label>
+        Contributor Display Name
+        <span class="field-help">Only shown publicly if you check the box above. Otherwise, it will show Anonymous Member.</span>
+        <input id="contributorPublicName" name="contributorPublicName" type="text">
+      </label>
+
+      <button class="button primary" type="submit">Submit for Verification</button>
+    </form>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="site-shell">
+    <p>Isopedia is a community-built isopod knowledge project by Crested Critters.</p>
+  </div>
+</footer>
+</body>
+</html>
 
