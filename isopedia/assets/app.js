@@ -685,12 +685,14 @@
     if (!user) return;
 
     const notice = $("#formNotice");
-    const grid = $("#pendingGrid");
+    const pendingGrid = $("#pendingGrid");
+    const disputeGrid = $("#disputeGrid");
     const verifierName = $("#verifierPublicName");
     const modal = $("#verifyModal");
     const modalContent = $("#verifyModalContent");
     const modalClose = $("#verifyModalClose");
     let pendingItems = [];
+    let disputeItems = [];
 
     if (verifierName && user.publicDisplayName) verifierName.value = user.publicDisplayName;
 
@@ -720,7 +722,7 @@
 
       alert("Dispute submitted.");
       closeModal();
-      await loadPending();
+      await loadAllReviewItems();
     }
 
     async function submitVerification(item) {
@@ -736,10 +738,26 @@
 
       alert("Contribution verified.");
       closeModal();
-      await loadPending();
+      await loadAllReviewItems();
     }
 
-    function wireModalActions(item) {
+    async function submitDisputeReview(item, decision) {
+      const actionText = decision === "accepted" ? "accept this suggested correction" : "reject / close this dispute";
+      if (!confirm(`Are you sure you want to ${actionText}?`)) return;
+      const resolutionNotes = prompt("Optional review note:", decision === "accepted" ? "Suggested correction accepted." : "Dispute rejected / closed.") || "";
+
+      const result = await IsopediaAPI.apiCall("reviewDispute", {
+        disputeId: item.disputeId,
+        decision,
+        resolutionNotes
+      });
+
+      alert(result.message || "Dispute reviewed.");
+      closeModal();
+      await loadAllReviewItems();
+    }
+
+    function wireContributionModalActions(item) {
       const verifyBtn = $("#modalVerifyBtn");
       const contestBtn = $("#modalContestBtn");
 
@@ -764,7 +782,32 @@
       }
     }
 
-    function openModal(contributionId) {
+    function wireDisputeModalActions(item) {
+      const acceptBtn = $("#modalAcceptDisputeBtn");
+      const rejectBtn = $("#modalRejectDisputeBtn");
+
+      if (acceptBtn) {
+        acceptBtn.addEventListener("click", async () => {
+          try {
+            await submitDisputeReview(item, "accepted");
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+      }
+
+      if (rejectBtn) {
+        rejectBtn.addEventListener("click", async () => {
+          try {
+            await submitDisputeReview(item, "rejected");
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+      }
+    }
+
+    function openContributionModal(contributionId) {
       const item = pendingItems.find((entry) => String(entry.contributionId) === String(contributionId));
       if (!item || !modal || !modalContent) return;
 
@@ -772,7 +815,18 @@
       modal.hidden = false;
       modal.classList.add("open");
       document.body.classList.add("modal-open");
-      wireModalActions(item);
+      wireContributionModalActions(item);
+    }
+
+    function openDisputeModal(disputeId) {
+      const item = disputeItems.find((entry) => String(entry.disputeId) === String(disputeId));
+      if (!item || !modal || !modalContent) return;
+
+      modalContent.innerHTML = disputeModalHtml(item, user);
+      modal.hidden = false;
+      modal.classList.add("open");
+      document.body.classList.add("modal-open");
+      wireDisputeModalActions(item);
     }
 
     if (modalClose) modalClose.addEventListener("click", closeModal);
@@ -785,28 +839,49 @@
       if (event.key === "Escape" && modal && modal.classList.contains("open")) closeModal();
     });
 
-    async function loadPending() {
-      setMessage(notice, "Loading pending contributions...", "info");
+    async function loadAllReviewItems() {
+      setMessage(notice, "Loading review items...", "info");
       try {
-        const data = await IsopediaAPI.apiCall("getPending", {});
-        pendingItems = data.contributions || [];
+        const [pendingData, disputeData] = await Promise.all([
+          IsopediaAPI.apiCall("getPending", {}),
+          IsopediaAPI.apiCall("getOpenDisputes", {})
+        ]);
+
+        pendingItems = pendingData.contributions || [];
+        disputeItems = disputeData.disputes || [];
         setMessage(notice, "", "");
 
         if (!pendingItems.length) {
-          grid.innerHTML = `
+          pendingGrid.innerHTML = `
             <div class="empty-state">
-              <h3>No pending contributions</h3>
-              <p>Nothing needs verification right now.</p>
+              <h3>No pending submissions</h3>
+              <p>No new isopod entries need verification right now.</p>
             </div>
           `;
-          return;
+        } else {
+          pendingGrid.innerHTML = pendingItems.map((item) => verifyListCardHtml(item, user)).join("");
         }
 
-        grid.innerHTML = pendingItems.map((item) => verifyListCardHtml(item, user)).join("");
+        if (!disputeItems.length) {
+          disputeGrid.innerHTML = `
+            <div class="empty-state">
+              <h3>No open disputes</h3>
+              <p>No contested information or suggested corrections need review right now.</p>
+            </div>
+          `;
+        } else {
+          disputeGrid.innerHTML = disputeItems.map((item) => disputeListCardHtml(item, user)).join("");
+        }
 
-        $all("[data-review-id]", grid).forEach((btn) => {
+        $all("[data-review-id]", pendingGrid).forEach((btn) => {
           btn.addEventListener("click", () => {
-            openModal(btn.getAttribute("data-review-id"));
+            openContributionModal(btn.getAttribute("data-review-id"));
+          });
+        });
+
+        $all("[data-dispute-id]", disputeGrid).forEach((btn) => {
+          btn.addEventListener("click", () => {
+            openDisputeModal(btn.getAttribute("data-dispute-id"));
           });
         });
       } catch (err) {
@@ -814,7 +889,7 @@
       }
     }
 
-    await loadPending();
+    await loadAllReviewItems();
   }
 
   function verifyListCardHtml(c, user) {
@@ -837,6 +912,35 @@
           ${own ? `<p class="verify-own-note">You submitted this entry, so you cannot verify it yourself.</p>` : ""}
           <div class="button-row">
             <button class="button primary" data-review-id="${escapeHtml(c.contributionId)}">Review Submission</button>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function disputeListCardHtml(d, user) {
+    const iso = d.isopod || {};
+    const own = String(d.disputedByUserId) === String(user.userId);
+    const img = displayImageUrl(iso);
+    const title = iso.speciesName || "Contested Entry";
+    const field = d.field || "Other";
+    const summary = d.suggestedCorrection || d.reason || "Open this dispute to review the details.";
+
+    return `
+      <article class="verify-card dispute-card">
+        <img class="iso-thumb" src="${escapeHtml(img)}" alt="${escapeHtml(title)}" ${imageFallbackAttr()}>
+        <div class="verify-card-body">
+          <div class="card-topline">
+            <span class="badge status-contested">Open Dispute</span>
+            <span class="genus-pill">${escapeHtml(iso.genus || "Other")}</span>
+          </div>
+          <h3>${escapeHtml(title)}</h3>
+          <p class="verify-meta"><strong>Field:</strong> ${escapeHtml(field)}</p>
+          <p class="verify-meta"><strong>Submitted by:</strong> ${escapeHtml(d.disputedByPublicName || "Anonymous Member")}</p>
+          <p class="verify-summary">${escapeHtml(summary)}</p>
+          ${own ? `<p class="verify-own-note">You submitted this dispute, so you cannot review it yourself.</p>` : ""}
+          <div class="button-row">
+            <button class="button warning" data-dispute-id="${escapeHtml(d.disputeId)}">Review Dispute</button>
           </div>
         </div>
       </article>
@@ -881,6 +985,56 @@
         <section class="verify-detail-section">
           <h3>Care Guide</h3>
           ${renderCareGuideHtml(p)}
+        </section>
+      </div>
+    `;
+  }
+
+  function disputeModalHtml(d, user) {
+    const iso = d.isopod || {};
+    const own = String(d.disputedByUserId) === String(user.userId);
+    const img = displayImageUrl(iso);
+    const title = iso.speciesName || "Contested Entry";
+    const tags = tagsArray(iso);
+    const correction = d.suggestedCorrection || "No suggested correction was provided.";
+
+    return `
+      <div class="verify-detail dispute-detail">
+        <div class="verify-detail-head">
+          <img class="verify-detail-image" src="${escapeHtml(img)}" alt="${escapeHtml(title)}" ${imageFallbackAttr()}>
+          <div class="verify-detail-copy">
+            <div class="card-topline">
+              <span class="badge status-contested">Open Dispute</span>
+              <span class="genus-pill">${escapeHtml(iso.genus || "Other")}</span>
+            </div>
+            <h2 id="verifyModalHeading">${escapeHtml(title)}</h2>
+            <p><strong>Contested field:</strong> ${escapeHtml(d.field || "Other")}</p>
+            <p><strong>Submitted by:</strong> ${escapeHtml(d.disputedByPublicName || "Anonymous Member")}</p>
+            <p><strong>Current entry status:</strong> ${escapeHtml(iso.status || "contested")}</p>
+            ${tags.length ? `<div class="tag-row">${tags.map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
+            ${own ? `<p class="verify-own-note">You submitted this dispute, so you cannot review it yourself.</p>` : ""}
+            <div class="button-row">
+              <button id="modalAcceptDisputeBtn" class="button primary" ${own ? "disabled title='You cannot review your own dispute.'" : ""}>Accept / Verify Correction</button>
+              <button id="modalRejectDisputeBtn" class="button danger" ${own ? "disabled title='You cannot review your own dispute.'" : ""}>Reject / Close Dispute</button>
+            </div>
+          </div>
+        </div>
+
+        <section class="verify-detail-section dispute-reason-box">
+          <h3>Why this was contested</h3>
+          <p>${escapeHtml(d.reason || "No reason provided.")}</p>
+        </section>
+
+        <section class="verify-detail-section dispute-correction-box">
+          <h3>Suggested correction / additional information</h3>
+          <p>${escapeHtml(correction)}</p>
+        </section>
+
+        <section class="verify-detail-section">
+          <h3>Current entry information</h3>
+          <p><strong>Origin:</strong> ${escapeHtml(iso.origin || "Not listed")}</p>
+          <p><strong>Description:</strong> ${escapeHtml(iso.basicDescription || "No description listed.")}</p>
+          <div class="dispute-current-care">${renderCareGuideHtml(iso)}</div>
         </section>
       </div>
     `;
