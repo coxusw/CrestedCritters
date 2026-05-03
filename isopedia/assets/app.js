@@ -190,6 +190,27 @@
     return "onerror=\"this.onerror=null;this.src='assets/placeholder.svg';\"";
   }
 
+
+  function profileUrl(userId) {
+    return "profile.html?id=" + encodeURIComponent(String(userId || ""));
+  }
+
+  function profileCreditHtml(userId, displayName, fallback) {
+    const name = String(displayName || fallback || "").trim();
+    if (!name) return escapeHtml(fallback || "Anonymous Member");
+    if (!userId || name === "Anonymous Member" || name === "Waiting for verification") {
+      return escapeHtml(name);
+    }
+    return `<a class="profile-credit-link" href="${profileUrl(userId)}">${escapeHtml(name)}</a>`;
+  }
+
+  function safeExternalLink(url, label) {
+    const clean = String(url || "").trim();
+    if (!clean) return "";
+    if (!/^https?:\/\//i.test(clean)) return "";
+    return `<a class="button" href="${escapeHtml(clean)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
+  }
+
   function apiConfigured() {
     const cfg = window.ISOPEDIA_CONFIG || {};
     return !!(cfg.API_URL && !cfg.API_URL.includes("PASTE_YOUR"));
@@ -521,8 +542,8 @@
       <section class="content-card two-col">
         <div>
           <h2>Credit</h2>
-          <p><strong>Contributor:</strong> ${escapeHtml(item.contributorName || "Anonymous Member")}</p>
-          <p><strong>Verified by:</strong> ${escapeHtml(item.verifierName || (String(item.status).toLowerCase() === "verified" ? "Anonymous Member" : "Waiting for verification"))}</p>
+          <p><strong>Contributor:</strong> ${profileCreditHtml(item.contributorUserId, item.contributorName, "Anonymous Member")}</p>
+          <p><strong>Verified by:</strong> ${profileCreditHtml(item.verifierUserId, item.verifierName || (String(item.status).toLowerCase() === "verified" ? "Anonymous Member" : "Waiting for verification"), "Waiting for verification")}</p>
         </div>
         <div>
           <h2>Community Review</h2>
@@ -1080,31 +1101,177 @@
     }
   }
 
+  async function initProfile() {
+    const root = $("#profileRoot");
+    if (!root) return;
+
+    const userId = getQueryParam("id") || getQueryParam("userId");
+    if (!userId) {
+      root.innerHTML = `
+        <div class="empty-state">
+          <h2>Profile not found</h2>
+          <p>No profile ID was provided.</p>
+          <a class="button primary" href="index.html">Back to Isopedia</a>
+        </div>
+      `;
+      return;
+    }
+
+    try {
+      const data = await IsopediaAPI.publicApi("getPublicProfile", { userId });
+      const profile = data.profile;
+
+      if (!profile) {
+        root.innerHTML = `
+          <div class="empty-state">
+            <h2>Profile not public</h2>
+            <p>This contributor has not made their profile public, or the account could not be found.</p>
+            <a class="button primary" href="index.html">Back to Isopedia</a>
+          </div>
+        `;
+        return;
+      }
+
+      document.title = profile.displayName + " | Isopedia Profile";
+      const links = [
+        safeExternalLink(profile.facebookUrl, "Facebook"),
+        safeExternalLink(profile.websiteUrl, "Website")
+      ].filter(Boolean).join("");
+
+      root.innerHTML = `
+        <section class="profile-hero content-card">
+          <div>
+            <span class="genus-pill">Isopedia Contributor</span>
+            <h1>${escapeHtml(profile.displayName || "Contributor")}</h1>
+            <p class="profile-bio">${escapeHtml(profile.bio || "This contributor has not added a bio yet.")}</p>
+            <div class="button-row profile-link-row">
+              ${links || `<span class="muted">No public links listed.</span>`}
+            </div>
+          </div>
+          <div class="profile-stats">
+            <article class="profile-stat"><strong>${Number(profile.contributorCount || 0)}</strong><span>Contributions</span></article>
+            <article class="profile-stat"><strong>${Number(profile.verifierCount || 0)}</strong><span>Verifications</span></article>
+          </div>
+        </section>
+
+        <section class="content-card">
+          <h2>Recent Credited Contributions</h2>
+          <div id="profileContributionGrid" class="grid"></div>
+        </section>
+      `;
+
+      const grid = $("#profileContributionGrid");
+      const contributions = profile.contributions || [];
+      if (!contributions.length) {
+        grid.innerHTML = `<p class="muted">No public credited contributions are listed yet.</p>`;
+      } else {
+        renderCards(contributions, grid);
+      }
+    } catch (err) {
+      root.innerHTML = `
+        <div class="empty-state">
+          <h2>Could not load profile</h2>
+          <p>${escapeHtml(err.message)}</p>
+        </div>
+      `;
+    }
+  }
+
   async function initAccount() {
     const user = await requireLoggedIn();
     if (!user) return;
 
     const root = $("#accountRoot");
     root.innerHTML = `
-      <section class="content-card">
+      <section class="content-card account-profile-card">
         <h1>Account</h1>
         <p><strong>Username:</strong> ${escapeHtml(user.username)}</p>
         <p><strong>Role:</strong> ${escapeHtml(user.role)}</p>
-        <p><strong>Public display name:</strong> ${escapeHtml(user.publicDisplayName || "Not set")}</p>
-        <p><strong>Public credit default:</strong> ${escapeHtml(user.publicCreditOptIn || "no")}</p>
+
         <div class="button-row">
           <a class="button primary" href="contribute.html">Add an Isopod</a>
           <a class="button" href="verify.html">Verify Contributions</a>
+          <a class="button" href="${profileUrl(user.userId)}">View Public Profile</a>
           ${user.role === "admin" ? `<button class="button warning" id="publishBtn">Publish Public JSON</button>` : ""}
           <button class="button" id="logoutBtn">Log Out</button>
         </div>
-        <p class="muted">Account editing can be added in the next version. For now, public credit choices are asked during contribution and verification.</p>
+      </section>
+
+      <section class="form-card wide-form account-profile-card">
+        <h2>Contributor Profile</h2>
+        <p class="field-help">
+          This is the profile people can view when they click your credited contributor or verifier name.
+          Turn off public profile if you do not want your profile page visible.
+        </p>
+
+        <form id="profileForm" class="form-grid">
+          <label class="check-row">
+            <input id="profilePublic" type="checkbox" ${String(user.profilePublic || "yes").toLowerCase() === "yes" ? "checked" : ""}>
+            Make my contributor profile public
+          </label>
+
+          <label class="check-row">
+            <input id="publicCreditOptIn" type="checkbox" ${String(user.publicCreditOptIn || "yes").toLowerCase() === "yes" ? "checked" : ""}>
+            List my display name for future credits by default
+          </label>
+
+          <label>
+            Public Display Name
+            <input id="publicDisplayName" type="text" maxlength="80" value="${escapeHtml(user.publicDisplayName || user.username || "")}" placeholder="Name shown on credits and profile">
+          </label>
+
+          <label>
+            Short Bio
+            <textarea id="profileBio" maxlength="600" placeholder="Tell other keepers a little about yourself, your collection, or your business.">${escapeHtml(user.profileBio || "")}</textarea>
+            <span class="field-help">Keep this short. Suggested max: 2–4 sentences.</span>
+          </label>
+
+          <label>
+            Facebook Link
+            <input id="facebookUrl" type="url" value="${escapeHtml(user.facebookUrl || "")}" placeholder="https://www.facebook.com/your-page-or-profile">
+          </label>
+
+          <label>
+            Website Link
+            <input id="websiteUrl" type="url" value="${escapeHtml(user.websiteUrl || "")}" placeholder="https://yourwebsite.com">
+          </label>
+
+          <div class="button-row">
+            <button class="button primary" type="submit">Save Profile</button>
+          </div>
+        </form>
       </section>
     `;
 
     $("#logoutBtn").addEventListener("click", async () => {
       await IsopediaAPI.logout();
       window.location.href = "index.html";
+    });
+
+    const profileForm = $("#profileForm");
+    profileForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const saveBtn = profileForm.querySelector('button[type="submit"]');
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
+      try {
+        const data = await IsopediaAPI.apiCall("updateProfile", {
+          profilePublic: $("#profilePublic").checked,
+          publicCreditOptIn: $("#publicCreditOptIn").checked,
+          publicDisplayName: $("#publicDisplayName").value,
+          profileBio: $("#profileBio").value,
+          facebookUrl: $("#facebookUrl").value,
+          websiteUrl: $("#websiteUrl").value
+        });
+        IsopediaAPI.setUser(data.user);
+        alert("Profile saved.");
+        await initAccount();
+      } catch (err) {
+        alert(err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Save Profile";
+      }
     });
 
     const publishBtn = $("#publishBtn");
@@ -1144,6 +1311,7 @@
     if (current === "faq") await initFaq();
     if (current === "donate") await initDonate();
     if (current === "account") await initAccount();
+    if (current === "profile") await initProfile();
   }
 
   document.addEventListener("DOMContentLoaded", main);
