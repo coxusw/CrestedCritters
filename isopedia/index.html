@@ -5,9 +5,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/mobile-filters.css">
 <script defer src="assets/config.js"></script>
 <script defer src="assets/api.js"></script>
 <script defer src="assets/app.js"></script>
+<script defer src="assets/mobile-filters.js"></script>
 </head>
 <body data-page="home">
 <header class="site-header">
@@ -65,6 +67,25 @@
       <input id="searchInput" class="search-input" type="search" placeholder="Search Rubber Ducky, Florida Orange Springtail, millipede, beetle..." autocomplete="off">
       <a class="button primary" href="contribute.html">Add an Entry</a>
     </div>
+
+    <!-- Mobile-only compact filters. Desktop still uses the pill buttons below. -->
+    <div class="mobile-filter-panel" aria-label="Mobile database filters">
+      <div class="mobile-filter-grid">
+        <label class="mobile-filter-field" for="mobileOrganismSelect">
+          <span>Category</span>
+          <select id="mobileOrganismSelect" aria-label="Filter by category">
+            <option value="All">All</option>
+          </select>
+        </label>
+        <label class="mobile-filter-field" for="mobileGroupSelect">
+          <span>Group / Genus</span>
+          <select id="mobileGroupSelect" aria-label="Filter by group or genus">
+            <option value="All">All</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
     <div id="organismButtons" class="genus-bar" aria-label="Browse by organism type"></div>
     <div id="genusButtons" class="genus-bar secondary-filter-bar" aria-label="Browse by group"></div>
   </section>
