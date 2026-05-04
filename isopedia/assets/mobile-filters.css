@@ -1,211 +1,320 @@
 /* =========================================================
-   Isopedia Mobile Filter Cleanup
+   Isopedia Filter Cleanup v1.1
    Save as: isopedia/assets/mobile-filters.css
 
    Purpose:
-   - Keep the existing pill buttons on desktop.
-   - Replace the giant mobile wall of filter buttons with two dropdowns.
+   - Use clean dropdown filters on desktop AND mobile.
+   - Hide the oversized filter button/chip rows on every screen size.
+   - Compact the Project Stats hero area.
+   - Shrink entry card images on mobile into thumbnails.
    ========================================================= */
 
-.mobile-filter-panel {
-  display: none;
-}
+/* ---------- Compact home hero / project stats ---------- */
 
-@media (max-width: 768px) {
-  .search-panel {
-    padding-bottom: 16px;
-  }
-
-  .mobile-filter-panel {
-    display: block;
-    margin-top: 14px;
-    padding: 14px;
-    border-radius: 22px;
-    background: rgba(255, 255, 255, 0.10);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
-    backdrop-filter: blur(10px);
-  }
-
-  .mobile-filter-grid {
-    display: grid;
-    gap: 12px;
-  }
-
-  .mobile-filter-field {
-    display: grid;
-    gap: 7px;
-  }
-
-  .mobile-filter-field span {
-    color: rgba(255, 255, 255, 0.92);
-    font-size: 0.88rem;
-    font-weight: 900;
-    letter-spacing: 0.01em;
-  }
-
-  .mobile-filter-field select {
-    width: 100%;
-    min-height: 50px;
-    padding: 11px 42px 11px 14px;
-    border-radius: 16px;
-    border: 1px solid rgba(6, 59, 34, 0.18);
-    background:
-      linear-gradient(45deg, transparent 50%, #0b4b2a 50%) calc(100% - 22px) 21px / 7px 7px no-repeat,
-      linear-gradient(135deg, #ffffff, #edf8ef);
-    color: #07381f;
-    font-weight: 900;
-    line-height: 1.2;
-    appearance: none;
-    -webkit-appearance: none;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72), 0 4px 12px rgba(0, 0, 0, 0.12);
-  }
-
-  .mobile-filter-field select:focus {
-    outline: none;
-    border-color: rgba(213, 169, 79, 0.82);
-    box-shadow: 0 0 0 4px rgba(213, 169, 79, 0.24);
-  }
-
-  /* Hide the large chip/filter walls on mobile only. */
-  #organismButtons,
-  #genusButtons {
-    display: none !important;
-  }
-
-  /* Tighten the search/add row on mobile. */
-  .search-row {
-    gap: 10px;
-  }
-
-  .search-row .button {
-    white-space: nowrap;
-  }
-}
-
-@media (max-width: 520px) {
-  .search-row {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  .search-row .button {
-    width: 100%;
-  }
-}
-
-@media (min-width: 769px) {
-  #organismButtons,
-  #genusButtons {
-    display: flex;
-  }
-}
-
-/* =========================================================
-   Desktop + mobile cleanup:
-   compact Project Stats and pull search upward
-   ========================================================= */
-
-/* Tighten the main hero/top section */
 .hero {
-  padding-top: 26px !important;
-  padding-bottom: 26px !important;
-  margin-bottom: 14px !important;
+  padding-top: clamp(18px, 2.4vw, 30px) !important;
+  padding-bottom: clamp(18px, 2.4vw, 30px) !important;
+  gap: 18px !important;
+  margin-bottom: 12px !important;
 }
 
-/* Reduce the big empty space before the search area */
-.search-card {
-  margin-top: 10px !important;
+.hero-card {
+  padding: 18px !important;
+  border-radius: 24px !important;
 }
 
-/* Compact Project Stats wrapper */
+.hero-card h2 {
+  margin-bottom: 6px !important;
+}
+
+.hero-card p {
+  margin-bottom: 10px !important;
+  line-height: 1.35 !important;
+}
+
+.stat-row,
 .stats-grid,
 .stat-grid {
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  gap: 10px !important;
-  margin: 12px 0 0 !important;
+  gap: 8px !important;
+  margin: 10px 0 0 !important;
 }
 
-/* Shrink individual stat boxes */
+.stat-row .stat,
 .stat-card,
 .stat {
-  padding: 12px 14px !important;
+  padding: 10px 12px !important;
   border-radius: 16px !important;
-  min-height: unset !important;
+  min-height: 0 !important;
   height: auto !important;
 }
 
-/* Shrink numbers */
+.stat-row .stat strong,
 .stat-number,
 .stat-value,
 .stat strong {
-  font-size: 1.65rem !important;
+  display: block !important;
+  margin: 0 0 3px !important;
+  font-size: clamp(1.35rem, 1.9vw, 1.85rem) !important;
   line-height: 1 !important;
-  margin: 0 0 4px !important;
 }
 
-/* Shrink labels */
+.stat-row .stat span,
 .stat-label,
 .stat-card span,
 .stat span {
-  font-size: 0.82rem !important;
+  display: block !important;
+  font-size: 0.76rem !important;
   line-height: 1.15 !important;
 }
 
-/* Remove extra text spacing inside stats */
-.stat-card p,
-.stat p {
-  margin: 0 !important;
+/* Pull the search/filter area closer to the top section. */
+.search-panel,
+.search-card {
+  margin-top: 8px !important;
 }
 
-/* Make the right-side Project Stats card less huge on desktop */
-@media (min-width: 769px) {
-  .hero .content-card,
-  .hero .hero-card,
-  .hero .stats-card,
-  .hero .project-stats,
-  .hero aside {
-    padding: 20px !important;
-  }
-
-  .hero {
-    align-items: center !important;
-  }
+.search-panel {
+  padding-top: 10px !important;
 }
 
-/* Mobile still stays compact */
+/* ---------- Dropdown filters on ALL screen sizes ---------- */
+
+.mobile-filter-panel {
+  display: block !important;
+  margin: 12px 0 0 !important;
+  padding: 12px !important;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14) !important;
+  backdrop-filter: blur(10px);
+}
+
+.mobile-filter-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+}
+
+.mobile-filter-field {
+  display: grid !important;
+  gap: 7px !important;
+}
+
+.mobile-filter-field span {
+  color: rgba(255, 255, 255, 0.92) !important;
+  font-size: 0.86rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.mobile-filter-field select {
+  width: 100% !important;
+  min-height: 46px !important;
+  padding: 10px 42px 10px 14px !important;
+  border-radius: 15px !important;
+  border: 1px solid rgba(6, 59, 34, 0.18) !important;
+  background:
+    linear-gradient(45deg, transparent 50%, #0b4b2a 50%) calc(100% - 22px) 19px / 7px 7px no-repeat,
+    linear-gradient(135deg, #ffffff, #edf8ef) !important;
+  color: #07381f !important;
+  font-weight: 900 !important;
+  line-height: 1.2 !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72), 0 4px 12px rgba(0, 0, 0, 0.10) !important;
+}
+
+.mobile-filter-field select:focus {
+  outline: none !important;
+  border-color: rgba(213, 169, 79, 0.82) !important;
+  box-shadow: 0 0 0 4px rgba(213, 169, 79, 0.24) !important;
+}
+
+/* Hide the oversized pill/chip rows on desktop and mobile. */
+#organismButtons,
+#genusButtons {
+  display: none !important;
+}
+
+/* Keep search input + Add Entry button tidy. */
+.search-row {
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+.search-row .button {
+  white-space: nowrap !important;
+}
+
+/* ---------- Mobile-specific cleanup ---------- */
+
 @media (max-width: 768px) {
   .hero {
-    padding: 18px !important;
+    padding: 16px !important;
+    gap: 14px !important;
     margin-bottom: 10px !important;
   }
 
+  .hero-card {
+    padding: 15px !important;
+    border-radius: 20px !important;
+  }
+
+  .stat-row,
   .stats-grid,
   .stat-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     gap: 7px !important;
   }
 
+  .stat-row .stat,
   .stat-card,
   .stat {
-    padding: 9px 8px !important;
+    padding: 8px 7px !important;
     border-radius: 14px !important;
   }
 
+  .stat-row .stat strong,
   .stat-number,
   .stat-value,
   .stat strong {
-    font-size: 1.35rem !important;
+    font-size: 1.28rem !important;
   }
 
+  .stat-row .stat span,
   .stat-label,
   .stat-card span,
   .stat span {
-    font-size: 0.7rem !important;
+    font-size: 0.68rem !important;
   }
 
-  .search-card {
-    margin-top: 8px !important;
+  .mobile-filter-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .mobile-filter-panel {
+    margin-top: 10px !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+  }
+
+  .search-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .search-row .button {
+    width: 100% !important;
+  }
+
+  /* Turn entry cards into compact list cards with thumbnail images. */
+  #resultGrid,
+  #recentGrid {
+    gap: 12px !important;
+  }
+
+  #resultGrid .species-card,
+  #resultGrid .isopod-card,
+  #resultGrid .entry-card,
+  #resultGrid .result-card,
+  #recentGrid .species-card,
+  #recentGrid .isopod-card,
+  #recentGrid .entry-card,
+  #recentGrid .result-card {
+    display: grid !important;
+    grid-template-columns: 92px minmax(0, 1fr) !important;
+    min-height: 92px !important;
+    border-radius: 18px !important;
+    overflow: hidden !important;
+  }
+
+  #resultGrid .card-image,
+  #resultGrid .entry-image,
+  #resultGrid .isopod-image,
+  #resultGrid .species-card img,
+  #resultGrid .result-card img,
+  #recentGrid .card-image,
+  #recentGrid .entry-image,
+  #recentGrid .isopod-image,
+  #recentGrid .species-card img,
+  #recentGrid .result-card img {
+    width: 92px !important;
+    height: 92px !important;
+    min-width: 92px !important;
+    max-width: 92px !important;
+    aspect-ratio: 1 / 1 !important;
+    object-fit: cover !important;
+    border-radius: 0 !important;
+  }
+
+  #resultGrid .card-body,
+  #resultGrid .entry-card-body,
+  #resultGrid .isopod-card-body,
+  #recentGrid .card-body,
+  #recentGrid .entry-card-body,
+  #recentGrid .isopod-card-body {
+    padding: 10px 12px !important;
+    gap: 5px !important;
+    align-content: center !important;
+  }
+
+  #resultGrid .card-body h3,
+  #resultGrid .entry-card-body h3,
+  #resultGrid .isopod-card-body h3,
+  #recentGrid .card-body h3,
+  #recentGrid .entry-card-body h3,
+  #recentGrid .isopod-card-body h3 {
+    font-size: 1rem !important;
+    line-height: 1.15 !important;
+  }
+
+  #resultGrid .card-meta,
+  #resultGrid .entry-meta,
+  #resultGrid .isopod-meta,
+  #recentGrid .card-meta,
+  #recentGrid .entry-meta,
+  #recentGrid .isopod-meta {
+    font-size: 0.82rem !important;
+    line-height: 1.25 !important;
+  }
+
+  #resultGrid .card-footer,
+  #recentGrid .card-footer {
+    grid-column: 2 !important;
+    padding: 0 12px 10px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  #resultGrid .species-card,
+  #resultGrid .isopod-card,
+  #resultGrid .entry-card,
+  #resultGrid .result-card,
+  #recentGrid .species-card,
+  #recentGrid .isopod-card,
+  #recentGrid .entry-card,
+  #recentGrid .result-card {
+    grid-template-columns: 78px minmax(0, 1fr) !important;
+    min-height: 78px !important;
+  }
+
+  #resultGrid .card-image,
+  #resultGrid .entry-image,
+  #resultGrid .isopod-image,
+  #resultGrid .species-card img,
+  #resultGrid .result-card img,
+  #recentGrid .card-image,
+  #recentGrid .entry-image,
+  #recentGrid .isopod-image,
+  #recentGrid .species-card img,
+  #recentGrid .result-card img {
+    width: 78px !important;
+    height: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
   }
 }
