@@ -1,0 +1,102 @@
+/* =========================================================
+   Isopedia Mobile Filter Cleanup
+   Save as: isopedia/assets/mobile-filters.css
+
+   Purpose:
+   - Keep the existing pill buttons on desktop.
+   - Replace the giant mobile wall of filter buttons with two dropdowns.
+   ========================================================= */
+
+.mobile-filter-panel {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .search-panel {
+    padding-bottom: 16px;
+  }
+
+  .mobile-filter-panel {
+    display: block;
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+    backdrop-filter: blur(10px);
+  }
+
+  .mobile-filter-grid {
+    display: grid;
+    gap: 12px;
+  }
+
+  .mobile-filter-field {
+    display: grid;
+    gap: 7px;
+  }
+
+  .mobile-filter-field span {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.88rem;
+    font-weight: 900;
+    letter-spacing: 0.01em;
+  }
+
+  .mobile-filter-field select {
+    width: 100%;
+    min-height: 50px;
+    padding: 11px 42px 11px 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(6, 59, 34, 0.18);
+    background:
+      linear-gradient(45deg, transparent 50%, #0b4b2a 50%) calc(100% - 22px) 21px / 7px 7px no-repeat,
+      linear-gradient(135deg, #ffffff, #edf8ef);
+    color: #07381f;
+    font-weight: 900;
+    line-height: 1.2;
+    appearance: none;
+    -webkit-appearance: none;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72), 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .mobile-filter-field select:focus {
+    outline: none;
+    border-color: rgba(213, 169, 79, 0.82);
+    box-shadow: 0 0 0 4px rgba(213, 169, 79, 0.24);
+  }
+
+  /* Hide the large chip/filter walls on mobile only. */
+  #organismButtons,
+  #genusButtons {
+    display: none !important;
+  }
+
+  /* Tighten the search/add row on mobile. */
+  .search-row {
+    gap: 10px;
+  }
+
+  .search-row .button {
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 520px) {
+  .search-row {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .search-row .button {
+    width: 100%;
+  }
+}
+
+@media (min-width: 769px) {
+  #organismButtons,
+  #genusButtons {
+    display: flex;
+  }
+}
