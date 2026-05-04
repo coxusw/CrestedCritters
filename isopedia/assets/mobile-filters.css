@@ -100,3 +100,112 @@
     display: flex;
   }
 }
+
+/* =========================================================
+   Desktop + mobile cleanup:
+   compact Project Stats and pull search upward
+   ========================================================= */
+
+/* Tighten the main hero/top section */
+.hero {
+  padding-top: 26px !important;
+  padding-bottom: 26px !important;
+  margin-bottom: 14px !important;
+}
+
+/* Reduce the big empty space before the search area */
+.search-card {
+  margin-top: 10px !important;
+}
+
+/* Compact Project Stats wrapper */
+.stats-grid,
+.stat-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 10px !important;
+  margin: 12px 0 0 !important;
+}
+
+/* Shrink individual stat boxes */
+.stat-card,
+.stat {
+  padding: 12px 14px !important;
+  border-radius: 16px !important;
+  min-height: unset !important;
+  height: auto !important;
+}
+
+/* Shrink numbers */
+.stat-number,
+.stat-value,
+.stat strong {
+  font-size: 1.65rem !important;
+  line-height: 1 !important;
+  margin: 0 0 4px !important;
+}
+
+/* Shrink labels */
+.stat-label,
+.stat-card span,
+.stat span {
+  font-size: 0.82rem !important;
+  line-height: 1.15 !important;
+}
+
+/* Remove extra text spacing inside stats */
+.stat-card p,
+.stat p {
+  margin: 0 !important;
+}
+
+/* Make the right-side Project Stats card less huge on desktop */
+@media (min-width: 769px) {
+  .hero .content-card,
+  .hero .hero-card,
+  .hero .stats-card,
+  .hero .project-stats,
+  .hero aside {
+    padding: 20px !important;
+  }
+
+  .hero {
+    align-items: center !important;
+  }
+}
+
+/* Mobile still stays compact */
+@media (max-width: 768px) {
+  .hero {
+    padding: 18px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .stats-grid,
+  .stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+  }
+
+  .stat-card,
+  .stat {
+    padding: 9px 8px !important;
+    border-radius: 14px !important;
+  }
+
+  .stat-number,
+  .stat-value,
+  .stat strong {
+    font-size: 1.35rem !important;
+  }
+
+  .stat-label,
+  .stat-card span,
+  .stat span {
+    font-size: 0.7rem !important;
+  }
+
+  .search-card {
+    margin-top: 8px !important;
+  }
+}
