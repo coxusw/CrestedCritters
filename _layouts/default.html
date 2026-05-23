@@ -26,7 +26,9 @@
       </a>
 
       <nav class="nav-links">
-        <a href="{{ '/' | relative_url }}">Home</a>
+        {% unless page.url == "/" %}
+          <a href="{{ '/' | relative_url }}">Home</a>
+        {% endunless %}
         <a href="https://shop.crestedcritters.com">Shop</a>
         <a href="{{ '/about/' | relative_url }}">About</a>
         <a href="{{ '/contact/' | relative_url }}">Contact</a>
