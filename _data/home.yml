@@ -6,22 +6,22 @@ blocks:
     image: /assets/images/logo.png
     buttons:
       - label: Shop Now
-        link: /shop/
+        link: https://shop.crestedcritters.com
         style: primary
       - label: 3D Printed
-        link: /shop/#3d-printed-accessories
+        link: https://shop.crestedcritters.com/#3d-printed-accessories
         style: ghost
       - style: ghost
-        link: /shop/#merch
+        link: https://shop.crestedcritters.com/#merch
         label: Merch
       - label: Botanicals
-        link: /shop/#botanicals
+        link: https://shop.crestedcritters.com/#botanicals
         style: ghost
       - label: Isopods
-        link: /shop/#isopods
+        link: https://shop.crestedcritters.com/#isopods
         style: ghost
       - style: ghost
-        link: /shop/#springtail
+        link: https://shop.crestedcritters.com/#springtail
         label: Springtail
   - type: categories
     title: Shop by Category
@@ -29,18 +29,18 @@ blocks:
     items:
       - title: Isopods
         description: Hardy cleanup crews and cultures for bioactive builds.
-        link: /shop/#isopods
+        link: https://shop.crestedcritters.com/#isopods
         image: /assets/images/dairy-cow-isopods.jpg
       - title: Botanicals
         description: Leaf litter, seed pods, and natural décor for enrichment.
-        link: /shop/#botanicals
+        link: https://shop.crestedcritters.com/#botanicals
         image: /assets/images/leaf-3.png
       - title: 3D Printed Accessories
         description: Functional prints made for reptile & invert setups.
-        link: /shop/#3d-printed-accessories
+        link: https://shop.crestedcritters.com/#3d-printed-accessories
         image: /assets/images/3d-prints.jpeg
       - title: Merch
-        link: /shop/#merch
+        link: https://shop.crestedcritters.com/#merch
         description: Get your Swag and handmade crocheted Isopods!
         image: /assets/images/thechalkinwildchild-logo.jpeg
   - type: testimonials

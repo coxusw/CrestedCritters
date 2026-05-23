@@ -62,7 +62,7 @@ title: Home
 
       {%- assign product_categories = site.products | map: "category" | uniq | sort -%}
       {%- assign meta_list = site.data.category_meta.categories | default: empty | sort: "order" -%}
-      {%- assign shop_url = '/shop/' | relative_url -%}
+      {%- assign shop_url = 'https://shop.crestedcritters.com' -%}
 
       <div class="card-grid">
 
