@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /isopedia/
+Disallow: /Randomizer/
+
+Sitemap: https://crestedcritters.com/sitemap.xml
