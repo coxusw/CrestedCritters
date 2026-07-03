@@ -31,3 +31,11 @@ If you believe there is an issue with your purchase, we encourage you to **reach
 What is Crested Critters’ overall policy philosophy?
 
 Our goal is to provide healthy cultures, high-quality supplies, and an honest buying experience. We take pride in our products and our reputation within the hobby community. If a problem arises, we are committed to working with you in good faith to find an appropriate solution.
+
+### Does Crested Critters follow all applicable laws?
+
+Yes, Crested Critters follows all Federal and State laws, and has obtained and keeps all applicable permits needed. Crested Critters strives to stay up to date with all permits and laws and regulations. We will include the USDA Awareness letter in all live shipments. If we do not currently have an active PPQ-526 permit to ship live to a certain state it will not allow the order to go through to that address.
+
+<p>
+  <a class="button" href="/usda-awareness-letter.pdf">View USDA Awareness Letter</a>
+</p>
