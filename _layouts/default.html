@@ -8,19 +8,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="{{ meta_description | escape }}">
   <link rel="canonical" href="{{ canonical_url }}">
-  <meta property="og:title" content="{{ page.title }} | Crested Critters">
+  <meta property="og:title" content="{% if page.url == '/' %}Crested Critters{% else %}{{ page.title }} | Crested Critters{% endif %}">
   <meta property="og:description" content="{{ meta_description | escape }}">
   <meta property="og:url" content="{{ canonical_url }}">
   <meta property="og:site_name" content="Crested Critters">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="https://crestedcritters.com/assets/images/logo.png?v=20261001">
-  <meta property="og:image:secure_url" content="https://crestedcritters.com/assets/images/logo.png?v=20261001">
-  <meta property="og:image:type" content="image/png">
+  <meta property="og:image" content="https://crestedcritters.com/assets/images/crested-critters-social-20261001.jpg">
+  <meta property="og:image:secure_url" content="https://crestedcritters.com/assets/images/crested-critters-social-20261001.jpg">
+  <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:alt" content="Crested Critters">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{ page.title }} | Crested Critters">
+  <meta name="twitter:title" content="{% if page.url == '/' %}Crested Critters{% else %}{{ page.title }} | Crested Critters{% endif %}">
   <meta name="twitter:description" content="{{ meta_description | escape }}">
-  <meta name="twitter:image" content="https://crestedcritters.com/assets/images/logo.png?v=20261001">
+  <meta name="twitter:image" content="https://crestedcritters.com/assets/images/crested-critters-social-20261001.jpg">
   <meta name="twitter:image:alt" content="Crested Critters">
 
   <link rel="icon" type="image/x-icon" href="{{ '/favicon.ico' | relative_url }}">
