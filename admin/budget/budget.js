@@ -172,9 +172,12 @@
     let narrative;
 
     if (currentExtra < 0) {
-      const affordablePerPerson = Math.max(0, Math.floor(((income - base) / 2) / 25) * 25);
+      const baseExtra = income - base;
+      const affordablePerPerson = Math.max(0, Math.floor((baseExtra / 2) / 25) * 25);
       suggested = Math.min(currentEach, affordablePerPerson);
-      narrative = `This paycheck is ${money(Math.abs(currentExtra))} short if Chris and Jen each keep ${money(currentEach)} discretionary spending. The suggested allowance is ${money(suggested)} each so the household plan does not start the period underwater.`;
+      narrative = baseExtra < 0
+        ? `This paycheck is ${money(Math.abs(currentExtra))} short with the current discretionary allowance. Even reducing Chris and Jen to $0 each would still leave the core plan ${money(Math.abs(baseExtra))} short, so at least one other planned expense also needs to move, shrink, or be deferred.`
+        : `This paycheck is ${money(Math.abs(currentExtra))} short if Chris and Jen each keep ${money(currentEach)} discretionary spending. The suggested allowance is ${money(suggested)} each, which brings the household plan back within this paycheck.`;
     } else if (currentExtra < 250) {
       narrative = `The plan technically fits, but only ${money(currentExtra)} remains after bills and ${money(currentEach)} each in discretionary spending. Keeping the allowance is possible, but lowering it would create a safer cushion.`;
       suggested = Math.max(0, currentEach - 50);
