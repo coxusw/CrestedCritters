@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="robots" content="noindex,nofollow,noarchive" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Budget Lab</title>
+  <link rel="stylesheet" href="./budget.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">Crested Critters Admin • Prototype</div>
+        <h1>Household Budget</h1>
+      </div>
+      <span class="sample-pill">SAMPLE DATA</span>
+    </header>
+
+    <main>
+      <section class="view active" data-view="home">
+        <div class="hero-card">
+          <div class="hero-top">
+            <div>
+              <div class="muted">Next paycheck</div>
+              <div class="hero-date" id="nextPayDate">Oct 9, 2026</div>
+            </div>
+            <button class="icon-btn" data-go="add" data-mode="paycheck">＋ Paycheck</button>
+          </div>
+          <div class="money-grid">
+            <div><span>Expected</span><strong id="expectedPay">$5,500</strong></div>
+            <div><span>Planned</span><strong id="plannedTotal">$4,760</strong></div>
+            <div class="accent"><span>Available extra</span><strong id="availableExtra">$340</strong></div>
+          </div>
+          <div class="progress-row">
+            <span>Includes $200 each for Chris + Jen</span>
+            <span id="planHealth">On plan</span>
+          </div>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Personal spending</h2>
+            <p>Same allowance for both. Any change needs both approvals.</p>
+          </div>
+        </div>
+        <div class="two-up">
+          <article class="person-card">
+            <div class="avatar">C</div>
+            <div><span>Chris</span><strong id="chrisDisc">$200</strong><small>this pay period</small></div>
+          </article>
+          <article class="person-card">
+            <div class="avatar">J</div>
+            <div><span>Jen</span><strong id="jenDisc">$200</strong><small>this pay period</small></div>
+          </article>
+        </div>
+
+        <button class="review-preview card-button" data-go="reviews">
+          <div>
+            <div class="row-title">Budget review</div>
+            <div class="review-copy" id="homeReviewCopy">Enter the paycheck to create this period's review.</div>
+          </div>
+          <span class="badge" id="reviewBadge">1</span>
+        </button>
+
+        <div class="section-head">
+          <div>
+            <h2>Coming up</h2>
+            <p>Only the things you need to care about next.</p>
+          </div>
+          <button class="text-btn" data-go="plan">See all</button>
+        </div>
+        <div id="upcomingMini" class="list-card"></div>
+      </section>
+
+      <section class="view" data-view="plan">
+        <div class="section-head sticky-head">
+          <div><h2>Plan</h2><p>Upcoming items assigned to this paycheck.</p></div>
+        </div>
+        <div class="summary-strip">
+          <div><span>Paycheck</span><strong id="planPay">$5,500</strong></div>
+          <div><span>Expenses</span><strong id="planExpenses">$4,360</strong></div>
+          <div><span>Discretionary</span><strong id="planDisc">$400</strong></div>
+        </div>
+        <div id="expenseList" class="expense-list"></div>
+      </section>
+
+      <section class="view" data-view="add">
+        <div class="section-head sticky-head">
+          <div><h2>Add</h2><p>Keep it simple. More options only when you need them.</p></div>
+        </div>
+
+        <div class="segmented">
+          <button class="segment active" data-addmode="expense">Expense</button>
+          <button class="segment" data-addmode="recurring">Recurring</button>
+          <button class="segment" data-addmode="paycheck">Paycheck</button>
+        </div>
+
+        <form id="expenseForm" class="form-card add-panel active" data-panel="expense">
+          <label>What was it?<input name="name" placeholder="Soccer food, school fee, Amazon..." required /></label>
+          <label>Amount<div class="money-input"><span>$</span><input name="amount" inputmode="decimal" placeholder="0.00" required /></div></label>
+          <div class="form-grid">
+            <label>Date<input name="date" type="date" required /></label>
+            <label>Category
+              <select name="category">
+                <option>Household</option><option>Kids</option><option>Soccer</option><option>Fuel</option>
+                <option>Groceries</option><option>Utilities</option><option>Personal</option><option>Other</option>
+              </select>
+            </label>
+          </div>
+          <label>Apply to paycheck
+            <select name="paycheck"><option>Oct 9, 2026</option><option>Oct 23, 2026</option></select>
+          </label>
+          <button class="primary-btn" type="submit">Add expense</button>
+        </form>
+
+        <form id="recurringForm" class="form-card add-panel" data-panel="recurring">
+          <label>Name<input name="name" placeholder="Disney+, gym, insurance..." required /></label>
+          <label>Amount<div class="money-input"><span>$</span><input name="amount" inputmode="decimal" placeholder="0.00" required /></div></label>
+          <div class="form-grid">
+            <label>Frequency
+              <select name="frequency"><option>Monthly</option><option>Every 2 weeks</option><option>Weekly</option><option>Annual</option></select>
+            </label>
+            <label>Next due<input name="date" type="date" required /></label>
+          </div>
+          <label>Category
+            <select name="category"><option>Subscriptions</option><option>Utilities</option><option>Vehicle</option><option>Debt</option><option>Kids</option><option>Other</option></select>
+          </label>
+          <button class="primary-btn" type="submit">Save recurring bill</button>
+        </form>
+
+        <form id="paycheckForm" class="form-card add-panel" data-panel="paycheck">
+          <div class="notice">
+            <strong>This starts the review.</strong>
+            <span>Saving the new paycheck closes the previous period and creates one new budget review.</span>
+          </div>
+          <label>Pay date<input name="date" type="date" required /></label>
+          <label>Amount deposited<div class="money-input"><span>$</span><input name="amount" inputmode="decimal" placeholder="5500.00" required /></div></label>
+          <label>Checking before deposit <span class="optional">optional</span>
+            <div class="money-input"><span>$</span><input name="checking" inputmode="decimal" placeholder="0.00" /></div>
+          </label>
+          <button class="primary-btn" type="submit">Save paycheck & create review</button>
+        </form>
+      </section>
+
+      <section class="view" data-view="reviews">
+        <div class="section-head sticky-head">
+          <div><h2>Reviews</h2><p>Previous period + new paycheck + suggested adjustments.</p></div>
+        </div>
+
+        <article class="review-card">
+          <div class="review-card-head">
+            <div>
+              <span class="status-dot"></span>
+              <span class="muted">Latest review</span>
+              <h3 id="reviewTitle">Oct 9 paycheck review</h3>
+            </div>
+            <span class="review-state" id="reviewState">Draft</span>
+          </div>
+
+          <div class="review-stats">
+            <div><span>Previous spending</span><strong id="previousSpend">$5,120</strong></div>
+            <div><span>New paycheck</span><strong id="reviewPaycheck">$5,500</strong></div>
+            <div><span>Available extra</span><strong id="reviewExtra">$340</strong></div>
+          </div>
+
+          <div class="coach-note">
+            <div class="coach-icon">✦</div>
+            <div>
+              <strong>Review note</strong>
+              <p id="reviewNarrative">Your base plan fits the sample paycheck. Chris and Jen can each keep $200 discretionary spending and still leave a small amount unassigned.</p>
+            </div>
+          </div>
+
+          <div class="proposal">
+            <div class="proposal-top">
+              <div>
+                <span class="muted">Suggested discretionary allowance</span>
+                <div class="proposal-amount"><span>$</span><input id="proposalAmount" type="number" min="0" step="25" value="200" /><small>each</small></div>
+              </div>
+              <div class="proposal-impact">
+                <span>Extra after allowance</span>
+                <strong id="proposalExtra">$340</strong>
+              </div>
+            </div>
+            <p id="proposalReason">The current $200 each fits this paycheck, so no reduction is suggested.</p>
+            <div class="approval-note">A change is applied only after <strong>both</strong> people approve the exact same amount.</div>
+            <div class="approval-grid">
+              <button class="approval-btn" data-approver="chris"><span>Chris</span><strong id="chrisApproval">Approve</strong></button>
+              <button class="approval-btn" data-approver="jen"><span>Jen</span><strong id="jenApproval">Approve</strong></button>
+            </div>
+            <button class="apply-btn" id="applyProposal" disabled>Waiting for both approvals</button>
+          </div>
+        </article>
+
+        <div class="history-title">Previous reviews</div>
+        <div class="history-card">
+          <div><strong>Previous pay period</strong><span>Sample review</span></div>
+          <span>›</span>
+        </div>
+      </section>
+
+      <section class="view" data-view="more">
+        <div class="section-head sticky-head">
+          <div><h2>More</h2><p>Details stay out of the way until you want them.</p></div>
+        </div>
+        <div class="settings-list">
+          <button><span>Recurring bills</span><b>12</b></button>
+          <button><span>Debt & reserve goals</span><b>›</b></button>
+          <button><span>Categories</span><b>›</b></button>
+          <button><span>Review settings</span><b>Direct</b></button>
+          <button><span>Household members</span><b>Chris + Jen</b></button>
+        </div>
+        <div class="prototype-warning">
+          <strong>Prototype only</strong>
+          <p>This page uses local sample data in your browser. No real household financial information is stored on CrestedCritters.com.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-go="home"><span>⌂</span><small>Home</small></button>
+      <button class="nav-btn" data-go="plan"><span>▤</span><small>Plan</small></button>
+      <button class="nav-btn add-nav" data-go="add"><span>＋</span><small>Add</small></button>
+      <button class="nav-btn" data-go="reviews"><span class="nav-review-icon">✦<i id="navBubble">1</i></span><small>Reviews</small></button>
+      <button class="nav-btn" data-go="more"><span>•••</span><small>More</small></button>
+    </nav>
+
+    <div class="toast" id="toast"></div>
+  </div>
+  <script src="./budget.js"></script>
+</body>
+</html>
